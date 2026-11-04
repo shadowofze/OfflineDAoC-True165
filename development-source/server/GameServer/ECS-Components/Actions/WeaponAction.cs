@@ -102,9 +102,12 @@ namespace DOL.GS
                     break;
             }
 
-            // Unstealth before attack animation.
+            // Unstealth before attack animation. A gamebot or hired companion too, as a player (bots follow the player
+            // rules; a SmartAI bot can swing its stealth opener from hiding).
             if (_owner is GamePlayer playerOwner)
                 playerOwner.Stealth(false);
+            else if (_owner is GameBot { IsStealthed: true } botOwner)
+                botOwner.Stealth(false);
 
             // Show the animation.
             if (mainHandAttackData.AttackResult is not eAttackResult.HitUnstyled and not eAttackResult.HitStyle && leftHandAttackData != null)

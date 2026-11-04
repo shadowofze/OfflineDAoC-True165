@@ -3151,7 +3151,11 @@ namespace DOL.AI.Brain
                 // non-temporary playerbots until companion behavior is proven.
                 if (!_brain.BotBody.IsTemporaryGroupHelper)
                 {
-                    bool rest = AutonomousRestPolicy.ShouldRest(
+                    // SmartAI (owner 2026-11-04): a healer or caster in its player's group rests below 90% power and keeps
+                    // resting while the player stays within 800 units; beyond, it stands and follows (SmartRestPolicy).
+                    bool rest = DOL.GS.SmartAI.SmartRestPolicy.Applies(_brain.BotBody)
+                        ? DOL.GS.SmartAI.SmartRestPolicy.ShouldRest(_brain.BotBody, leader)
+                        : AutonomousRestPolicy.ShouldRest(
                         leader.CurrentRegionID == _brain.Body.CurrentRegionID &&
                             _brain.Body.IsWithinRadius(leader, 350),
                         AutonomousRestPolicy.MovementBlocksRest(
@@ -3269,6 +3273,11 @@ namespace DOL.AI.Brain
                     _brain.CheckHeals();
                     return;
                 }
+
+                // SmartAI (launcher "Use SmartAI"): when it acts this think, the legacy combat below is skipped. Off, or
+                // for a class without a SmartAI spec, or after a SmartAI error, the legacy combat runs unchanged.
+                if (DOL.GS.SmartAI.SmartAiConfig.IsEnabled && DOL.GS.SmartAI.SmartAiBrainDriver.TryThinkCombat(_brain))
+                    return;
 
                 if (_brain.HoldsExclusiveSupportRole())
                 {
@@ -3425,7 +3434,8 @@ namespace DOL.AI.Brain
                 }
                 if (Body.TargetObject is GameLiving ambushTarget && TryApproachAmbush(ambushTarget))
                     return;
-                if (Body.IsStealthed)
+                // SmartAI: a bot in reach with a stealth opener stays hidden for it; the swing unstealths it (WeaponAction).
+                if (Body.IsStealthed && !DOL.GS.SmartAI.SmartStyleSelector.KeepsStealthForOpener(BotBody, Body.TargetObject as GameLiving))
                     Body.Stealth(false);
 
                 if (Body.TargetObject is GameLiving pullTarget && pullTarget == ActiveOrderedPullTarget &&

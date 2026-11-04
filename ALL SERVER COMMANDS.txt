@@ -777,6 +777,20 @@ NORMAL PLAYER COMMANDS
   /slit
   Handler: DOL.GS.Commands.EmoteCommandHandler
 
+/smartai
+  SmartAI (the launcher's "Use SmartAI" option). Target the companion or bot first.
+    /smartai personality [auto|aggressive|defensive|tactical|opportunistic|supportive|conservative]
+      sets the personality your hired companion fights with (no name: shows it). Saying
+      "<name> personality <personality>" near the companion does the same. Auto uses its specialization's default.
+    /smartai status - SmartAI on or off, the loaded class files, and this session's log file
+    /smartai spec - which SmartAI specialization the bot fights as, and why
+    /smartai group - the group's main assist, target, strategy and wounded
+    /smartai debug [n] - the bot's last n SmartAI decisions (up to 32)
+    /smartai reload [force] - re-reads the class files in runtime/server/smartai/classes
+  Every /smartai command and its answer are written to runtime/logs/smartai-session-<server start>.log.
+  The tools besides personality need the server property smart_ai_player_tools (on by default).
+  Handler: DOL.GS.SmartAI.SmartAiCommandHandler
+
 /smile
   Make a big smile
   /smile

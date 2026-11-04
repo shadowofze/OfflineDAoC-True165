@@ -7,6 +7,15 @@ hold). Its changelog has the history of everything this version inherits.
 
 ## Coming in 0.3
 
+- SmartAI (in testing, off by default): a new "Use SmartAI" option in the launcher's Options tab. Off, every bot plays exactly as before; if SmartAI hits repeated errors it turns itself off for the session, and the launcher offers to turn it off after an unexpected server stop.
+- SmartAI: class strategy files (runtime/server/smartai/classes) describe how each specialization fights; the server reads and checks them at startup and with /smartai reload. The Cleric (Rejuvenation, Enhancement, Smite) is the first; the other 38 class templates are staged in runtime/config/smartai/specs.
+- SmartAI: bots with a class file choose between healing, buffing, offensive spells and their normal attack by their spec's priorities and rules, through the same game actions as before (player rules and combat numbers unchanged), and never break a mez.
+- SmartAI: groups share one tactical view (main assist, target, who is hurt); bots report trouble (healer attacked, heavy damage, low power), the group protects its healer, and companions can call out in party chat.
+- SmartAI: PvE, PvP and RvR are told apart; against players the group targets healers and crowd controllers first.
+- SmartAI: six personalities (/smartai personality, or "<name> personality defensive" near a companion); hired companions use their realm abilities (Purge, MCL...); SmartAI bots may use positional styles and stealth openers.
+- SmartAI: an Enhancement Cleric heals instead of smiting when no other healer is healing; healer and caster companions rest below 90% power and keep resting while you stay within 800 units.
+- SmartAI tools: /smartai status, spec, group and debug, logged to runtime/logs/smartai-session-*.log.
+
 - Combat: a monster on its last sliver of health no longer falls over before the hit that kills it.
 - World: two Albion banners floating in the air over Camelot Hills are gone.
 - Looting: you can no longer pick up loot while dead.

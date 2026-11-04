@@ -16,6 +16,7 @@
     <Compile Include="../../server/GameServer/bots/autonomous/BotGoalSettings.cs" Link="Configuration/BotGoalSettings.cs" />
     <Compile Include="../../server/GameServer/bots/autonomous/RealmEventRecordStore.cs" Link="Records/RealmEventRecordStore.cs" />
     <Compile Include="../../server/GameServer/Managers/GameLoop/BotAiDelayReport.cs" Link="Records/BotAiDelayReport.cs" />
+    <Compile Include="../../server/GameServer/smartai/config/SmartAiSwitch.cs" Link="Configuration/SmartAiSwitch.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Assets\offline-daoc-header.png"

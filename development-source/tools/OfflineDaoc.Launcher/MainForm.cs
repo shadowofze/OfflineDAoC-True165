@@ -4,6 +4,7 @@ using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using DOL.GS;
+using DOL.GS.SmartAI;
 
 namespace OfflineDaoc.Launcher;
 
@@ -85,6 +86,8 @@ internal sealed partial class MainForm : Form
     private readonly CheckBox _makeMeGm = new() { Text = "Make Me a GM", AutoSize = true, ForeColor = DaocTheme.Parchment, Font = new Font("Georgia", 9f, FontStyle.Bold) };
     private readonly CheckBox _rvrAnnouncements = new() { Text = "RvR and battleground announcements", AutoSize = true, Checked = true, ForeColor = DaocTheme.Parchment, Font = new Font("Georgia", 9f, FontStyle.Bold) };
     private readonly CheckBox _pveAnnouncements = new() { Text = "PvE realm event announcements", AutoSize = true, Checked = true, ForeColor = DaocTheme.Parchment, Font = new Font("Georgia", 9f, FontStyle.Bold) };
+    // Opt-in (docs/smartai/LAUNCHER_INTEGRATION.md): unchecked unless the database says exactly True.
+    private readonly CheckBox _useSmartAi = new() { Text = "Use SmartAI", AutoSize = true, Checked = false, ForeColor = DaocTheme.Parchment, Font = new Font("Georgia", 9f, FontStyle.Bold) };
     private readonly Label _optionsStatus = new()
     {
         AutoSize = true,
@@ -132,6 +135,9 @@ internal sealed partial class MainForm : Form
     private Process? _serverProcess;
     private RollingServerLog? _serverLog;
     private bool _stoppingServer;
+    // The server process the player asked to stop (its exit is expected), and whether the launcher is closing.
+    private Process? _stopRequestedFor;
+    private bool _formClosing;
     private bool _refreshing;
     private bool _refreshingExchange;
     private bool _loadingOptions;
@@ -229,6 +235,7 @@ internal sealed partial class MainForm : Form
         };
         FormClosing += (_, _) =>
         {
+            _formClosing = true;
             _serverReadinessPoll.Stop();
             _serverLog?.Dispose();
         };
@@ -527,7 +534,7 @@ internal sealed partial class MainForm : Form
         var surface = new InsetPanel
         {
             Dock = DockStyle.Top,
-            Height = 330,
+            Height = 370,
             Margin = new Padding(18),
             Padding = new Padding(20),
             Accent = DaocTheme.Gold,
@@ -536,13 +543,14 @@ internal sealed partial class MainForm : Form
         {
             Dock = DockStyle.Fill,
             ColumnCount = 3,
-            RowCount = 6,
+            RowCount = 7,
             BackColor = Color.Transparent,
         };
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 210));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 135));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
@@ -575,10 +583,14 @@ internal sealed partial class MainForm : Form
         layout.SetColumnSpan(_pveAnnouncements, 2);
         layout.Controls.Add(OptionDescription("Screen announcements when realm raids form, and to every realm when a final boss (epic dungeons, Summoner's Hall, Darkness Falls) is defeated."), 2, 3);
         _pveAnnouncements.CheckedChanged += async (_, _) => await SaveAnnouncementSettingAsync();
+        layout.Controls.Add(_useSmartAi, 0, 4);
+        layout.SetColumnSpan(_useSmartAi, 2);
+        layout.Controls.Add(OptionDescription("Smarter combat, specialization tactics and group coordination for hired companions and gamebots, at the next server startup. Unchecked: the standard bot AI."), 2, 4);
+        _useSmartAi.CheckedChanged += async (_, _) => await SaveSmartAiSettingAsync();
         Label about = OptionDescription(TrueMode.Summary);
-        layout.Controls.Add(about, 0, 4);
+        layout.Controls.Add(about, 0, 5);
         layout.SetColumnSpan(about, 3);
-        layout.Controls.Add(_optionsStatus, 0, 5);
+        layout.Controls.Add(_optionsStatus, 0, 6);
         layout.SetColumnSpan(_optionsStatus, 3);
         surface.Controls.Add(layout);
         return surface;
@@ -1432,6 +1444,8 @@ internal sealed partial class MainForm : Form
             _rvrAnnouncements.Enabled = editable;
             _pveAnnouncements.Checked = snapshot.PveAnnouncements;
             _pveAnnouncements.Enabled = editable;
+            _useSmartAi.Checked = snapshot.UseSmartAi;
+            _useSmartAi.Enabled = editable;
             if (_savingOptions)
             {
                 _optionsStatus.ForeColor = DaocTheme.Success;
@@ -1460,7 +1474,7 @@ internal sealed partial class MainForm : Form
             return;
         }
         _savingOptions = true;
-        _rvrAnnouncements.Enabled = _pveAnnouncements.Enabled = _makeMeGm.Enabled = _startButton.Enabled = false;
+        _rvrAnnouncements.Enabled = _pveAnnouncements.Enabled = _makeMeGm.Enabled = _useSmartAi.Enabled = _startButton.Enabled = false;
         _optionsStatus.Text = "APPLYING ANNOUNCEMENT SETTINGS…";
         _optionsStatus.ForeColor = DaocTheme.Success;
         try { await Task.Run(() => PersistAnnouncementSettings(rvr, pve)); }
@@ -1508,6 +1522,85 @@ internal sealed partial class MainForm : Form
         retire.CommandText = "DELETE FROM ServerProperty WHERE `Key`='game_wide_announcements'";
         retire.ExecuteNonQuery();
         transaction.Commit();
+    }
+
+    private async Task SaveSmartAiSettingAsync()
+    {
+        if (_loadingOptions || _savingOptions) return;
+        bool enabled = _useSmartAi.Checked;
+        if (IsServerRunning() || FindExactServerProcess() is not null)
+        {
+            MessageBox.Show(this, "Stop the server before changing SmartAI.", "Server is running");
+            await RefreshDashboardAsync();
+            return;
+        }
+        _savingOptions = true;
+        _rvrAnnouncements.Enabled = _pveAnnouncements.Enabled = _makeMeGm.Enabled = _useSmartAi.Enabled = _startButton.Enabled = false;
+        _optionsStatus.Text = "APPLYING SMARTAI SETTING…";
+        _optionsStatus.ForeColor = DaocTheme.Success;
+        try { await Task.Run(() => PersistSmartAiSetting(enabled)); }
+        catch (Exception ex) { MessageBox.Show(this, ex.Message, "Unable to save SmartAI setting"); }
+        finally { _savingOptions = false; await RefreshDashboardAsync(); }
+    }
+
+    // SmartAI (docs/smartai): the server reads use_smart_ai from ServerProperty at startup, so a server started
+    // without the launcher behaves the same. Never written to true165-rules.json, so content refreshes keep it.
+    private void PersistSmartAiSetting(bool enabled)
+    {
+        if (IsServerRunning() || FindExactServerProcess() is not null)
+            throw new InvalidOperationException("The server must be fully stopped.");
+        if (!File.Exists(_database))
+            throw new InvalidOperationException("The prepared world database is missing.");
+        using var connection = new SQLiteConnection($"Data Source={_database};Version=3;Pooling=False;Default Timeout=10");
+        connection.Open();
+        WriteSmartAiSetting(connection, enabled);
+    }
+
+    private static void WriteSmartAiSetting(SQLiteConnection connection, bool enabled)
+    {
+        using var command = connection.CreateCommand();
+        command.CommandText = """
+            INSERT INTO ServerProperty (Category, `Key`, Description, DefaultValue, Value, LastTimeRowUpdated, ServerProperty_ID)
+            VALUES (@category, @key, @description, 'False', @value, @updated, @key)
+            ON CONFLICT(`Key`) DO UPDATE SET
+                Value=excluded.Value,
+                LastTimeRowUpdated=excluded.LastTimeRowUpdated
+            """;
+        command.Parameters.AddWithValue("@category", SmartAiSwitch.Category);
+        command.Parameters.AddWithValue("@key", SmartAiSwitch.UseSmartAiKey);
+        command.Parameters.AddWithValue("@description", SmartAiSwitch.UseSmartAiDescription);
+        command.Parameters.AddWithValue("@value", SmartAiSwitch.ToStored(enabled));
+        command.Parameters.AddWithValue("@updated", DateTime.UtcNow.ToString("O"));
+        command.ExecuteNonQuery();
+    }
+
+    // The launcher side of the SmartAI fallback: when the server stops on its own while SmartAI is on, offer to go
+    // back to the standard bot AI for the next start. (The server also turns SmartAI off by itself for the rest of a
+    // session after repeated SmartAI errors; that never changes this saved setting.)
+    private void OfferSmartAiFallbackAfterUnexpectedExit(int? exitCode)
+    {
+        try
+        {
+            if (!File.Exists(_database) || IsServerRunning() || FindExactServerProcess() is not null)
+                return;
+            using var connection = new SQLiteConnection($"Data Source={_database};Version=3;Pooling=False;Default Timeout=10");
+            connection.Open();
+            if (!ReadOptInSwitch(connection, SmartAiSwitch.UseSmartAiKey))
+                return;
+            string code = exitCode is int value ? $" (exit code {value})" : string.Empty;
+            _serverLog?.WriteLine($"Launcher: the server stopped unexpectedly{code} while SmartAI was on.");
+            if (MessageBox.Show(this,
+                    $"The server stopped unexpectedly{code} while SmartAI was on.\n\n" +
+                    "Turn SmartAI off and use the standard bot AI at the next start? You can turn it back on in Options.",
+                    "Server stopped", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+            WriteSmartAiSetting(connection, false);
+            _serverLog?.WriteLine("Launcher: SmartAI turned off after the unexpected stop.");
+        }
+        catch (Exception ex)
+        {
+            try { _serverLog?.WriteLine("Launcher: SmartAI fallback check failed: " + ex.Message); } catch (Exception) { }
+        }
     }
 
     private async Task SaveGmSettingAsync()
@@ -1757,8 +1850,21 @@ internal sealed partial class MainForm : Form
         }
         bool rvrAnnouncements = ReadSwitch(connection, "rvr_battleground_announcements");
         bool pveAnnouncements = ReadSwitch(connection, "pve_realm_event_announcements");
+        bool useSmartAi = ReadOptInSwitch(connection, SmartAiSwitch.UseSmartAiKey);
         return new DashboardSnapshot(serverState, bots, groups, active, memoryMb, botAiDelay, makeMeGm, ReadRvrWorld(),
-            rvrAnnouncements, pveAnnouncements);
+            rvrAnnouncements, pveAnnouncements, useSmartAi);
+    }
+
+    // Opt-in switches: only an explicit "True" is on. A missing row or any other value reads as off. Never use
+    // ReadSwitch for these: it reads a missing row as on.
+    private static bool ReadOptInSwitch(SQLiteConnection connection, string key)
+    {
+        if (!TableExists(connection, "ServerProperty"))
+            return false;
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT Value FROM ServerProperty WHERE `Key`=@key LIMIT 1";
+        command.Parameters.AddWithValue("@key", key);
+        return SmartAiSwitch.IsOn(command.ExecuteScalar()?.ToString());
     }
 
     // Anything but an explicit "false" (including a missing row) reads as on.
@@ -2592,11 +2698,22 @@ internal sealed partial class MainForm : Form
             _serverProcess = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
             _serverProcess.OutputDataReceived += (_, args) => { try { if (args.Data is not null) _serverLog?.WriteLine(args.Data); } catch (Exception) { } };
             _serverProcess.ErrorDataReceived += (_, args) => { try { if (args.Data is not null) _serverLog?.WriteLine("ERROR: " + args.Data); } catch (Exception) { } };
+            Process ownedProcess = _serverProcess;
             _serverProcess.Exited += (_, _) => BeginInvoke(async () =>
             {
                 _serverReadinessPoll.Stop();
+                // Per process, not _stoppingServer: StopServerAsync clears that flag as soon as its wait ends, which
+                // can be before this callback runs.
+                bool unexpected = !ReferenceEquals(_stopRequestedFor, ownedProcess) && !_formClosing && !IsDisposed;
                 _stoppingServer = false;
+                int? exitCode = null;
+                try { exitCode = ownedProcess.ExitCode; } catch (Exception) { }
                 await RefreshDashboardAsync();
+                if (unexpected)
+                {
+                    OfferSmartAiFallbackAfterUnexpectedExit(exitCode);
+                    await RefreshDashboardAsync();
+                }
             });
             _serverProcess.Start();
             ShowStartingState();
@@ -2660,6 +2777,7 @@ internal sealed partial class MainForm : Form
 
             if (ownsRunningProcess)
             {
+                _stopRequestedFor = _serverProcess;
                 _serverProcess!.StandardInput.WriteLine("exit");
                 _serverProcess.StandardInput.Flush();
                 if (!await WaitForExitWithinAsync(_serverProcess, 10_000))
@@ -3122,7 +3240,7 @@ internal sealed partial class MainForm : Form
     }
     private sealed record DashboardSnapshot(string ServerState, List<BotRow> Bots, List<GroupRow> Groups,
         int Active, double ServerMemoryMb, BotAiDelayReport? BotAiDelay, bool MakeMeGm = false, RvrWorldSnapshot? RvrWorld = null,
-        bool RvrAnnouncements = true, bool PveAnnouncements = true);
+        bool RvrAnnouncements = true, bool PveAnnouncements = true, bool UseSmartAi = false);
 
     private sealed record LiveBotStatus(long BotId, int Level, string ZoneName, string Activity,
         string CurrentGoal, string TargetName, string TravelDestination, string ObjectiveProgress,

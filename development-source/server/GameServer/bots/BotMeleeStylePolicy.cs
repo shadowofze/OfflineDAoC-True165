@@ -6,8 +6,12 @@ namespace DOL.GS
     /// <summary>Shared companion/world-bot selection; native openings and costs remain authoritative.</summary>
     public static class BotMeleeStylePolicy
     {
-        public static bool IsEligible(Style style) => style != null &&
-            style.OpeningRequirementType != Style.eOpening.Positional && !style.StealthRequirement;
+        public static bool IsEligible(Style style) => IsEligible(style, false);
+
+        /// <summary>The legacy selector leaves positional styles and stealth openers out; a bot SmartAI drives may use
+        /// them (SmartStyleSelector). StyleProcessor.CanUseStyle still checks position and stealth at every swing.</summary>
+        public static bool IsEligible(Style style, bool smartAi) => style != null &&
+            (smartAi || style.OpeningRequirementType != Style.eOpening.Positional && !style.StealthRequirement);
 
         public static bool Better(Style candidate, Style current) => current == null ||
             candidate.GrowthRate > current.GrowthRate ||
@@ -17,8 +21,10 @@ namespace DOL.GS
             style?.WeaponTypeRequirement == (int)eObjectType.Shield && bot.ActiveWeaponSlot == eActiveWeaponSlot.Standard
                 ? bot.Inventory.GetItem(eInventorySlot.LeftHandWeapon) : bot.ActiveWeapon;
 
-        public static bool Usable(GameBot bot, Style style, AttackData lastAttack) =>
-            IsEligible(style) && style.Level <= bot.Level &&
+        public static bool Usable(GameBot bot, Style style, AttackData lastAttack) => Usable(bot, style, lastAttack, false);
+
+        public static bool Usable(GameBot bot, Style style, AttackData lastAttack, bool smartAi) =>
+            IsEligible(style, smartAi) && style.Level <= bot.Level &&
             MatchesWeapon(style, bot.ActiveWeapon, bot.Inventory.GetItem(eInventorySlot.LeftHandWeapon), bot.ActiveWeaponSlot) &&
             StyleProcessor.CheckEnduranceCost(bot, Weapon(bot, style), style) &&
             bot.CheckStyleStun(style) &&
@@ -51,14 +57,15 @@ namespace DOL.GS
                     bot.ActiveWeaponSlot == eActiveWeaponSlot.TwoHanded ? eInventorySlot.TwoHandWeapon : eInventorySlot.RightHandWeapon) ||
                 bot.ActiveWeaponSlot == eActiveWeaponSlot.Distance)
                 return null;
+            bool smartAi = SmartAI.SmartStyleSelector.Drives(bot);
             // Preserve a deliberate tank taunt, but revalidate at the actual swing.
             Style queued = bot.styleComponent.NextCombatStyle;
-            if (preserveQueued && Usable(bot, queued, lastAttack)) return queued;
+            if (preserveQueued && Usable(bot, queued, lastAttack, smartAi)) return queued;
             Style best = null;
             Style anytime = null;
             foreach (Style style in bot.Styles)
             {
-                if (!Usable(bot, style, lastAttack)) continue;
+                if (!Usable(bot, style, lastAttack, smartAi)) continue;
                 if (Better(style, best)) best = style;
                 if (SavageBotCombatPolicy.IsReliableAnytimeStyle(style) && Better(style, anytime)) anytime = style;
             }

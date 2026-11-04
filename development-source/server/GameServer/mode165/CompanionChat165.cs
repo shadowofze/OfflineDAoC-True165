@@ -92,6 +92,18 @@ namespace DOL.GS
             GameBot named = near.FirstOrDefault(b => AutonomousBotChatCoordinator.ContainsMention(message, b.Name));
             if (named == null && Random.Shared.NextDouble() > 0.35)
                 return;
+            // SmartAI (Phase 10): "Cedric personality aggressive" sets the named companion's personality, and it answers.
+            if (named != null && SmartAI.SmartPersonalityCommands.TryVoice(named, message, out string answer))
+            {
+                GameBot voiced = named;
+                _ = new ECSGameTimer(voiced, _ =>
+                {
+                    if (CanSpeak(voiced, player))
+                        voiced.Say(answer);
+                    return 0;
+                }, 800);
+                return;
+            }
             GameBot speaker = named ?? near[Random.Shared.Next(near.Length)];
             long now = GameLoop.GameLoopTime;
             if (NextReply.TryGetValue(speaker.DatabaseID, out long next) && now < next)

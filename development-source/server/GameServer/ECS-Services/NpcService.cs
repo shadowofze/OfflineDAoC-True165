@@ -29,6 +29,8 @@ namespace DOL.GS
             AutonomousWorldBotController.PrepareRvrPlanningTick();
             AutonomousBotGroupCoordinator.PrepareCoordinatorTick();
             AutonomousWorldBotController.PrepareCampPlanningTick();
+            if (SmartAI.SmartAiConfig.IsEnabled)
+                SmartAI.SmartAiCoordinator.PrepareTick();
             int lastValidIndex;
 
             try
