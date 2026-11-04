@@ -544,6 +544,16 @@ NORMAL PLAYER COMMANDS
   Usage: /online
   Handler: DOL.GS.Commands.OnlineCommandHandler
 
+/petpull
+  Pet pulling: your companions leave the monsters your pet holds to it until they drop to 85% health, then casters
+  and healers join with area spells only (no single-target spells or crowd control on the pack, and no blast that
+  would reach a monster still above 85%). Melee only fights monsters that break away toward the group. Your pet gets
+  the smallest heal, and only once a monster on it has lost about 5% (a big heal if it falls under 50%). Companions
+  stay put: no walking toward the pack or out to the pet - your pet brings the monsters to you.
+  Works with /defensive or /aggressive. /petpull again (or /petpull off) to stop.
+  /petpull [on|off]
+  Handler: DOL.GS.Commands.CompanionPetPullCommand
+
 /played
   Returns the age of the character
   /played

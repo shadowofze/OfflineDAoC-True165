@@ -44,7 +44,7 @@ Ally survival is the supreme mandate. The Regrowth Druid maintains backline posi
 ### 4. Mode: RvR
 - **Group Purge Authority**: The Regrowth Druid holds the signature `Group Purge` active ability. Use `Group Purge` immediately when 2+ group members (or the primary crowd-controller / main assist) are hit with enemy AoE Mez, AoE Stun, or Root.
 - **Disease & Poison Curing**: Rapidly cure Disease on tanks to restore 100% healing effectiveness.
-- **Positioning**: 1350â€“1500 units behind the frontline. Spread away from fellow casters (Bards, Eldritches, Enchanters) to avoid clustered enemy PBAoE bombs.
+- **Positioning**: 1350–1500 units behind the frontline. Spread away from fellow casters (Bards, Eldritches, Enchanters) to avoid clustered enemy PBAoE bombs.
 - **Pet Support**: Set nature pet to `Guard` the primary crowd-controller (Bard) or self to disrupt stealthers attempting to open from behind.
 
 ### 5. Mode: PvP
@@ -65,9 +65,9 @@ Ally survival is the supreme mandate. The Regrowth Druid maintains backline posi
   - If any mob breaks off from the pet and targets the group, tanks and other DPS can immediately attack and secure that loose mob to protect the group. The Druid can spot-heal allies engaging these loose adds.
 - **Smart Healing for the Pet (The 5% Mob Life Lost Threshold)**:
   - The Regrowth Druid **IS allowed to heal the pet**, but **MUST wait until the incoming mobs have lost around 5% of their life** (mobs at ~95% HP or below from damage shield contact hits) before casting its first direct heal, ensuring the mobs have anchored threat on the pet.
-  - **Smart Healing (Best Smallest Heal)**: The Druid uses "smart healing"â€”casting its **best smallest heal** (`HealEfficient` / minor baseline heal) to sustain the pet while generating minimal healing aggro.
+  - **Smart Healing (Best Smallest Heal)**: The Druid uses "smart healing"—casting its **best smallest heal** (`HealEfficient` / minor baseline heal) to sustain the pet while generating minimal healing aggro.
   - **Massive Damage Escalation**: If the pet continues taking massive damage (heavy multi-mob spike or rapid health drop), the Druid is authorized to cast a bigger heal (`HealBig`) to prevent the pet from dying.
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to achieve maximum casting range.
   - The pet puller is 100% responsible for bringing the mobs directly into the stationary group so everyone can do their job.
 - **Group Triage & 85% AoE Window**:
@@ -115,7 +115,7 @@ Ally survival is the supreme mandate. The Regrowth Druid maintains backline posi
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1250â€“1450 units
+- **Target Range**: 1250–1450 units
 - **Pet Placement**: Guard mode within 300 units of the backline casters.
 
 ### 11. Ability Usage Priorities
@@ -128,8 +128,8 @@ Ally survival is the supreme mandate. The Regrowth Druid maintains backline posi
 ### 12. Resource Management
 - **Conservative Mana Floor**: 30% (Reserve power for critical triage and resurrections)
 - **Triage Thresholds**:
-  - Target HP 70%â€“85%: `HealEfficient` (Greater Heal)
-  - Target HP 35%â€“70%: `HealBig` (Major Heal)
+  - Target HP 70%–85%: `HealEfficient` (Greater Heal)
+  - Target HP 35%–70%: `HealBig` (Major Heal)
   - Target HP < 35%: `HealInstant` + `HealBig`
   - 3+ members < 70%: `HealSpread` / `HealGroup`
 
@@ -223,7 +223,7 @@ Maintains 100% uptime on maximum spec Strength/Constitution, Dexterity/Quickness
   - If any mob breaks off from the pet and threatens group members, the Nurture Druid can immediately step in with One-Handed weapon, shield block, and nature pet to attack, distract, and peel that loose mob to protect the group!
 - **Support & Smart Healing**:
   - If the pet is taking heavy damage and incoming mobs have lost ~5% life, the Nurture Druid can assist with a small efficient heal on the pet or spot-heal allies.
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - Hold position firmly at the group camp anchor. Do **NOT** run away or backpedal to gain casting or melee range.
   - The pet puller is responsible for bringing the mobs directly into the parked group.
 - **Cast Embargo on Main Pack Above ~85% Mob Health**:
@@ -271,7 +271,7 @@ Maintains 100% uptime on maximum spec Strength/Constitution, Dexterity/Quickness
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline
-- **Target Range**: 700â€“1000 units behind frontline
+- **Target Range**: 700–1000 units behind frontline
 - **Flank Coverage**: Position to intercept enemy flankers before they reach the Regrowth Druid or Bard.
 
 ### 11. Ability Usage Priorities
@@ -283,7 +283,7 @@ Maintains 100% uptime on maximum spec Strength/Constitution, Dexterity/Quickness
 ### 12. Resource Management
 - **Mana Floor**: 25% (Reserve mana for emergency spot-heals and rebuffing fallen allies)
 - **Buff Priority**: Spec Str/Con > Spec Dex/Qui > Base AF > Base Stats > Health Regen
-- **Heal Thresholds**: Cast `HealEfficient` when ally HP 50%â€“75%; cast `HealBig` when ally HP < 50%.
+- **Heal Thresholds**: Cast `HealEfficient` when ally HP 50%–75%; cast `HealBig` when ally HP < 50%.
 
 ### 13. What the AI SHOULD Do
 - Rebuff fallen group members immediately after they are resurrected and stabilized.
@@ -367,7 +367,7 @@ Operates as an offensive caster with a formidable pet and superior crowd control
   - No tank or melee attempts to taunt the main pack, and the Nature Druid holds offensive spells on the main cluster while mobs are above ~85% HP.
 - **Loose Mob Protection (Break-Off Protection)**:
   - If any mob breaks off from the pet and threatens friendly healers or casters, the Nature Druid is authorized to immediately cast Nature Root, direct-damage nukes, or send its nature pet onto that loose mob to protect the group!
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - Stand firm at the group camp anchor alongside the casters. Do **NOT** run away or kite backwards to gain max spell range.
   - The pet puller is responsible for bringing the mobs directly into the parked group.
 - **The 85% Mob Health AoE Trigger**:
@@ -417,7 +417,7 @@ Operates as an offensive caster with a formidable pet and superior crowd control
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Caster Line
-- **Target Range**: 900â€“1200 units from enemy target
+- **Target Range**: 900–1200 units from enemy target
 - **Pet Placement**: Deployed onto the frontline assist target.
 
 ### 11. Ability Usage Priorities

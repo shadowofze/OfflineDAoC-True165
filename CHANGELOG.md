@@ -15,6 +15,9 @@ hold). Its changelog has the history of everything this version inherits.
 - SmartAI: six personalities (/smartai personality, or "<name> personality defensive" near a companion); hired companions use their realm abilities (Purge, MCL...); SmartAI bots may use positional styles and stealth openers.
 - SmartAI: an Enhancement Cleric heals instead of smiting when no other healer is healing; healer and caster companions rest below 90% power and keep resting while you stay within 800 units.
 - SmartAI tools: /smartai status, spec, group and debug, logged to runtime/logs/smartai-session-*.log.
+- Companions: /petpull for pet pulling - companions leave the monsters on your pet to it until 85%, then casters and healers join with area spells only; melee takes only monsters that break away; your pet gets the smallest heal once a monster on it has lost about 5%; nobody walks out to the pack or the pet.
+- SmartAI: healers choose their heal by their spec's health thresholds (for example a Greater Heal at 70-85%, a Major Heal at 35-70%, a group heal when three are hurt).
+- SmartAI: class strategy files are active for all 39 classes; specs that share a main line are told apart by a second line and its level (for example a Thane's Shields, an Infiltrator's Envenom), and the Berserker's Vendo play is part of the Left Axe spec.
 
 - Combat: a monster on its last sliver of health no longer falls over before the hit that kills it.
 - World: two Albion banners floating in the air over Camelot Hills are gone.

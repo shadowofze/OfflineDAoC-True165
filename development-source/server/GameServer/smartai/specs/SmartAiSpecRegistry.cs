@@ -181,6 +181,10 @@ namespace DOL.GS.SmartAI
                 else if (points == bestPoints)
                     best = null; // tied at the top: the points don't decide
             }
+            // Several specs on the top line (a Mercenary's pure Dual Wield, Shield Flanker and Parry Duelist): the
+            // secondary_line with the most points decides; none trained, the pure spec (no secondary_line).
+            if (best != null)
+                best = BySecondaryLine(definition, best.Match.PrimaryLineKey, specLevel);
             double ratio = total > 0 ? (double)bestPoints / total : 0;
             if (best != null && ratio >= best.Match.MinPointRatio)
             {
@@ -207,6 +211,44 @@ namespace DOL.GS.SmartAI
             }
             how = total == 0 ? "no primary line trained past 1" : "a tie between the most-trained lines";
             return null;
+        }
+
+        /// <summary>
+        /// Among the specs on one primary line:
+        /// 1. a spec whose secondary_line level range holds the bot's level in that line (a Thane's Shields 36+ or 2-35);
+        /// 2. else the spec, without a range, whose secondary_line has the most points invested;
+        /// 3. else the first spec without a secondary_line (the pure one: a Thane with no Shields), else the first.
+        /// </summary>
+        public static SmartSpecDefinition BySecondaryLine(SmartClassDefinition definition, string primaryKey, Func<string, int> specLevel)
+        {
+            SmartSpecDefinition pure = null, first = null, bestSecondary = null, inRange = null;
+            long bestPoints = 0;
+            foreach (SmartSpecDefinition spec in definition.Specs)
+            {
+                if (!string.Equals(spec.Match?.PrimaryLineKey, primaryKey, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                first ??= spec;
+                string secondary = spec.Match.SecondaryLineKey;
+                if (string.IsNullOrEmpty(secondary))
+                {
+                    pure ??= spec;
+                    continue;
+                }
+                int level = specLevel?.Invoke(secondary) ?? 0;
+                if (spec.Match.HasSecondaryRange)
+                {
+                    if (inRange == null && level >= spec.Match.SecondaryLow && level <= spec.Match.SecondaryHigh)
+                        inRange = spec;
+                    continue;
+                }
+                long points = PointsInvested(level);
+                if (points > bestPoints)
+                {
+                    bestPoints = points;
+                    bestSecondary = spec;
+                }
+            }
+            return inRange ?? bestSecondary ?? pure ?? first;
         }
 
         public static long PointsInvested(int level) => level <= 1 ? 0 : (long)level * (level + 1) / 2 - 1;

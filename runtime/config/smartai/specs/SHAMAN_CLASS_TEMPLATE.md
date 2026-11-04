@@ -45,7 +45,7 @@ Ally survival is paramount. The Mending Shaman maintains backline positioning, t
 ### 4. Mode: RvR
 - **Triage Priority**: Prioritize friendly main crowd controllers (Healers/Pacification), main tanks, and casters under assist-train focus.
 - **Disease Cleansing**: Rapidly cast `Cure Disease` on friendly frontline tanks and healers to remove incoming healing penalty debuffs.
-- **Positioning**: 1350â€“1500 units behind the frontline. Maintain line-of-sight to the group while staying spread out to minimize exposure to enemy AoE crowd-control or PBAoE bombs.
+- **Positioning**: 1350–1500 units behind the frontline. Maintain line-of-sight to the group while staying spread out to minimize exposure to enemy AoE crowd-control or PBAoE bombs.
 - **Defensive Peel**: If an enemy assassin or frontline tank breaks into the backline, apply instant `Purge` if crowd-controlled, pop `Mastery of Concentration` if interrupted, and cast single-target root on the pursuer before kiting toward friendly peelers.
 
 ### 5. Mode: PvP
@@ -66,10 +66,10 @@ Ally survival is paramount. The Mending Shaman maintains backline positioning, t
   - If any mob breaks off from the pet and targets the group, tanks and other DPS can immediately attack and secure that loose mob to protect the group. The Mending Shaman can cast single-target root on the break-off add or spot-heal allies engaging it.
 - **Smart Healing for the Pet (The 5% Mob Life Lost Threshold)**:
   - The Mending Shaman **IS allowed to heal the pet**, but **MUST wait until the incoming mobs have lost around 5% of their life** (mobs at ~95% HP or below from damage shield contact hits) before casting its first direct heal, ensuring the mobs have anchored threat on the pet.
-  - **Smart Healing (Best Smallest Heal)**: The Shaman uses "smart healing"â€”casting its **best smallest heal** (`HealEfficient` / minor baseline heal) to sustain the pet while generating minimal healing aggro.
+  - **Smart Healing (Best Smallest Heal)**: The Shaman uses "smart healing"—casting its **best smallest heal** (`HealEfficient` / minor baseline heal) to sustain the pet while generating minimal healing aggro.
   - **Massive Damage Escalation**: If the pet continues taking massive damage (heavy multi-mob spike or rapid health drop), the Shaman is authorized to cast a bigger heal (`HealBig`) to prevent the pet from dying.
   - Pre-cast Health Regeneration buffs and baseline stat buffs remain running on the pet prior to the pull.
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to achieve maximum casting range.
   - The pet puller is 100% responsible for bringing the mobs directly into the stationary group so everyone can do their job.
 - **Group Triage & 85% AoE Window**:
@@ -118,7 +118,7 @@ Ally survival is paramount. The Mending Shaman maintains backline positioning, t
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1250â€“1450 units
+- **Target Range**: 1250–1450 units
 - **Spacing**: Maintain 400+ units separation from other support casters (Healer/Runemaster) to avoid clustered CC.
 
 ### 11. Ability Usage Priorities
@@ -126,13 +126,13 @@ Ally survival is paramount. The Mending Shaman maintains backline positioning, t
 2. `Mastery of Concentration` (AtlasOF_MasteryOfConcentration): Priority 90 (15 seconds of uninterruptible healing)
 3. `Mystic Crystal Lore` (AtlasOF_MCL): Priority 85 (Restore mana when below 25%)
 4. `HealBig` / Major Spec Heal: Priority 80 (When target HP < 50%)
-5. `HealEfficient` / Minor Heal: Priority 70 (When target HP between 50%â€“85%)
+5. `HealEfficient` / Minor Heal: Priority 70 (When target HP between 50%–85%)
 
 ### 12. Resource Management
 - **Conservative Mana Floor**: 30% (Reserve power for critical triage and resurrections)
 - **Triage Thresholds**:
-  - Target HP 70%â€“85%: `HealEfficient` (Minor Heal)
-  - Target HP 35%â€“70%: `HealBig` (Major Heal)
+  - Target HP 70%–85%: `HealEfficient` (Minor Heal)
+  - Target HP 35%–70%: `HealBig` (Major Heal)
   - Target HP < 35%: `Mastery of Concentration` + `HealBig`
   - 3+ members < 70%: `HealGroup`
 
@@ -153,7 +153,7 @@ Ally survival is paramount. The Mending Shaman maintains backline positioning, t
 ### 15. Target Selection Matrix
 - **Condition: Ally HP < 35%**: Select Ally -> Cast `HealBig` (Escalate to MoC if interrupted).
 - **Condition: Ally Afflicted with Disease**: Select Ally -> Cast `Cure Disease`.
-- **Condition: Ally HP 35%â€“85%**: Select Lowest Ally HP% -> Cast `HealEfficient`.
+- **Condition: Ally HP 35%–85%**: Select Lowest Ally HP% -> Cast `HealEfficient`.
 - **Condition: 3+ Allies HP < 70%**: Cast `HealGroup`.
 - **Condition: Add incoming at > 300 range**: Select Add -> Cast Root (Creeper).
 
@@ -229,7 +229,7 @@ Enrich and sustain the group. The Aug Shaman ensures Midgard's heavy melee front
   - **Smart Healing (Best Smallest Heal)**: Cast the **best smallest heal** (`HealEfficient` / minor baseline heal) to sustain the pet while generating minimal healing aggro.
   - **Massive Damage Escalation**: If the pet takes massive spike damage, cast `HealBig` to stabilize.
   - Pre-cast Health Regeneration, Str/Con, and Dex/Qui buffs stay active on the pet prior to the pull.
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to achieve maximum casting range.
   - The pet puller is 100% responsible for bringing the mobs directly into the stationary group so everyone can do their job.
 - **Group Triage & 85% AoE Window**:
@@ -277,7 +277,7 @@ Enrich and sustain the group. The Aug Shaman ensures Midgard's heavy melee front
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Backline
-- **Target Range**: 1100â€“1350 units
+- **Target Range**: 1100–1350 units
 - **Spacing**: Close enough to maintain buff range on frontline while remaining out of enemy melee reach.
 
 ### 11. Ability Usage Priorities
@@ -290,7 +290,7 @@ Enrich and sustain the group. The Aug Shaman ensures Midgard's heavy melee front
 ### 12. Resource Management
 - **Mana Reserve Floor**: 25% (Reserve power for buff recasting and emergency heals)
 - **Triage Thresholds**:
-  - Target HP 50%â€“75%: Baseline `HealEfficient`
+  - Target HP 50%–75%: Baseline `HealEfficient`
   - Target HP < 50%: Baseline `HealBig`
 
 ### 13. What the AI SHOULD Do
@@ -380,7 +380,7 @@ Offensive disruption and pressure. The Cave Shaman cripples enemy coordination b
 - **Smart Healing for the Pet (The 5% Mob Life Lost Threshold)**:
   - If called to assist with pet healing, the Cave Shaman **MUST wait until the incoming mobs have lost around 5% of their life** (mobs at ~95% HP or below from damage shield contact hits) before casting its first direct heal.
   - Use the **best smallest heal** (`HealEfficient` / minor baseline heal) to sustain the pet while generating minimal healing aggro. Escalate to `HealBig` only on massive damage spikes.
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to achieve maximum casting range.
   - The pet puller is 100% responsible for bringing the mobs directly into the stationary group so everyone can do their job.
 - **The 85% Mob Health AoE Trigger (AoE Disease & DoT Burn Window)**:
@@ -433,7 +433,7 @@ Offensive disruption and pressure. The Cave Shaman cripples enemy coordination b
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1250â€“1450 units
+- **Target Range**: 1250–1450 units
 - **Spacing**: Maintain 400+ units separation from primary healers to avoid shared CC.
 
 ### 11. Ability Usage Priorities

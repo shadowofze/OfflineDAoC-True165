@@ -10,7 +10,7 @@ default_personality: "Defensive"
 # Class: Paladin (Albion)
 
 ## Shared Class Capabilities
-- **Armor Type**: Full Plate (Level 20+), Chain (1â€“19).
+- **Armor Type**: Full Plate (Level 20+), Chain (1–19).
 - **Weapon Slots**: One-Handed Slashing, Thrusting, Crushing; Two-Handed Weapons; Medium and Large Shields.
 - **Core Specialization Lines**:
   - `Chants`: Albion's holy war chants featuring Pulsing Endosong (pulsing endurance reduction chant that keeps group endurance full!), Pulsing Armor Factor (AF) chant, Pulsing Health Regeneration chant, Pulsing Damage Shield chant (retribution damage against melee attackers), and minor self-healing spells.
@@ -31,14 +31,14 @@ default_personality: "Defensive"
 match_specs:
   primary_line: "Chants"
   min_point_ratio: 0.50
-  spec_type_aliases: ["OneHandAndShieldPaladin", "OneHandAndShield"]
+  spec_type_aliases: ["OneHandAndShield"]
 ```
 
 ### 1. Intended Role
 Albion Group Anchor, Endosong Provider, 9-Second Shield Slam Peeler, Healer Bodyguard (`Guard`/`Protect`), and Plate Frontliner.
 
 ### 2. Intended Role Summary
-The One-Hand and Shield Paladin is the defensive heartbeat of Albion groups. Combining high Chants (48â€“50) with 42 Shield, it provides the essential Pulsing Endosong that enables infinite sprinting and style execution for all party members, maintains pulsing AF buffs, locks down enemy attackers with 9-second Shield Slams, and protects vulnerable casters and healers via `Guard` and `Protect`.
+The One-Hand and Shield Paladin is the defensive heartbeat of Albion groups. Combining high Chants (48–50) with 42 Shield, it provides the essential Pulsing Endosong that enables infinite sprinting and style execution for all party members, maintains pulsing AF buffs, locks down enemy attackers with 9-second Shield Slams, and protects vulnerable casters and healers via `Guard` and `Protect`.
 
 ### 3. Combat Philosophy
 Steadfast protection and endurance logistics. The Paladin prioritizes the survival of Albion's support core above personal damage. It maintains chants continuously, stays within bodyguard range of the primary cleric, intercepts charging melee with Shield Slam stuns, and absorbs incoming blows.
@@ -48,7 +48,7 @@ Steadfast protection and endurance logistics. The Paladin prioritizes the surviv
 - **Dedicated Healer Guard**: Anchor directly beside the primary Cleric; maintain active `Guard` to absorb incoming melee strikes.
 - **Shield Slam Peeling**: When enemy stealthers (Shadowblades, Nightshades) or heavy melee reach Albion support, slam them with a 9-second shield stun.
 - **Pulsing AF Chant**: Twist Pulsing AF chant to maximize group armor mitigation against physical damage.
-- **Positioning**: Tight midline (within 200â€“300 units of the main Cleric).
+- **Positioning**: Tight midline (within 200–300 units of the main Cleric).
 
 ### 5. Mode: PvP
 - **Shield Stun & Attrition**: Slam stun opponent (9s) -> Move to side/rear for weapon style chain -> Block with large shield -> Outlast opponent through self-heals and pulsing chants.
@@ -180,7 +180,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Two_Handed"
   min_point_ratio: 0.50
-  spec_type_aliases: ["TwoHandHybridPaladin", "TwoHanded"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -319,7 +319,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Shields"
   min_point_ratio: 0.50
-  spec_type_aliases: ["FullShieldPaladin", "ShieldBodyguardPaladin"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -335,7 +335,7 @@ Impenetrable physical barrier. The Full Shield Bodyguard Paladin acts as a livin
 - **Maximum Cleric Guard**: Maintain 50-spec `Guard` on the primary Cleric; block incoming attacks for both self and the guarded ally.
 - **9-Second Shield Slam Lockdown**: Apply 9-second Shield Slams to high-threat enemy melee rushers and stealthers attacking Albion's backline.
 - **Pulsing Chants**: Maintain Pulsing Endosong and AF chants while standing firm beside the support core.
-- **Positioning**: Zero-distance anchor (within 100â€“150 units of guarded Cleric).
+- **Positioning**: Zero-distance anchor (within 100–150 units of guarded Cleric).
 
 ### 5. Mode: PvP
 - **Shield Fortress**: Shield slam stun (9s) -> Rotate for positional styles -> Block incoming attacks -> Outlast through defensive absorption.
@@ -399,7 +399,7 @@ Impenetrable physical barrier. The Full Shield Bodyguard Paladin acts as a livin
 3. Enemy Melee Attacking Backline: Priority 80 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Tight Backline (within 100â€“150 units of guarded Cleric)
+- **Anchor**: Tight Backline (within 100–150 units of guarded Cleric)
 - **Pull Phase**: Stationary at camp anchor; never leave the Cleric's side.
 
 ### 11. Ability Usage Priorities

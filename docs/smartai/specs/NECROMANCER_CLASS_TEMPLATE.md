@@ -72,7 +72,7 @@ Methodical pull mechanics and unbreakable pet threat. The Death Servant Necroman
   - Healers in the group (Clerics/Friars) ARE allowed to heal the servant, but **MUST wait until incoming mobs have lost around 5% of their life** (~95% HP from damage shield contact hits) before casting direct heals.
   - Group healers cast their **best smallest heal** (`HealEfficient`), escalating to a bigger heal only on massive spike damage.
   - Pre-cast Health Regeneration / HoTs from Friars stay running on the servant.
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - The entire group remains firmly anchored at camp. Group members do **NOT** run away or kite backwards for casting range.
   - The Necromancer brings the mobs directly into the parked group.
 - **The 85% Mob Health AoE Trigger**:
@@ -119,7 +119,7 @@ Methodical pull mechanics and unbreakable pet threat. The Death Servant Necroman
 
 ### 10. Positioning Preferences
 - **Anchor**: Group Camp Center / Backline
-- **Target Range**: 1200â€“1400 units
+- **Target Range**: 1200–1400 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -183,7 +183,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Deathsight"
   min_point_ratio: 0.50
-  spec_type_aliases: ["DeathsightNecro"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -200,7 +200,7 @@ Unrelenting attrition and self-sustain. The Deathsight Necromancer siphons life 
 - **Snare Control**: Apply long-range Cold Snare to enemy melee peelers charging the backline.
 - **Lifedrain Sustain**: Use Lifedrain to recover servant health when focused by enemy ranged attackers.
 - **Power Transfer**: Transfer excess power to friendly Clerics or Sorcerers when their mana drops below 30%.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Drain Tanking**: Keep Lifedrain cycling continuously against opponents while servant melees.
@@ -257,7 +257,7 @@ Unrelenting attrition and self-sustain. The Deathsight Necromancer siphons life 
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1300â€“1500 units
+- **Target Range**: 1300–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -319,7 +319,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Painworking"
   min_point_ratio: 0.50
-  spec_type_aliases: ["PainworkingNecro"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -394,7 +394,7 @@ Mass attrition and decay. The Painworking Necromancer blankets enemy clusters in
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Group Camp Center
-- **PBAoE Range**: 0â€“350 units from the mob cluster centered on the pet (during burn phase)
+- **PBAoE Range**: 0–350 units from the mob cluster centered on the pet (during burn phase)
 - **Pull Phase**: Stationary at camp anchor; never flee backwards for range.
 
 ### 11. Ability Usage Priorities

@@ -58,6 +58,19 @@ namespace DOL.GS.SmartAI
         /// <summary>The server's spec line key (Specs constant value, e.g. "Body Magic"), set by the validator.</summary>
         public string PrimaryLineKey { get; set; } = string.Empty;
         public double MinPointRatio { get; init; }
+        /// <summary>Optional: the line that tells apart specs sharing a primary_line (a Mercenary's Shields or Parry
+        /// beside its Dual Wield). Empty: the pure spec of that line.</summary>
+        public string SecondaryLine { get; init; } = string.Empty;
+        /// <summary>The server's key of SecondaryLine, set by the validator.</summary>
+        public string SecondaryLineKey { get; set; } = string.Empty;
+        /// <summary>Optional level range of the secondary line (0 = not set): a Thane's Shields above 35 is the Shield
+        /// spec, 2-35 the Battle Hybrid (owner 2026-11-04). Without a range, the most points on the line decide.</summary>
+        public int SecondaryMinLevel { get; init; }
+        public int SecondaryMaxLevel { get; init; }
+        public bool HasSecondaryRange => SecondaryMinLevel > 0 || SecondaryMaxLevel > 0;
+        /// <summary>The range as levels: unset bounds are 2 (trained past 1) and no upper limit.</summary>
+        public int SecondaryLow => SecondaryMinLevel > 0 ? SecondaryMinLevel : 2;
+        public int SecondaryHigh => SecondaryMaxLevel > 0 ? SecondaryMaxLevel : int.MaxValue;
         public string WeaponType { get; init; } = string.Empty;
         public IReadOnlyList<string> SpecTypeAliases { get; init; } = [];
         public int Line { get; init; }

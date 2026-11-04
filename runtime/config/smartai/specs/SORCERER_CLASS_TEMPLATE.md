@@ -46,7 +46,7 @@ Total battlefield pacification and target isolation. The Mind Sorcerer initiates
 - **Re-Mez & Peel**: Monitor Mez timers; re-mez targets broken early by stray damage. Apply Single Root or AoE Root to enemy melee trains charging Albion's support midline.
 - **Amnesia Disruption**: Cast Amnesia onto enemy primary healers or casting nukers during critical spell channels to reset their targets and cancel casts.
 - **Pet Charm**: Maintain a charmed pet (guard or enemy humanoid/undead) set to attack enemy casters to disrupt casting concentration.
-- **Positioning**: 1350â€“1500 units behind frontline tanks, slightly offset from group healers.
+- **Positioning**: 1350–1500 units behind frontline tanks, slightly offset from group healers.
 
 ### 5. Mode: PvP
 - **Control & Isolate**: Open with Mesmerize -> Command charmed pet to attack -> Apply Root -> Cast Mind DD while maintaining distance. Use `Quick Cast` if pressured.
@@ -108,7 +108,7 @@ Total battlefield pacification and target isolation. The Mind Sorcerer initiates
 3. Main Assist Focus Target: Priority 75 (For Mind DD)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Group Camp Center (1000â€“1350 units from target pack)
+- **Anchor**: Midline / Group Camp Center (1000–1350 units from target pack)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities
@@ -186,7 +186,7 @@ Sustained offensive pressure with built-in survivability. The Body Sorcerer soft
 - **Body Debuff Train**: Coordinate with Albion Body casters; apply Body Resistance Debuff (-40% / -50%) to the primary target, then unleash spec Body Lifedrains.
 - **Self-Sustain**: Use Lifedrain to recover from enemy archer or caster poke without taxing Albion healer mana pools.
 - **Peel Support**: Apply baseline Root or Mez to enemy peelers pursuing Albion support.
-- **Positioning**: 1200â€“1350 units back in the caster line.
+- **Positioning**: 1200–1350 units back in the caster line.
 
 ### 5. Mode: PvP
 - **Debuff & Drain**: Open with Root -> Body Resistance Debuff -> Quick Cast Lifedrain -> Repeat Lifedrain to burn target while keeping own HP at 100%.
@@ -245,7 +245,7 @@ Sustained offensive pressure with built-in survivability. The Body Sorcerer soft
 3. Enemy Light Armor Caster / Support: Priority 75
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Group Camp Center (1000â€“1350 units from mob cluster)
+- **Anchor**: Midline / Group Camp Center (1000–1350 units from mob cluster)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities
@@ -384,7 +384,7 @@ Attrition through sustained area damage. The Matter Sorcerer blankets opposing f
 3. Primary Focus Target: Priority 80 (For Matter DD)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Group Camp Center (1000â€“1350 units from target pack)
+- **Anchor**: Midline / Group Camp Center (1000–1350 units from target pack)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities

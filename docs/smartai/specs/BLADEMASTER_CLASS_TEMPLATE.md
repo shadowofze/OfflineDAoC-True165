@@ -10,7 +10,7 @@ default_personality: "Aggressive"
 # Class: Blademaster (Hibernia)
 
 ## Shared Class Capabilities
-- **Armor Type**: Reinforced (Level 20+), Leather (1â€“19).
+- **Armor Type**: Reinforced (Level 20+), Leather (1–19).
 - **Weapon Slots**: Dual Wield via Celtic Dual (Blades, Blunt, or Piercing in main hand and offhand); Small and Medium Shields.
 - **Core Specialization Lines**:
   - `Celtic Dual`: Hibernia's dual-wield combat mastery, delivering high-frequency offhand double-strikes, side/rear stuns, armor-cleaving bleeds, and defensive style chains.
@@ -30,7 +30,7 @@ default_personality: "Aggressive"
 match_specs:
   primary_line: "Celtic_Dual"
   min_point_ratio: 0.50
-  spec_type_aliases: ["CelticDualBlademaster", "DualWield"]
+  spec_type_aliases: ["DualWield"]
 ```
 
 ### 1. Intended Role
@@ -174,8 +174,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Celtic_Dual"
+  secondary_line: "Shields"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ShieldFlankerBlademaster", "DualWieldAndShield"]
+  spec_type_aliases: ["DualWieldAndShield"]
 ```
 
 ### 1. Intended Role
@@ -190,7 +191,7 @@ Adaptive peeling and counter-striking. The Shield Flanker guards Hibernia's back
 ### 4. Mode: RvR
 - **Healer Protection & Peel**: Guard Hibernian Bards/Druids; land 9-second Shield Slams on enemy rushers and stealthers.
 - **Celtic Dual Execution**: Once peel target is stunned, swap to dual wield and burst them down.
-- **Positioning**: Midline anchor (200â€“300 units ahead of Bard/Druid).
+- **Positioning**: Midline anchor (200–300 units ahead of Bard/Druid).
 
 ### 5. Mode: PvP
 - **Slam & Shred**: Shield Slam (9s stun) -> Swap to dual wield -> Positional style chain -> Destroy opponent before stun expires.
@@ -255,7 +256,7 @@ Adaptive peeling and counter-striking. The Shield Flanker guards Hibernia's back
 3. Enemy Melee Attacking Backline: Priority 80 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Support Side (within 150â€“200 units of guarded Bard/Druid)
+- **Anchor**: Midline / Support Side (within 150–200 units of guarded Bard/Druid)
 - **Pull Phase**: Stationary at camp anchor; never leave the camp.
 
 ### 11. Ability Usage Priorities
@@ -314,8 +315,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Celtic_Dual"
+  secondary_line: "Piercing"
   min_point_ratio: 0.50
-  spec_type_aliases: ["PiercingDualBlademaster", "DualWield"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

@@ -10,7 +10,7 @@ default_personality: "Tactical"
 # Class: Ranger (Hibernia)
 
 ## Shared Class Capabilities
-- **Armor Type**: Reinforced (Level 20+), Leather (1â€“19).
+- **Armor Type**: Reinforced (Level 20+), Leather (1–19).
 - **Weapon Slots**: Recurve Bow (Hibernia's rapid-firing composite bow); Dual Wield via Celtic Dual (Blades or Piercing in main hand and offhand).
 - **Core Specialization Lines**:
   - `Recurve Bow`: High-velocity physical missile archery (Critical Shot, Power Shot, Rapid Fire, Point Blank Shot).
@@ -31,7 +31,7 @@ default_personality: "Tactical"
 match_specs:
   primary_line: "RecurveBow"
   min_point_ratio: 0.50
-  spec_type_aliases: ["SniperRanger", "Ranged"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -46,7 +46,7 @@ Concealed long-range sniping supported by nature buffs. The Ranger activates Pat
 ### 4. Mode: RvR
 - **Caster Sniping**: Target enemy cloth casters and primary healers from 1875+ units with Critical Shot and Trueshot.
 - **Pathfinding Buffs**: Maintain self AF, Damage Add, and Haste buffs at all times.
-- **Positioning**: Elevated backline vantage point (1600â€“1875 units).
+- **Positioning**: Elevated backline vantage point (1600–1875 units).
 
 ### 5. Mode: PvP
 - **Snipe & Kite**: Critical Shot opener -> Trueshot -> Rapid Fire -> Swap to Celtic Dual if closed upon -> Finish with twin-blade styles.
@@ -64,7 +64,7 @@ Concealed long-range sniping supported by nature buffs. The Ranger activates Pat
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
-  - **Zone Priority**: **Outside Open-World Leveling Strongly Prioritized** (Shannon Estuary, Connacht, Bog of Cullen). Open green expanses provide the essential 1800â€“2000 unit clear sightlines required for Critical Shot openers, Pin/Snare arrows, and outdoor kiting.
+  - **Zone Priority**: **Outside Open-World Leveling Strongly Prioritized** (Shannon Estuary, Connacht, Bog of Cullen). Open green expanses provide the essential 1800–2000 unit clear sightlines required for Critical Shot openers, Pin/Snare arrows, and outdoor kiting.
   - **Dungeon Suitability**: **RESTRICTED / AVOID SOLO**. Confined dungeon corridors eliminate maximum bow range advantage and force immediate melee combat where a pure archer is at a severe disadvantage. Stay outdoors unless grouped.
 - **Target Con Selection**:
   - **Optimal (Blue / High Blue)**: 2 to 3 bow shots kill target before it reaches melee distance.
@@ -72,7 +72,7 @@ Concealed long-range sniping supported by nature buffs. The Ranger activates Pat
   - **Restricted (Orange)**: Only engage with full distance and clear outdoor retreat lane.
   - **Prohibited (Red / Purple)**: Strictly avoid solo.
 - **Pull & Engagement Sequence**:
-  - 1. Max range setup (1800â€“2000 units) from stealth in open field.
+  - 1. Max range setup (1800–2000 units) from stealth in open field.
   - 2. Opener: Critical Shot from stealth.
   - 3. Snare: Follow with Pin / Snare Arrow as target charges.
   - 4. Rapid Shots: Fire standard arrows while target crawls forward.
@@ -81,7 +81,7 @@ Concealed long-range sniping supported by nature buffs. The Ranger activates Pat
   - **Sit / Rest Threshold**: Rest in stealth when Endurance < 20% or Health < 50%.
   - **Resume Threshold**: Stand when Endurance >= 90%, Health >= 90%.
 - **Emergency Escape Protocol**:
-  - Pin Arrow add -> turn 180Â° -> Sprint retreat -> enter Stealth.
+  - Pin Arrow add -> turn 180° -> Sprint retreat -> enter Stealth.
 
 ### 7. Offensive Priorities
 1. Rapid Fire / Celtic Dual on Loose Break-Off Add: Priority 100
@@ -101,7 +101,7 @@ Concealed long-range sniping supported by nature buffs. The Ranger activates Pat
 3. Enemy Light Armor Caster / Support: Priority 85 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Camp Center / Midline (1000â€“1200 units from mob cluster)
+- **Anchor**: Camp Center / Midline (1000–1200 units from mob cluster)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities
@@ -161,7 +161,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Celtic_Dual"
   min_point_ratio: 0.50
-  spec_type_aliases: ["PathfindingBlenderRanger", "DualWield"]
+  spec_type_aliases: ["DualWield"]
 ```
 
 ### 1. Intended Role
@@ -291,7 +291,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Pathfinding"
   min_point_ratio: 0.50
-  spec_type_aliases: ["BalancedScoutRanger", "Hybrid"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -305,7 +305,7 @@ Adaptive hybrid warfare. The Balanced Ranger opens from range with archery, clos
 
 ### 4. Mode: RvR
 - **Adaptive Skirmishing**: Harass enemy lines with archery; switch to twin blades to peel enemy stealthers off Hibernian support.
-- **Positioning**: Midline anchor (200â€“400 units from support).
+- **Positioning**: Midline anchor (200–400 units from support).
 
 ### 5. Mode: PvP
 - **Shoot & Slice**: Bow opener -> Close in -> Positional Celtic Dual style chain -> Finish with Point Blank Shot.

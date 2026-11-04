@@ -10,7 +10,7 @@ default_personality: "Aggressive"
 # Class: Reaver (Albion)
 
 ## Shared Class Capabilities
-- **Armor Type**: Chain (Level 20+), Studded (1â€“19).
+- **Armor Type**: Chain (Level 20+), Studded (1–19).
 - **Weapon Slots**: Flexible Weapons (Albion's signature spiked flails and whips); One-Handed Slashing, Thrusting, Crushing; Medium and Large Shields.
 - **Core Specialization Lines**:
   - `Soulrending`: Dark magic featuring high-damage Soul Lifedrains (steals enemy health), instant Area of Effect (AoE) DoTs, instant Direct Damage shouts, damage debuffs, and necrotic damage shields.
@@ -29,8 +29,9 @@ default_personality: "Aggressive"
 ```yaml
 match_specs:
   primary_line: "Soulrending"
+  secondary_line: "Flexible"
   min_point_ratio: 0.50
-  spec_type_aliases: ["SoulrendingReaver", "OneHandAndShield"]
+  spec_type_aliases: ["OneHandAndShield"]
 ```
 
 ### 1. Intended Role
@@ -46,7 +47,7 @@ Attrition through physical lockdown and lifetap recovery. The Reaver guards Albi
 - **Healer Protection & Peel**: Anchor beside Albion Clerics; maintain active `Guard` to absorb incoming melee strikes.
 - **Shield Slam & Soul Tap**: Slam enemy stealthers or melee with a 9-second shield stun, then immediately siphon their health with Soul Lifedrain.
 - **AoE Soul DoT**: Drop instant AoE Soul DoT onto enemy assist clusters to unstealth hidden enemies and pressure healer power.
-- **Positioning**: Midline anchor (200â€“300 units ahead of Cleric).
+- **Positioning**: Midline anchor (200–300 units ahead of Cleric).
 
 ### 5. Mode: PvP
 - **Slam & Drain**: Shield Slam (9s stun) -> Positional Flexible bleed chain -> Cast Soul Lifedrain -> Outlast opponent through self-healing burst.
@@ -114,7 +115,7 @@ Attrition through physical lockdown and lifetap recovery. The Reaver guards Albi
 3. Enemy Melee Attacking Backline (RvR): Priority 80
 
 ### 10. Positioning Preferences
-- **Anchor**: Tight Backline / Camp Center (within 150â€“200 units of guarded Cleric)
+- **Anchor**: Tight Backline / Camp Center (within 150–200 units of guarded Cleric)
 - **Pull Phase**: Stationary at camp anchor; never pursue mobs outside camp.
 
 ### 11. Ability Usage Priorities
@@ -175,8 +176,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Flexible"  # Or Slash / Thrust / Crush
+  secondary_line: "Shields"
   min_point_ratio: 0.50
-  spec_type_aliases: ["WeaponShieldReaver", "OneHandAndShield"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -190,7 +192,7 @@ Balanced melee brawling and defensive peeling. The Flail Brawler locks down thre
 
 ### 4. Mode: RvR
 - **Frontline Assist & Peel**: Provide active `Guard` over Albion healers; slam enemy rushers with 9-second Shield Slams; execute called targets with 50-spec flail styles.
-- **Positioning**: Midline / Frontline junction (200â€“300 units ahead of Cleric).
+- **Positioning**: Midline / Frontline junction (200–300 units ahead of Cleric).
 
 ### 5. Mode: PvP
 - **Slam & Flail**: Shield Slam (9s stun) -> Positional flail style chain -> Finish with Soul Lifedrain.
@@ -254,7 +256,7 @@ Balanced melee brawling and defensive peeling. The Flail Brawler locks down thre
 3. Enemy Melee Attacking Backline: Priority 80 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Healer Side (within 150â€“200 units of guarded Cleric)
+- **Anchor**: Midline / Healer Side (within 150–200 units of guarded Cleric)
 - **Pull Phase**: Stationary at camp anchor; never leave the camp.
 
 ### 11. Ability Usage Priorities
@@ -314,7 +316,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Soulrending"
   min_point_ratio: 0.50
-  spec_type_aliases: ["FullSoulrendingCasterReaver", "MeleeDPS"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

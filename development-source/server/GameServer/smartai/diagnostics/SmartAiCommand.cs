@@ -147,6 +147,10 @@ namespace DOL.GS.SmartAI
                 foreach (SmartFamilyRule rule in profile.Rules)
                     Say(client, $"  {rule.Family} {rule.Priority}: {rule.Source}" +
                                 (rule.Condition.Groups.Length > 0 ? $" [if {rule.Condition.Text}]" : string.Empty));
+                foreach (SmartHealBand band in profile.HealBands)
+                    Say(client, $"  Heal at {band.Min}-{band.Max}%: {string.Join(" then ", band.Heals)}");
+                if (profile.GroupHeal is { } groupHeal)
+                    Say(client, $"  Group heal when {groupHeal.Members}+ members are under {groupHeal.Below}%: {string.Join(" then ", groupHeal.Heals)}");
                 foreach (SmartAbilityRule rule in profile.Abilities)
                     Say(client, $"  Realm ability {rule.Priority}: {rule.Key.Replace("AtlasOF_", "")}" +
                                 (bot.GetAbility(rule.Key) == null ? " (not trained)" : string.Empty) +

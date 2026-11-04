@@ -10,7 +10,7 @@ default_personality: "Defensive"
 # Class: Warrior (Midgard)
 
 ## Shared Class Capabilities
-- **Armor Type**: Chain (Level 20+), Studded (1â€“19).
+- **Armor Type**: Chain (Level 20+), Studded (1–19).
 - **Weapon Slots**: One-Handed Sword, Axe, Hammer; Two-Handed Sword, Axe, Hammer; Medium and Large Shields; Thrown Weapons (Throwing Axes, Throwing Hammers).
 - **Core Specialization Lines**:
   - `Shields`: High-tier shield styles (Slam: 9-second stun), high block chance with Large Shields, and critical party defense abilities (`Guard`, `Protect`, `Intercept`).
@@ -30,7 +30,7 @@ default_personality: "Defensive"
 match_specs:
   primary_line: "Shields"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ShieldWarrior", "OneHandAndShield"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -46,7 +46,7 @@ Immovable protection and total lockdown. The Shield Warrior anchors directly bes
 - **Dedicated Healer Guard**: Anchor beside Midgard's primary Healer or Shaman; maintain active `Guard` and `Protect` to absorb incoming melee strikes.
 - **9-Second Shield Slam Peeling**: When enemy stealthers (Infiltrators, Nightshades) or heavy melee reach Midgard support, slam them with a 9-second shield stun.
 - **Frontline Screening**: Screen against charging enemy zergs, soaking incoming CC and physical burst.
-- **Positioning**: Tight backline / Midline shield wall (within 150â€“200 units of main Healer).
+- **Positioning**: Tight backline / Midline shield wall (within 150–200 units of main Healer).
 
 ### 5. Mode: PvP
 - **Shield Stun & Attrition**: Slam stun opponent (9s) -> Move to side/rear for weapon style chain -> Block with large shield -> Outlast opponent through relentless defense and parry.
@@ -117,7 +117,7 @@ Immovable protection and total lockdown. The Shield Warrior anchors directly bes
 3. Enemy Melee Attacking Backline (RvR): Priority 80
 
 ### 10. Positioning Preferences
-- **Anchor**: Tight Backline / Camp Center (within 150â€“200 units of guarded Healer)
+- **Anchor**: Tight Backline / Camp Center (within 150–200 units of guarded Healer)
 - **Pull Phase**: Stationary at camp anchor; never pursue mobs outside camp.
 
 ### 11. Ability Usage Priorities
@@ -177,7 +177,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Sword"  # Or Axe / Hammer (Two-Handed)
   min_point_ratio: 0.50
-  spec_type_aliases: ["TwoHandedWarrior", "TwoHanded"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -313,8 +313,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Sword"  # Or Axe / Hammer
+  secondary_line: "Shields"
   min_point_ratio: 0.50
-  spec_type_aliases: ["HybridWeaponShieldWarrior", "OneHandHybrid"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -329,7 +330,7 @@ Fluid tactical adaptation. The Hybrid Warrior can stand firm on the backline pro
 ### 4. Mode: RvR
 - **Healer Protection & Peel**: Guard Midgard healers; slam enemy rushers with 9-second Shield Slams.
 - **Melee Assist Transition**: Once backline is secure, push forward with the melee train, delivering high-damage weapon style chains.
-- **Positioning**: Flexible midline (200â€“300 units ahead of Healer).
+- **Positioning**: Flexible midline (200–300 units ahead of Healer).
 
 ### 5. Mode: PvP
 - **Slam & Chain**: Shield Slam (9s stun) -> Positional weapon style chain -> Block and parry opponent counter-strikes.
@@ -393,7 +394,7 @@ Fluid tactical adaptation. The Hybrid Warrior can stand firm on the backline pro
 3. Enemy Melee Attacking Backline: Priority 80 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Healer Side (within 150â€“200 units of guarded Healer)
+- **Anchor**: Midline / Healer Side (within 150–200 units of guarded Healer)
 - **Pull Phase**: Stationary at camp anchor; never leave the camp.
 
 ### 11. Ability Usage Priorities

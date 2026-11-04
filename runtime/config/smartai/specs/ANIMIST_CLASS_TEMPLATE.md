@@ -42,7 +42,7 @@ The Creeping Animist creates impenetrable defensive zones by planting a network 
 Zone control and automated suppression. The Creeping Animist anchors at camp, sets up turret networks around the group perimeter, and uses long-range roots to hold enemies inside the turret kill zone.
 
 ### 4. Mode: RvR
-- **Turret Nesting**: Plant 4â€“8 stationary fire-turrets in choke points (milegates, bridges, keep doors) to create lethal kill zones.
+- **Turret Nesting**: Plant 4–8 stationary fire-turrets in choke points (milegates, bridges, keep doors) to create lethal kill zones.
 - **Root Containment**: Apply long-range Roots and Snares to keep enemy fighters trapped within turret range.
 - **Positioning**: 1350 units back behind the turret perimeter.
 
@@ -55,7 +55,7 @@ Zone control and automated suppression. The Creeping Animist anchors at camp, se
 ### 6b. Mode: PvE Pet Pulling (Turret Defense & Burn Role)
 - **Role During Pet Pulling**: The Animist is **NOT the designated puller**. It acts as stationary camp defense and turret artillery.
 - **Camp Turret Placement**:
-  - Prior to the pull, summon 2â€“3 stationary turrets tightly anchored around the camp center.
+  - Prior to the pull, summon 2–3 stationary turrets tightly anchored around the camp center.
   - Do NOT cast turrets along the pull path; turrets must remain focused inside the camp kill zone.
 - **Mobs Stay on the Pet**:
   - The mobs must stay focused on the puller's pet while the damage shield does damage.
@@ -106,7 +106,7 @@ Zone control and automated suppression. The Creeping Animist anchors at camp, se
 
 ### 10. Positioning Preferences
 - **Anchor**: Group Camp Center
-- **Target Range**: 1200â€“1400 units
+- **Target Range**: 1200–1400 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -174,7 +174,7 @@ Long-range artillery bombardment into enemy clusters. The Arboreal Animist drops
 ### 4. Mode: RvR
 - **GTAoE Bombardment**: Drop continuous GTAoE bombardment on keep ramps, doors, bridge choke points, and enemy caster clusters.
 - **Arboreal DD Burst**: Assist the assist train with heavy Arboreal DD nukes on called targets.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **GTAoE Traps**: Drop GTAoE on opponent's escape path, root, and burn with Arboreal DD.
@@ -230,7 +230,7 @@ Long-range artillery bombardment into enemy clusters. The Arboreal Animist drops
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor during pet pulling.
 
 ### 11. Ability Usage Priorities
@@ -296,7 +296,7 @@ Living fortification and tank support. The Verdant Animist uses the Guardian Tre
 ### 4. Mode: RvR
 - **Guardian Pet Harass**: Command Guardian Tree pet to intercept and peel enemy frontline melee trains.
 - **Damage Shield Uptime**: Maintain pulsing damage shields on friendly melee allies.
-- **Positioning**: 1200â€“1400 units back.
+- **Positioning**: 1200–1400 units back.
 
 ### 5. Mode: PvP
 - **Tree Pet Dueling**: Let Guardian Tree absorb hits while casting damage shields and baseline DD.
@@ -356,7 +356,7 @@ Living fortification and tank support. The Verdant Animist uses the Guardian Tre
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Group Camp Center
-- **Target Range**: 1100â€“1350 units
+- **Target Range**: 1100–1350 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor during pet pulling.
 
 ### 11. Ability Usage Priorities

@@ -1033,7 +1033,7 @@ namespace DOL.AI.Brain
 
         public void EnforceCompanionEngagementRange()
         {
-            if (CompanionEngagementMode.DefensiveLeader(Body) == null) return;
+            if (CompanionEngagementMode.RestrictingLeader(Body) == null) return;
             foreach (GameLiving target in AggroList.Keys)
                 if (!CompanionEngagementMode.Allows(Body, target)) RemoveFromAggroList(target);
             if (ActiveOrderedPullTarget is GameLiving order && !CompanionEngagementMode.Allows(Body, order))
@@ -3714,7 +3714,9 @@ namespace DOL.AI.Brain
         private bool ApproachForOffensiveSpell(GameLiving target)
         {
             if (target?.IsAlive != true || Body.IsCrowdControlled ||
-                !PrefersCurrentSpellRange())
+                !PrefersCurrentSpellRange() ||
+                // /petpull, stay put: no walking toward the pack for spell range; the pet brings it to the group.
+                CompanionEngagementMode.PetPullStaysPut(Body, target))
                 return false;
 
             int castRange = OffensiveApproachRange(target);
@@ -3843,6 +3845,8 @@ namespace DOL.AI.Brain
         {
             if (target?.IsAlive != true || Body.IsCasting ||
                 BotBody?.CharacterClass?.ID is (int)eCharacterClass.Necromancer or (int)eCharacterClass.Disciple ||
+                // /petpull, stay put: no staff charge into the pack the pet holds
+                CompanionEngagementMode.PetPullStaysPut(Body, target) ||
                 !GameServer.ServerRules.IsAllowedToAttack(Body, target, true) ||
                 !(OutOfPowerForOffense() || NoAttackSpellYet()))
                 return false;
@@ -5210,7 +5214,9 @@ namespace DOL.AI.Brain
         /// </summary>
         private bool ApproachSupportTarget(GameLiving target)
         {
+            // /petpull, stay put: the pet comes back to the group; nobody walks out to heal it.
             if (target == null || target == Body || !InSupportReach(target) || LeavesPlayerToSupport(target) ||
+                CompanionEngagementMode.PetPullStaysPut(Body, target) ||
                 !_supportReach.KeepApproaching(target, Body.GetDistanceTo(target), GameLoop.GameLoopTime))
                 return false;
             BotBody.WalkTo(new Point3D(target.X, target.Y, target.Z), BotBody.MaxSpeed);
@@ -5533,6 +5539,15 @@ namespace DOL.AI.Brain
                         spellToCast = BotBody.HealGroup;
                 }
             }
+
+            // SmartAI heal thresholds (owner 2026-11-04): the spec's section 12 heal for this target's health.
+            spellToCast = SmartAiHealChoice(spellTarget, spellToCast);
+
+            // /petpull, smallest heal (owner 2026-11-04): the player's pet gets the efficient heal, the least healing
+            // aggro, unless it is going down fast (CompanionEngagementMode.PetPullSmallHeal). A heal over time stays.
+            if ((spellToCast == BotBody.HealBig || spellToCast == BotBody.HealInstant) &&
+                CompanionEngagementMode.PetPullSmallHeal(AssistedPlayer, spellTarget) && CheckHealSpell(BotBody.HealEfficient))
+                spellToCast = BotBody.HealEfficient;
 
             // Cast the selected spell
             if (BotBody.IsAutonomousWorldBot && (AutonomousObjectiveAssignments.Is(BotBody, eAutonomousObjectiveKind.RvR) || AutonomousRealmRaid.GetView(BotBody.Group) != null) &&

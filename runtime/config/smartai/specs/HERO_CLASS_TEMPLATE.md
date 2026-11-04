@@ -10,7 +10,7 @@ default_personality: "Defensive"
 # Class: Hero (Hibernia)
 
 ## Shared Class Capabilities
-- **Armor Type**: Scale (Level 20+), Reinforced (1â€“19).
+- **Armor Type**: Scale (Level 20+), Reinforced (1–19).
 - **Weapon Slots**: One-Handed Blades, Blunt, Piercing; Celtic Spear (Hibernia's long-reach piercing two-hander); Large Weapons (heavy two-handed crushing and slashing weapons); Medium and Large Shields.
 - **Core Specialization Lines**:
   - `Shields`: High-tier shield styles (Slam: 9-second stun), high block chance with Large Shields, and critical party defense abilities (`Guard`, `Protect`, `Intercept`).
@@ -31,7 +31,7 @@ default_personality: "Defensive"
 match_specs:
   primary_line: "Celtic_Spear"
   min_point_ratio: 0.50
-  spec_type_aliases: ["CelticSpearHero", "TwoHandHybrid"]
+  spec_type_aliases: ["TwoHandHybrid"]
 ```
 
 ### 1. Intended Role
@@ -47,7 +47,7 @@ Fluid tactical defense and reach execution. The Celtic Spear Hero anchors close 
 - **Stag Form Resilience**: Activate Stag Form upon entering major collisions to gain massive bonus health and shrug off enemy crowd control.
 - **Dedicated Healer Guard**: Anchor directly beside the primary Bard or Druid; maintain active `Guard` and `Protect` to absorb incoming melee strikes.
 - **Shield Slam & Spear Swap**: Slam incoming enemy stealthers or heavy melee with a 9-second shield stun, then immediately swap to Celtic Spear to execute positional rear/side stuns and bleeds.
-- **Positioning**: Midline anchor (200â€“300 units ahead of Bard/Druid).
+- **Positioning**: Midline anchor (200–300 units ahead of Bard/Druid).
 
 ### 5. Mode: PvP
 - **Slam & Spear Chain**: Shield Slam (9s stun) -> Swap to Celtic Spear -> Maneuver to rear -> Execute positional spear chain -> Finish with high-damage executioners.
@@ -178,7 +178,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Shields"
   min_point_ratio: 0.50
-  spec_type_aliases: ["OneHandAndShieldHero", "OneHandAndShield"]
+  spec_type_aliases: ["OneHandAndShield"]
 ```
 
 ### 1. Intended Role
@@ -258,7 +258,7 @@ Total physical mitigation and immovable area control. The Main Tank Hero exists 
 3. Enemy Melee Attacking Backline: Priority 80 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Tight Backline (within 100â€“150 units of guarded Bard/Druid)
+- **Anchor**: Tight Backline (within 100–150 units of guarded Bard/Druid)
 - **Pull Phase**: Stationary at camp anchor; never leave the support's side.
 
 ### 11. Ability Usage Priorities
@@ -318,7 +318,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Large_Weapons"
   min_point_ratio: 0.50
-  spec_type_aliases: ["LargeWeaponHero", "TwoHandHybrid"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -333,7 +333,7 @@ Crushing kinetic impact backed by defensive versatility. The Large Weapon Hero c
 ### 4. Mode: RvR
 - **Heavy Melee Burst**: Charge alongside Hibernian Blademasters and Champions; execute heavy two-handed styles on called targets.
 - **Shield Slam & Swap**: Slam incoming enemy rushers with a 9-second shield stun, then swap to Large Weapons to finish them.
-- **Positioning**: Flexible midline / Forward melee flank (200â€“300 units ahead of Bard).
+- **Positioning**: Flexible midline / Forward melee flank (200–300 units ahead of Bard).
 
 ### 5. Mode: PvP
 - **Slam & Crush**: Shield Slam (9s stun) -> Swap to Large Weapon -> Position for side/rear style chain -> Overpower target with massive two-handed burst.
@@ -397,7 +397,7 @@ Crushing kinetic impact backed by defensive versatility. The Large Weapon Hero c
 3. Enemy Melee Attacking Backline: Priority 80 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Support Side (within 150â€“200 units of guarded Bard/Druid)
+- **Anchor**: Midline / Support Side (within 150–200 units of guarded Bard/Druid)
 - **Pull Phase**: Stationary at camp anchor; never leave the camp.
 
 ### 11. Ability Usage Priorities

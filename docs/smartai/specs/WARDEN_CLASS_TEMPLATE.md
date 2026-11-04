@@ -115,7 +115,7 @@ Defensive fortification and backline protection. The Nurture Warden anchors near
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline (Between frontline tanks and backline casters)
-- **Target Range**: 300â€“600 units
+- **Target Range**: 300–600 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor during pet pulling.
 
 ### 11. Ability Usage Priorities
@@ -384,7 +384,7 @@ Life support protected by physical shielding. The Regrowth Warden focuses primar
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1300â€“1450 units
+- **Target Range**: 1300–1450 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor during pet pulling.
 
 ### 11. Ability Usage Priorities

@@ -1,4 +1,4 @@
-﻿---
+---
 schema_version: 1
 class_name: "Thane"
 class_id: 21
@@ -10,7 +10,7 @@ default_personality: "Tactical"
 # Class: Thane (Midgard)
 
 ## Shared Class Capabilities
-- **Armor Type**: Chain (Level 20+), Studded (1â€“19).
+- **Armor Type**: Chain (Level 20+), Studded (1–19).
 - **Weapon Slots**: One-Handed Sword, Axe, Hammer; Two-Handed Sword, Axe, Hammer; Medium Shields.
 - **Core Specialization Lines**:
   - `Stormcalling`: Thor's divine lightning magic, featuring long-range Direct Damage lightning bolts, instant point-blank lightning blasts, Area of Effect (AoE) lightning shouts, and personal static damage shields.
@@ -29,8 +29,10 @@ default_personality: "Tactical"
 ```yaml
 match_specs:
   primary_line: "Stormcalling"
+  secondary_line: "Shields"
+  secondary_min_level: 36   # Shields above 35: the Shield Thane (owner 2026-11-04)
   min_point_ratio: 0.50
-  spec_type_aliases: ["StormShieldThane", "OneHandAndShield"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -47,7 +49,7 @@ Ranged lightning harassment paired with impenetrable backline peeling. The Thane
 - **Dedicated Healer Guard**: Anchor beside the primary Healer or Shaman; maintain active `Guard` to absorb physical strikes.
 - **Shield Slam & Instant Blast**: Slam incoming enemy stealthers or melee with a 9-second shield stun, then immediately blast them with an instant lightning shout.
 - **Static Damage Shield**: Keep personal static damage shield active to punish attackers.
-- **Positioning**: Midline anchor (200â€“300 units ahead of Healer).
+- **Positioning**: Midline anchor (200–300 units ahead of Healer).
 
 ### 5. Mode: PvP
 - **Storm & Slam**: Lightning bolt opener -> Shield Slam (9s stun) -> Instant lightning blast -> Positional melee style chain -> Finish with follow-up instant DD.
@@ -82,7 +84,7 @@ Ranged lightning harassment paired with impenetrable backline peeling. The Thane
   - **Dungeon Suitability**: **EXCELLENT SOLO HYBRID SURVIVABILITY**. Chain armor, Shield block defense with Slam stun, self-AF and Str buffs, and instant Stormcalling lightning shouts give the Thane exceptional versatility in dungeon corridors (Spindelhalla, Cursed Tomb). Lightning shouts cannot be interrupted by physical hits, allowing the Thane to finish fleeing or charging mobs reliably.
   - **Corridor Pull Isolation**: Use ranged Lightning Bolt / Shout from doorway to pull an isolated mob into a cleared corridor bottleneck.
 - **Target Con Selection**:
-  - **Optimal (Blue / High Blue)**: Lightning shouts + Hammer/Axe styles eliminate mob with zero downtime.
+  - **Optimal (Blue / High Blue)**: Lightning shouts + Sword/Axe/Hammer styles eliminate mob with zero downtime.
   - **Secondary (Yellow)**: Standard 1-on-1 solo baseline. Slam stun followed by lightning burst.
   - **Restricted (Orange)**: Engage only with full endurance and active self-buffs.
   - **Prohibited (Red / Purple)**: Avoid solo.
@@ -91,7 +93,7 @@ Ranged lightning harassment paired with impenetrable backline peeling. The Thane
   - 2. Opener: Cast ranged Stormcalling Lightning Bolt on target to initiate pull.
   - 3. Contact: Land Shield Slam (stun) as mob closes into melee range.
   - 4. Instant Burst: Fire instant Lightning Shout point-blank during stun.
-  - 5. Melee Combo: Execute Hammer/Axe style chain to execute target.
+  - 5. Melee Combo: Execute Sword/Axe/Hammer style chain to execute target.
 - **Downtime & Rest Protocol**:
   - **Sit / Rest Threshold**: Sit when Mana < 20% or Health < 50% or Endurance < 20%.
   - **Safety Check**: Check cleared hallway before sitting.
@@ -179,7 +181,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Stormcalling"
   min_point_ratio: 0.50
-  spec_type_aliases: ["TwoHandedThane", "TwoHanded"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -318,8 +320,11 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Stormcalling"
+  secondary_line: "Shields"
+  secondary_min_level: 2    # some Shields, 35 or less: the Battle Hybrid
+  secondary_max_level: 35
   min_point_ratio: 0.50
-  spec_type_aliases: ["BattleThane", "OneHandHybrid"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -334,7 +339,7 @@ Adaptive frontline flexibility. The Battle Thane can hold position guarding heal
 ### 4. Mode: RvR
 - **Healer Protection & Peel**: Guard Midgard healers; block incoming strikes; peel enemy rushers with shield stuns and instant lightning blasts.
 - **Melee Assist Burst**: Deliver high-damage weapon styles on called targets while weaving instant lightning shouts.
-- **Positioning**: Flexible midline (200â€“300 units ahead of Healer).
+- **Positioning**: Flexible midline (200–300 units ahead of Healer).
 
 ### 5. Mode: PvP
 - **Shield Stun & Blast**: Shield stun opponent -> Instant lightning blast -> Execute weapon style chain -> Block counter-attacks.
@@ -398,7 +403,7 @@ Adaptive frontline flexibility. The Battle Thane can hold position guarding heal
 3. Enemy Melee Attacking Backline: Priority 80 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Healer Side (within 150â€“200 units of guarded Healer)
+- **Anchor**: Midline / Healer Side (within 150–200 units of guarded Healer)
 - **Pull Phase**: Stationary at camp anchor; never leave the camp.
 
 ### 11. Ability Usage Priorities

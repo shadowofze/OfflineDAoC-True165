@@ -10,7 +10,7 @@ default_personality: "Aggressive"
 # Class: Mercenary (Albion)
 
 ## Shared Class Capabilities
-- **Armor Type**: Chain (Level 20+), Studded (1â€“19).
+- **Armor Type**: Chain (Level 20+), Studded (1–19).
 - **Weapon Slots**: Dual Wield (One-Handed Slashing, Thrusting, Crushing in main and offhand); Small and Medium Shields.
 - **Core Specialization Lines**:
   - `Dual Wield`: Albion's premier dual-weapon mastery line, unlocking lethal offhand strike chances, crushing side and rear positional style chains, stuns, and bleeds.
@@ -30,7 +30,7 @@ default_personality: "Aggressive"
 match_specs:
   primary_line: "Dual_Wield"
   min_point_ratio: 0.50
-  spec_type_aliases: ["DualWieldMercenary", "DualWield"]
+  spec_type_aliases: ["DualWield"]
 ```
 
 ### 1. Intended Role
@@ -174,8 +174,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Dual_Wield"
+  secondary_line: "Shields"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ShieldFlankerMercenary", "DualWieldAndShield"]
+  spec_type_aliases: ["DualWieldAndShield"]
 ```
 
 ### 1. Intended Role
@@ -190,7 +191,7 @@ Adaptive peeling and counter-striking. The Shield Flanker guards Albion's backli
 ### 4. Mode: RvR
 - **Healer Protection & Peel**: Guard Albion Clerics; land 9-second Shield Slams on enemy stealthers and melee rushers.
 - **Dual-Wield Execution**: Once peel target is stunned, swap to dual wield and burst them down.
-- **Positioning**: Midline anchor (200â€“300 units ahead of Cleric).
+- **Positioning**: Midline anchor (200–300 units ahead of Cleric).
 
 ### 5. Mode: PvP
 - **Slam & Shred**: Shield Slam (9s stun) -> Swap to dual wield -> Positional style chain -> Destroy opponent before stun expires.
@@ -255,7 +256,7 @@ Adaptive peeling and counter-striking. The Shield Flanker guards Albion's backli
 3. Enemy Melee Attacking Backline: Priority 80 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Healer Side (within 150â€“200 units of guarded Cleric)
+- **Anchor**: Midline / Healer Side (within 150–200 units of guarded Cleric)
 - **Pull Phase**: Stationary at camp anchor; never leave the camp.
 
 ### 11. Ability Usage Priorities
@@ -314,8 +315,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Dual_Wield"
+  secondary_line: "Parry"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ParryDuelistMercenary", "DualWield"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

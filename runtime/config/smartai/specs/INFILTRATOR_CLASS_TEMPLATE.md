@@ -1,4 +1,4 @@
-﻿---
+---
 schema_version: 1
 class_name: "Infiltrator"
 class_id: 9
@@ -30,8 +30,10 @@ default_personality: "Aggressive"
 ```yaml
 match_specs:
   primary_line: "Critical_Strike"
+  secondary_line: "Envenom"
+  secondary_min_level: 30   # Envenom 30 or more: the Perforate poison build; less: Shadow Stalker (owner 2026-11-04)
   min_point_ratio: 0.50
-  spec_type_aliases: ["PerforateInfiltrator", "CriticalStrike"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -175,7 +177,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Dual_Wield"
   min_point_ratio: 0.50
-  spec_type_aliases: ["DualWieldInfiltrator", "DualWield"]
+  spec_type_aliases: ["DualWield"]
 ```
 
 ### 1. Intended Role
@@ -304,7 +306,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Critical_Strike"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ShadowStalkerInfiltrator", "CriticalStrike"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

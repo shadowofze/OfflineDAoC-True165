@@ -71,7 +71,7 @@ Methodical pull mechanics paired with rapid area devastation. The Mana Enchanter
   - Healers in the group (Druids/Bard) ARE allowed to heal the pet, but **MUST wait until incoming mobs have lost around 5% of their life** (~95% HP from damage shield contact hits) before casting direct heals.
   - Group healers cast their **best smallest heal** (`HealEfficient`), escalating to a bigger heal only on massive spike damage.
   - Pre-cast Health Regeneration / HoTs from Druids stay running on the pet.
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - The entire group remains firmly anchored at camp. Group members do **NOT** run away or kite backwards for casting range.
   - The Enchanter brings the mobs directly into the parked group.
 - **The 85% Mob Health PBAoE Trigger**:
@@ -119,7 +119,7 @@ Methodical pull mechanics paired with rapid area devastation. The Mana Enchanter
 
 ### 10. Positioning Preferences
 - **Anchor**: Group Camp Center
-- **PBAoE Range**: 0â€“350 units from the mob cluster centered on the pet (during burn phase)
+- **PBAoE Range**: 0–350 units from the mob cluster centered on the pet (during burn phase)
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -199,7 +199,7 @@ Lethal single-target burst and stun coordination. The Light Enchanter locks down
 - **Stun Setup**: Open on high-value enemy casters, healers, or melee peelers with single-target Heat Stun.
 - **Heat Debuff Assist**: Cast Heat debuff on the Main Assist's target, then burst with spec Heat DD.
 - **Pet Harass**: Send Underhill pet to pressure enemy backline support.
-- **Positioning**: 1350â€“1500 units back behind frontline tanks.
+- **Positioning**: 1350–1500 units back behind frontline tanks.
 
 ### 5. Mode: PvP
 - **Stun & Burn**: Land Heat Stun -> Debuff -> `Quick Cast` + Heat DD -> Finish with follow-up nukes before stun expires.
@@ -257,7 +257,7 @@ Lethal single-target burst and stun coordination. The Light Enchanter locks down
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1300â€“1500 units
+- **Target Range**: 1300–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -335,7 +335,7 @@ Group empowerment and pet micro-management. The Enchantment Enchanter turns its 
 - **Group Damage Add**: Maintain spec Damage Add on all Hibernian melee fighters (Blademasters, Heroes, Champions).
 - **Pet Harassment**: Command Underhill pet to hunt enemy healers and crowd controllers to cause spell interrupts.
 - **Banish Cleanse**: Cast Banish to cleanse enemy roots and snares off friendly frontline tanks.
-- **Positioning**: 1200â€“1400 units back.
+- **Positioning**: 1200–1400 units back.
 
 ### 5. Mode: PvP
 - **Pet Dominance**: Buff pet with combat speed and damage add; command pet to stick to opponent while providing baseline DD support.
@@ -392,7 +392,7 @@ Group empowerment and pet micro-management. The Enchantment Enchanter turns its 
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Backline
-- **Target Range**: 1100â€“1350 units
+- **Target Range**: 1100–1350 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities

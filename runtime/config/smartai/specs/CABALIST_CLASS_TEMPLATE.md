@@ -45,7 +45,7 @@ Methodical pull control and persistent area damage. The Matter Cabalist uses its
 - **Simulacrum Disruption**: Send Simulacrum to pressure enemy healers and crowd controllers.
 - **Active RAs**: Pop `AtlasOF_Juggernaut` to transform the Simulacrum into a towering combat engine capable of shredding enemy casters.
 - **DoT Pressure**: Blanket enemy backline casters in long-duration Matter DoTs to break stealth and cause cast interrupts.
-- **Positioning**: 1350â€“1500 units back behind friendly frontline shield tanks.
+- **Positioning**: 1350–1500 units back behind friendly frontline shield tanks.
 
 ### 5. Mode: PvP
 - **Pet Harass & DoT**: Command Simulacrum to stick to opponent while applying Matter DoTs and baseline DD.
@@ -72,7 +72,7 @@ Methodical pull control and persistent area damage. The Matter Cabalist uses its
   - Healers in the group (Clerics/Friars) ARE allowed to heal the pet, but **MUST wait until incoming mobs have lost around 5% of their life** (~95% HP from damage shield contact hits) before casting direct heals.
   - Group healers cast their **best smallest heal** (`HealEfficient`), escalating to a bigger heal only on massive spike damage.
   - Pre-cast Health Regeneration / HoTs from Friars stay running on the pet.
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - The entire group remains firmly anchored at camp. Group members do **NOT** run away or kite backwards for casting range.
   - The Cabalist brings the mobs directly into the parked group.
 - **The 85% Mob Health AoE Trigger**:
@@ -120,7 +120,7 @@ Methodical pull control and persistent area damage. The Matter Cabalist uses its
 
 ### 10. Positioning Preferences
 - **Anchor**: Group Camp Center / Backline
-- **Target Range**: 1200â€“1400 units
+- **Target Range**: 1200–1400 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -200,7 +200,7 @@ Lethal burst execution and self-sustain. The Body Cabalist strips enemy body res
 - **Target Assassination**: Coordinate with Albion's Main Assist (MA); apply Body resistance debuff and burst called targets with rapid Lifedrain.
 - **Root Lockdown**: Cast single-target Body root on enemy melee peelers charging the caster line.
 - **Pet Harassment**: Command Simulacrum to attack enemy healers to push back cast times.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Duelist Dominance**: Strip body resistance, cast single root to create distance, and cycle Lifedrain to sustain full health while burning the opponent.
@@ -258,7 +258,7 @@ Lethal burst execution and self-sustain. The Body Cabalist strips enemy body res
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1300â€“1500 units
+- **Target Range**: 1300–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -336,7 +336,7 @@ Wide-area neutralization and tactical control. The Spirit Cabalist neutralizes i
 - **AoE Mesmerize Opening**: Open engagements with maximum-range AoE Mesmerize on clustered enemy groups.
 - **Disease Blanket**: Cast Disease onto enemy healers and tanks to cut incoming heals by 50% and reveal stealthers.
 - **Nearsight Debuffing**: Apply nearsight to enemy ranged snipers (Rangers, Scouts, Hunters) and casters to shut down their effective casting range.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Mez & Reset**: Land single-target Mez to force enemy `Purge` or reset combat distance.
@@ -393,7 +393,7 @@ Wide-area neutralization and tactical control. The Spirit Cabalist neutralizes i
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities

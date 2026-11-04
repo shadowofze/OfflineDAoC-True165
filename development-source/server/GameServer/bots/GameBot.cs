@@ -3026,6 +3026,8 @@ namespace DOL.GS
             // freed pet turns on its charmer. Only the Minstrel's own timed twist (BotBrain.TryTwistWithCharm) plays
             // another song meanwhile (GitHub #13, owner 2026-11-03).
             if (Classic165Mode.IsOn && spell != CharmTwistSong && Charm165.PulseWouldLosePet(this, spell)) { LogCompanionCast165(spell, "keeping-charm"); return false; }
+            // /petpull (owner 2026-11-04): on the pack the player's pet holds, area damage spells only.
+            if (CompanionEngagementMode.PetPullBlocksSpell(this, spell)) { LogCompanionCast165(spell, "pet-pull-aoe-only"); return false; }
             // Final boundary as well as selection filtering: no rank of the
             // disabled shield can keep a Cabalist/Enchanter bot channeling.
             // The pet focus shield is cast only by its own decision (BotBrain.TryStartPetFocusShield), never by upkeep.

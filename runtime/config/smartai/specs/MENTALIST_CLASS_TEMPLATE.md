@@ -45,7 +45,7 @@ Lethal burst coordination and continuous health regeneration. The Light Mentalis
 - **Stun Setup**: Open on high-value enemy casters, healers, or melee peelers with single-target Stun.
 - **Energy Burst**: Assist Hibernia's assist train with spec Energy DD nukes.
 - **HoT Buffering**: Maintain HoT on frontline fighters taking fire.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Stun & Burn**: Land Stun -> `Quick Cast` + Energy DD -> Finish with follow-up nukes while HoT restores self health.
@@ -114,7 +114,7 @@ Lethal burst coordination and continuous health regeneration. The Light Mentalis
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1300â€“1500 units
+- **Target Range**: 1300–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -126,7 +126,7 @@ Lethal burst coordination and continuous health regeneration. The Light Mentalis
 
 ### 12. Resource Management
 - **Mana Floor**: 20%
-- **HoT Efficiency**: Refresh HoT only when 1â€“2 ticks remain.
+- **HoT Efficiency**: Refresh HoT only when 1–2 ticks remain.
 
 ### 13. What the AI SHOULD Do
 - Keep Heal-over-Time (HoT) active on the pet 100% of the time during pet pulls.
@@ -185,7 +185,7 @@ Group resource sustainability paired with wide-area attrition. The Mana Mentalis
 - **AoE DoT Spread**: Blanket enemy caster and healer lines with AoE DoT to cause constant cast pushback and force enemy healers into panic triage.
 - **Power Battery**: Continuously monitor friendly Druid, Bard, and Eldritch mana pools. Transfer power whenever an ally drops below 35% mana.
 - **Heat/Energy DD Support**: Focus single-target DD on called targets once AoE DoTs are ticking.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **DoT Kiting**: Apply AoE/single DoT, use baseline root to maintain distance, and drain opponent while transferring power if paired with a partner.
@@ -251,7 +251,7 @@ Group resource sustainability paired with wide-area attrition. The Mana Mentalis
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1300â€“1500 units
+- **Target Range**: 1300–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -322,7 +322,7 @@ Battlefield containment and mass confusion. The Mentalism Mentalist immobilizes 
 - **AoE Root Control**: Cast maximum-range AoE Root on charging enemy melee trains to peel them off the Hibernian caster line.
 - **Area Confusion**: Cast Area Confusion spells into enemy caster groups to interrupt and break spell targets.
 - **Mind DD Burst**: Focus single-target Mentalism DD on the called assist target.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Root & Nuke**: Pin opponent with AoE/single Root, step out of melee reach, and burn them down with Mentalism DD.
@@ -382,7 +382,7 @@ Battlefield containment and mass confusion. The Mentalism Mentalist immobilizes 
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities

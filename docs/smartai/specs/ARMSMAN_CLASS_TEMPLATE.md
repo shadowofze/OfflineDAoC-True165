@@ -10,7 +10,7 @@ default_personality: "Defensive"
 # Class: Armsman (Albion)
 
 ## Shared Class Capabilities
-- **Armor Type**: Full Plate (Level 20+), Chain (1â€“19).
+- **Armor Type**: Full Plate (Level 20+), Chain (1–19).
 - **Weapon Slots**: One-Handed Slashing, Thrusting, Crushing; Polearms (Albion's signature long-reach heavy weapons); Two-Handed Weapons; Large Shields; Heavy Crossbows.
 - **Core Specialization Lines**:
   - `Polearm`: Devastating long-reach weapon style chains featuring crippling rear/side stuns, snares, and immense physical burst damage.
@@ -29,9 +29,9 @@ default_personality: "Defensive"
 
 ```yaml
 match_specs:
-  primary_line: "PolearmWeapon"
+  primary_line: "Polearms"
   min_point_ratio: 0.50
-  spec_type_aliases: ["PolearmArmsman", "TwoHandHybrid"]
+  spec_type_aliases: ["TwoHandHybrid"]
 ```
 
 ### 1. Intended Role
@@ -177,7 +177,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Shields"
   min_point_ratio: 0.50
-  spec_type_aliases: ["OneHandAndShieldArmsman", "OneHandAndShield"]
+  spec_type_aliases: ["OneHandAndShield"]
 ```
 
 ### 1. Intended Role
@@ -257,7 +257,7 @@ Total physical mitigation and immovable area control. The Main Tank Armsman exis
 3. Enemy Melee Attacking Backline: Priority 80 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Tight Backline (within 100â€“150 units of guarded Cleric)
+- **Anchor**: Tight Backline (within 100–150 units of guarded Cleric)
 - **Pull Phase**: Stationary at camp anchor; never leave the Cleric's side.
 
 ### 11. Ability Usage Priorities
@@ -317,7 +317,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Two_Handed"
   min_point_ratio: 0.50
-  spec_type_aliases: ["PurePolearmTwoHandArmsman", "TwoHanded"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

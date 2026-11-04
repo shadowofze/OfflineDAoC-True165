@@ -42,7 +42,7 @@ All actions prioritize ally survival over offensive action. The Rejuvenation Cle
 
 ### 4. Mode: RvR
 - **Target Prioritization**: Prioritize curing Mez (`CureMezz`) and Root on friendly Main Assist tanks immediately to keep the assist train mobile. Cure Disease immediately to restore full healing effectiveness.
-- **Positioning**: 1350â€“1500 units behind the frontline. Maintain maximum spacing from other friendly casters to avoid being caught in enemy PBAoE bombs or AoE Mezzes.
+- **Positioning**: 1350–1500 units behind the frontline. Maintain maximum spacing from other friendly casters to avoid being caught in enemy PBAoE bombs or AoE Mezzes.
 - **Counter-Pressure**: If targeted by enemy stealthers or assist trains, do not run away into the open; move through the friendly frontline/tanks so they can peel with taunts and stuns.
 - **Cooldown Usage**: Use `Purge` instantly if hard CC'd while allies are taking heavy damage. Use `Mastery of Concentration` (MoC) when focused by enemy melee to guarantee emergency heals land.
 
@@ -64,9 +64,9 @@ All actions prioritize ally survival over offensive action. The Rejuvenation Cle
   - If any mob breaks off from the pet and targets the group, tanks and other DPS can immediately attack and secure that loose mob to protect the group. The Cleric can spot-heal allies engaging these loose adds.
 - **Smart Healing for the Pet (The 5% Mob Life Lost Threshold)**:
   - The Rejuv Cleric **IS allowed to heal the pet**, but **MUST wait until the incoming mobs have lost around 5% of their life** (mobs at ~95% HP or below from damage shield contact hits) before casting its first direct heal, ensuring the mobs have anchored threat on the pet.
-  - **Smart Healing (Best Smallest Heal)**: The Cleric uses "smart healing"â€”casting its **best smallest heal** (`HealEfficient` / minor baseline heal) to sustain the pet while generating minimal healing aggro.
+  - **Smart Healing (Best Smallest Heal)**: The Cleric uses "smart healing"—casting its **best smallest heal** (`HealEfficient` / minor baseline heal) to sustain the pet while generating minimal healing aggro.
   - **Massive Damage Escalation**: If the pet continues taking massive damage (heavy multi-mob spike or rapid health drop), the Cleric is authorized to cast a bigger heal (`HealBig`) to prevent the pet from dying.
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to achieve maximum casting range.
   - The pet puller is 100% responsible for bringing the mobs directly into the stationary group so everyone can do their job.
 - **Group Triage & 85% AoE Window**:
@@ -113,7 +113,7 @@ All actions prioritize ally survival over offensive action. The Rejuvenation Cle
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1200â€“1450 units
+- **Target Range**: 1200–1450 units
 - **LOS Behavior**: Maintain continuous LOS to group members; break LOS to enemy ranged attackers using cover between casts.
 - **Safe Zone**: Always position with an open retreat path toward friendly guard tanks.
 
@@ -127,8 +127,8 @@ All actions prioritize ally survival over offensive action. The Rejuvenation Cle
 ### 12. Resource Management
 - **Conservative Mana Floor**: 30% (Never exhaust mana on non-essential spells)
 - **Triage Thresholds**:
-  - Target HP 70%â€“85%: `HealEfficient` (Greater Heal)
-  - Target HP 35%â€“70%: `HealBig` (Major Heal)
+  - Target HP 70%–85%: `HealEfficient` (Greater Heal)
+  - Target HP 35%–70%: `HealBig` (Major Heal)
   - Target HP < 35%: `HealInstant` + `HealBig`
   - 3+ members < 70%: `HealSpread` / `HealGroup`
   - Fallen Ally: Cast `Combat Resurrection` only when incoming group damage has stabilized.
@@ -176,7 +176,7 @@ All actions prioritize ally survival over offensive action. The Rejuvenation Cle
 11. **Toughness 2** (`AtlasOF_Toughness`, Level 2): Passive hit point increase.
 12. **Mastery of Healing 3** (`AtlasOF_MasteryOfHealing`, Level 3): Maximizes primary heal throughput.
 13. **Wild Healing 2** (`AtlasOF_WildHealing`, Level 2): Increases critical heal chance to 20%.
-14. **Augmented Acuity 3â€“4**: End-game stat scaling.
+14. **Augmented Acuity 3–4**: End-game stat scaling.
 
 ---
 
@@ -225,7 +225,7 @@ Maintains maximum spec Armor Factor (AF), Strength/Constitution, and Dexterity/Q
   - If any mob breaks off from the pet and threatens group members, the Enhancement Cleric can immediately step in with One-Handed Crushing and Shield to attack, stun, and peel that loose mob to protect the group!
 - **Support & Smart Healing**:
   - If the pet is taking heavy damage and incoming mobs have lost ~5% life, the Enhancement Cleric can assist with a small efficient heal on the pet or spot-heal allies.
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - Hold position firmly at the group camp anchor. Do **NOT** run away or backpedal to gain casting or melee range.
   - The pet puller is responsible for bringing the mobs directly into the parked group.
 - **Cast Embargo on Main Pack Above ~85% Mob Health**:
@@ -273,7 +273,7 @@ Maintains maximum spec Armor Factor (AF), Strength/Constitution, and Dexterity/Q
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline
-- **Target Range**: 600â€“900 units behind frontline
+- **Target Range**: 600–900 units behind frontline
 - **Flank Coverage**: Position to intercept enemy flankers before they reach the Rejuv Cleric or Wizard.
 
 ### 11. Ability Usage Priorities
@@ -285,7 +285,7 @@ Maintains maximum spec Armor Factor (AF), Strength/Constitution, and Dexterity/Q
 ### 12. Resource Management
 - **Mana Floor**: 25% (Reserve mana for emergency spot-heals and rebuffing fallen allies)
 - **Buff Priority**: Spec AF > Spec Str/Con > Spec Dex/Qui > Base AF > Base Stats
-- **Heal Thresholds**: Cast `HealEfficient` when ally HP 50%â€“75%; cast `HealBig` when ally HP < 50%.
+- **Heal Thresholds**: Cast `HealEfficient` when ally HP 50%–75%; cast `HealBig` when ally HP < 50%.
 
 ### 13. What the AI SHOULD Do
 - Rebuff fallen group members immediately after they are resurrected and stabilized.
@@ -371,7 +371,7 @@ Operates as an offensive caster with chainmail defense and shield capability. Fo
   - No tank or melee attempts to taunt the main pack, and the Smite Cleric holds offensive spells on the main cluster while mobs are above ~85% HP.
 - **Loose Mob Protection (Break-Off Protection)**:
   - If any mob breaks off from the pet and threatens friendly healers or casters, the Smite Cleric is authorized to immediately cast ranged/instant Smite Stun or single-target nukes on that loose mob to protect the group!
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - Stand firm at the group camp anchor alongside the casters. Do **NOT** run away or kite backwards to gain max spell range.
   - The pet puller is responsible for bringing the mobs directly into the parked group.
 - **The 85% Mob Health AoE Trigger**:
@@ -421,7 +421,7 @@ Operates as an offensive caster with chainmail defense and shield capability. Fo
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Caster Line
-- **Target Range**: 900â€“1200 units from enemy target
+- **Target Range**: 900–1200 units from enemy target
 - **LOS Behavior**: Keep clear line-of-sight to the assist target; angle shield toward enemy melee while casting.
 
 ### 11. Ability Usage Priorities

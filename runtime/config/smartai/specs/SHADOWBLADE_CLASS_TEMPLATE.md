@@ -30,8 +30,9 @@ default_personality: "Aggressive"
 ```yaml
 match_specs:
   primary_line: "Critical_Strike"
+  secondary_line: "Left_Axe"
   min_point_ratio: 0.50
-  spec_type_aliases: ["LeftAxeShadowblade", "CriticalStrike"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -175,7 +176,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Critical_Strike"
   min_point_ratio: 0.50
-  spec_type_aliases: ["TwoHandedShadowblade", "TwoHanded"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -305,7 +306,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Left_Axe"
   min_point_ratio: 0.50
-  spec_type_aliases: ["PureAxeBlenderShadowblade", "LeftAxe"]
+  spec_type_aliases: ["LeftAxe"]
 ```
 
 ### 1. Intended Role

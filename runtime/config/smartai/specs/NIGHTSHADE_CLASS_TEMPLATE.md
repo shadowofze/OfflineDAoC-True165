@@ -31,7 +31,7 @@ default_personality: "Aggressive"
 match_specs:
   primary_line: "Critical_Strike"
   min_point_ratio: 0.50
-  spec_type_aliases: ["PerforateNightshade", "CriticalStrike"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -175,7 +175,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Celtic_Dual"
   min_point_ratio: 0.50
-  spec_type_aliases: ["CelticDualNightshade", "DualWield"]
+  spec_type_aliases: ["DualWield"]
 ```
 
 ### 1. Intended Role
@@ -303,8 +303,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Critical_Strike"
+  secondary_line: "Nightshade_Magic"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ShadowStrikeNightshade", "CriticalStrike"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

@@ -205,7 +205,8 @@ namespace DOL.GS.SmartAI
         private static SmartMatchSpecs ParseMatchSpecs(List<(int Line, string Text)> body, int fenceLine,
             Action<int, string> warn, Action<int, string> error, string specName)
         {
-            string primary = string.Empty, weapon = string.Empty;
+            string primary = string.Empty, secondary = string.Empty, weapon = string.Empty;
+            int secondaryMin = 0, secondaryMax = 0;
             double ratio = double.NaN;
             var aliases = new List<string>();
             bool sawRoot = false;
@@ -241,6 +242,18 @@ namespace DOL.GS.SmartAI
                     case "primary_line":
                         primary = Unquote(value);
                         break;
+                    case "secondary_line":
+                        secondary = Unquote(value);
+                        break;
+                    case "secondary_min_level":
+                    case "secondary_max_level":
+                        if (!int.TryParse(Unquote(value), NumberStyles.Integer, CultureInfo.InvariantCulture, out int level) || level < 1 || level > 50)
+                            error(line, $"'{specName}': {key} '{value}' must be a level from 1 to 50");
+                        else if (key.Equals("secondary_min_level", StringComparison.OrdinalIgnoreCase))
+                            secondaryMin = level;
+                        else
+                            secondaryMax = level;
+                        break;
                     case "min_point_ratio":
                         if (!double.TryParse(Unquote(value), NumberStyles.Float, CultureInfo.InvariantCulture, out ratio))
                             error(line, $"'{specName}': min_point_ratio '{value}' is not a number");
@@ -264,6 +277,9 @@ namespace DOL.GS.SmartAI
             return new SmartMatchSpecs
             {
                 PrimaryLine = primary,
+                SecondaryLine = secondary,
+                SecondaryMinLevel = secondaryMin,
+                SecondaryMaxLevel = secondaryMax,
                 MinPointRatio = ratio,
                 WeaponType = weapon,
                 SpecTypeAliases = aliases,

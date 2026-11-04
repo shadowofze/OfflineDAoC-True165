@@ -45,7 +45,7 @@ Decisive group neutralization and protection. The Pac Healer dictates combat flo
 - **Opening CC**: Cast maximum-range AoE Mesmerize on clustered enemy groups.
 - **AoE Stun Lockdown**: Land AoE Stun on charging enemy melee trains to leave them vulnerable to Midgard's assist train.
 - **Amnesia**: Cycle Amnesia against enemy casters to disrupt continuous cast bars.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Stun & Mez Control**: Cycle single-target Stun and Mez to create distance, reset fights, or secure kills.
@@ -110,7 +110,7 @@ Decisive group neutralization and protection. The Pac Healer dictates combat flo
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -180,7 +180,7 @@ Uncompromising ally survival through rapid heal triage. The Mending Healer prior
 - **Primary Group Triage**: Prioritize frontline tanks (Warriors, Berserkers) and friendly crowd controllers under assist train focus.
 - **Disease & Poison Cleansing**: Rapidly cast `Cure Disease` on friendly tanks and healers to remove the 50% healing received penalty.
 - **Interrupt Protection**: Trigger `Mastery of Concentration` when collapsed upon by enemy stealthers or melee trains to ensure uninterrupted group triage.
-- **Positioning**: 1350â€“1500 units back; spread away from Shamans and Runemasters to avoid clustered enemy CC.
+- **Positioning**: 1350–1500 units back; spread away from Shamans and Runemasters to avoid clustered enemy CC.
 
 ### 5. Mode: PvP
 - **Pillar Play & Kiting**: Break enemy caster lines of sight between cast cycles.
@@ -246,22 +246,22 @@ Uncompromising ally survival through rapid heal triage. The Mending Healer prior
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
 1. `AtlasOF_Purge`: Priority 100
 2. `AtlasOF_MasteryOfConcentration`: Priority 95
 3. Spec Major Heal (`HealBig`): Priority 90 (Target HP < 50%)
-4. `HealEfficient` / Minor Heal: Priority 85 (Target HP 50%â€“85%)
+4. `HealEfficient` / Minor Heal: Priority 85 (Target HP 50%–85%)
 5. Group Heal: Priority 80 (3+ allies < 70% HP)
 6. `AtlasOF_MCL`: Priority 75 (When mana < 20%)
 
 ### 12. Resource Management
 - **Mana Reserve Floor**: 25% (Reserve power for emergency group heals and resurrections)
 - **Triage Thresholds**:
-  - Target HP 70%â€“85%: `HealEfficient`
-  - Target HP 35%â€“70%: `HealBig`
+  - Target HP 70%–85%: `HealEfficient`
+  - Target HP 35%–70%: `HealBig`
   - Target HP < 35%: `Mastery of Concentration` + `HealBig`
   - 3+ members < 70%: `HealGroup`
 
@@ -323,7 +323,7 @@ Combat acceleration and group enhancement. The Aug Healer empowers Midgard's hea
 - **Celerity Maintenance**: Keep Celerity active on friendly melee trains to maximize style pressure and burst.
 - **Damage Add & Buffs**: Ensure all 8 group members have spec AF, Str/Con, and Damage Add active.
 - **Secondary Healing**: Assist the primary healer with baseline heals on backline squishies and frontline tanks.
-- **Positioning**: Midline / Backline (1100â€“1350 units).
+- **Positioning**: Midline / Backline (1100–1350 units).
 
 ### 5. Mode: PvP
 - **Buff Preservation**: Keep buffs and Celerity running on partner fighters to win DPS trades.
@@ -390,7 +390,7 @@ Combat acceleration and group enhancement. The Aug Healer empowers Midgard's hea
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Backline
-- **Target Range**: 1100â€“1350 units
+- **Target Range**: 1100–1350 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities

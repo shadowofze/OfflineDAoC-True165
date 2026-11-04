@@ -1,4 +1,4 @@
----
+﻿---
 schema_version: 1
 class_name: "Cleric"
 class_id: 6

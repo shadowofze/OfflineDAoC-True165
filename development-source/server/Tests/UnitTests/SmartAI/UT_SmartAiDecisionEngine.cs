@@ -241,6 +241,67 @@ public class UT_SmartAiDecisionEngine
     public void HealingClasses(DOL.GS.eCharacterClass c, bool heals) =>
         Assert.That(SmartBotPerception.IsHealingClass((int)c), Is.EqualTo(heals));
 
+    // Heal thresholds (owner 2026-11-04) ------------------------------------------------------------------------------
+
+    [Test]
+    public void HealThresholds_ReadFromTheClericFile()
+    {
+        SmartSpecProfile rejuv = Profile("Rejuvenation Cleric");
+        Assert.That(rejuv.HealBands.Select(b => (b.Min, b.Max, string.Join("+", b.Heals))), Is.EqualTo(new[]
+        {
+            (70, 85, "HealEfficient"),
+            (35, 70, "HealBig"),
+            (0, 35, "HealInstant+HealBig"),
+        }));
+        Assert.That(rejuv.GroupHeal.Members, Is.EqualTo(3));
+        Assert.That(rejuv.GroupHeal.Below, Is.EqualTo(70));
+        Assert.That(rejuv.GroupHeal.Heals, Is.EqualTo(new[] { "HealGroup" }), "HealSpread / HealGroup are the same group heal");
+
+        SmartSpecProfile enh = Profile("Enhancement Cleric");
+        Assert.That(enh.HealBands.Select(b => (b.Min, b.Max, string.Join("+", b.Heals))), Is.EqualTo(new[]
+        {
+            (50, 75, "HealEfficient"),
+            (0, 50, "HealBig"),
+        }), "Two clauses on one line, split on ';'");
+        Assert.That(enh.GroupHeal, Is.Null);
+    }
+
+    [Test]
+    public void HealThresholds_SmiteHasNoneSoTheLegacyChoiceStands() =>
+        Assert.That(Profile("Smite Cleric").HealBands, Is.Empty);
+
+    private static string HealFor(SmartSpecProfile p, int health, int hurtUnder70 = 0, params string[] notReady) =>
+        SmartHealThresholds.Choose(p.HealBands, p.GroupHeal, health, below => below == 70 ? hurtUnder70 : 0,
+            heal => !notReady.Contains(heal));
+
+    [Test]
+    public void HealThresholds_PickTheBandsHeal()
+    {
+        SmartSpecProfile rejuv = Profile("Rejuvenation Cleric");
+        Assert.That(HealFor(rejuv, 80), Is.EqualTo("HealEfficient"));
+        Assert.That(HealFor(rejuv, 70), Is.EqualTo("HealEfficient"), "70 opens the upper band");
+        Assert.That(HealFor(rejuv, 50), Is.EqualTo("HealBig"));
+        Assert.That(HealFor(rejuv, 20), Is.EqualTo("HealInstant"));
+        Assert.That(HealFor(rejuv, 20, 0, "HealInstant"), Is.EqualTo("HealBig"), "Instant on its timer: the big heal");
+        Assert.That(HealFor(rejuv, 90), Is.Null, "Above every band: the legacy choice");
+        Assert.That(HealFor(rejuv, 50, 0, "HealBig"), Is.Null, "The band's heal not ready: the legacy choice");
+    }
+
+    [Test]
+    public void HealThresholds_GroupHealWhenThreeAreHurt()
+    {
+        SmartSpecProfile rejuv = Profile("Rejuvenation Cleric");
+        Assert.That(HealFor(rejuv, 50, hurtUnder70: 3), Is.EqualTo("HealGroup"));
+        Assert.That(HealFor(rejuv, 50, hurtUnder70: 2), Is.EqualTo("HealBig"));
+        Assert.That(HealFor(rejuv, 50, 3, "HealGroup"), Is.EqualTo("HealBig"), "No group heal ready: the band");
+    }
+
+    [TestCase("HealSpread", "HealGroup")]
+    [TestCase("HealEfficient", "HealEfficient")]
+    [TestCase("HealMiracle", null)]
+    public void HealThresholds_KnownKinds(string name, string kind) =>
+        Assert.That(SmartHealThresholds.Canonical(name), Is.EqualTo(kind));
+
     [Test]
     public void Scorer_EmergenciesRaiseTriage()
     {

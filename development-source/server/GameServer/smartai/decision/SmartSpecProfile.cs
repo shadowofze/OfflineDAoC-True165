@@ -162,6 +162,94 @@ namespace DOL.GS.SmartAI
     /// <summary>One section 11 line naming a realm ability SmartAI can fire (SmartRealmAbilities.SafeActives).</summary>
     public sealed record SmartAbilityRule(string Key, int Priority, SmartCondition Condition, string Source);
 
+    /// <summary>Section 12 heal thresholds: a target health band (Min &lt;= health &lt; Max) and the heals for it, in
+    /// order of preference ("HealInstant + HealBig": the instant first, the big heal when it isn't ready).</summary>
+    public sealed record SmartHealBand(int Min, int Max, string[] Heals, string Source);
+
+    /// <summary>Section 12 "3+ members &lt; 70%: HealSpread / HealGroup": a group heal when enough members are hurt.</summary>
+    public sealed record SmartGroupHealRule(int Members, int Below, string[] Heals, string Source);
+
+    /// <summary>
+    /// Reads section 12's heal thresholds (owner 2026-11-04): bullets that name heal kinds in backticks (`HealEfficient`,
+    /// `HealBig`, `HealInstant`, `HealGroup` / `HealSpread`, `HealInstantGroup`, `HealOverTime`) with a health range
+    /// ("70%–85%", "< 35%", "when ally HP 50%–75%") or a group count ("3+ members < 70%"). Clauses split on ";".
+    /// Lines without a heal kind (mana floors, resurrection) are not thresholds.
+    /// </summary>
+    public static class SmartHealThresholds
+    {
+        private static readonly Regex HealToken = new(@"`(?<k>Heal[A-Za-z]+)`", RegexOptions.Compiled);
+        private static readonly Regex Range = new(@"(?<a>\d{1,3})\s*%?\s*[–—-]\s*(?<b>\d{1,3})\s*%", RegexOptions.Compiled);
+        private static readonly Regex Below = new(@"(<|below|under)\s*(?<x>\d{1,3})\s*%", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex Group = new(@"(?<n>\d+)\s*\+\s*(members?|allies|group members?)\s*(<|below|under)\s*(?<x>\d{1,3})\s*%",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        public static readonly string[] Known = ["HealEfficient", "HealBig", "HealInstant", "HealGroup", "HealInstantGroup", "HealOverTime"];
+
+        public static (List<SmartHealBand> Bands, SmartGroupHealRule Group) Read(SmartSpecSection resources)
+        {
+            var bands = new List<SmartHealBand>();
+            SmartGroupHealRule group = null;
+            if (resources == null)
+                return (bands, null);
+            foreach (string bullet in resources.Bullets)
+            {
+                foreach (string clause in bullet.Split(';'))
+                {
+                    string[] heals = HealToken.Matches(clause).Select(m => Canonical(m.Groups["k"].Value))
+                        .Where(k => k != null).Distinct().ToArray();
+                    if (heals.Length == 0)
+                        continue;
+                    Match g = Group.Match(clause);
+                    if (g.Success)
+                    {
+                        group ??= new SmartGroupHealRule(int.Parse(g.Groups["n"].Value), int.Parse(g.Groups["x"].Value), heals, clause.Trim());
+                        continue;
+                    }
+                    Match r = Range.Match(clause);
+                    if (r.Success)
+                    {
+                        int a = int.Parse(r.Groups["a"].Value), b = int.Parse(r.Groups["b"].Value);
+                        bands.Add(new SmartHealBand(Math.Min(a, b), Math.Max(a, b), heals, clause.Trim()));
+                        continue;
+                    }
+                    Match below = Below.Match(clause);
+                    if (below.Success)
+                        bands.Add(new SmartHealBand(0, int.Parse(below.Groups["x"].Value), heals, clause.Trim()));
+                }
+            }
+            return (bands, group);
+        }
+
+        /// <summary>The heal kind for a template name ("HealSpread" is the group heal); null for one the bots don't know.</summary>
+        public static string Canonical(string name) => name switch
+        {
+            "HealSpread" => "HealGroup",
+            _ => Array.IndexOf(Known, name) >= 0 ? name : null,
+        };
+
+        /// <summary>
+        /// The heal kind to cast (pure, for tests): the group heal when its rule is met, else the first ready heal of the
+        /// band holding the target's health; null to keep the legacy choice (no band fits, or none of its heals is ready).
+        /// </summary>
+        public static string Choose(IReadOnlyList<SmartHealBand> bands, SmartGroupHealRule group, int targetHealthPercent,
+            Func<int, int> membersBelow, Func<string, bool> ready)
+        {
+            if (group != null && membersBelow(group.Below) >= group.Members)
+                foreach (string heal in group.Heals)
+                    if (ready(heal))
+                        return heal;
+            foreach (SmartHealBand band in bands)
+            {
+                if (targetHealthPercent < band.Min || targetHealthPercent >= band.Max)
+                    continue;
+                foreach (string heal in band.Heals)
+                    if (ready(heal))
+                        return heal;
+            }
+            return null;
+        }
+    }
+
     /// <summary>
     /// A spec compiled for the engine (cached per spec, rebuilt with the registry on /smartai reload).
     /// - Priority lines of sections 7 (offensive), 8 (defensive) and 9 (target) map to families by their wording;
@@ -184,6 +272,9 @@ namespace DOL.GS.SmartAI
         public bool HasTriageRules { get; }
         /// <summary>Section 11's realm abilities SmartAI can fire, highest priority first.</summary>
         public IReadOnlyList<SmartAbilityRule> Abilities { get; }
+        /// <summary>Section 12's heal thresholds (SmartHealThresholds); empty: the legacy heal choice.</summary>
+        public IReadOnlyList<SmartHealBand> HealBands { get; }
+        public SmartGroupHealRule GroupHeal { get; }
 
         private static readonly Regex AbilityKey = new(@"AtlasOF_\w+", RegexOptions.Compiled);
 
@@ -191,6 +282,9 @@ namespace DOL.GS.SmartAI
         {
             Spec = spec;
             RuleArray = rules.ToArray();
+            (List<SmartHealBand> bands, SmartGroupHealRule group) = SmartHealThresholds.Read(spec.Section(SmartSpecSectionKeys.Resources));
+            HealBands = bands;
+            GroupHeal = group;
             Abilities = spec.AbilityPriorities
                 .Select(e => (Entry: e, Key: AbilityKey.Match(e.Name)))
                 .Where(x => x.Key.Success && x.Entry.Priority > 0 && SmartRealmAbilities.IsSafe(x.Key.Value))

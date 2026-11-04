@@ -10,7 +10,7 @@ default_personality: "Aggressive"
 # Class: Savage (Midgard)
 
 ## Shared Class Capabilities
-- **Armor Type**: Studded (Level 20+), Leather (1â€“19).
+- **Armor Type**: Studded (Level 20+), Leather (1–19).
 - **Weapon Slots**: Hand-to-Hand (dual spiked fist claws with innate dual-wield mechanics); Two-Handed Sword, Axe, Hammer; One-Handed Sword, Axe, Hammer.
 - **Core Specialization Lines**:
   - `Savagery`: Unique health-sacrificing self-buffs! The Savage sacrifices portions of current health to activate game-breaking combat enhancements: extreme melee Haste buffs, high-tier melee Damage Add buffs, Evade chance buffs, and Melee Critical hit buffs.
@@ -30,7 +30,7 @@ default_personality: "Aggressive"
 match_specs:
   primary_line: "Hand_To_Hand"
   min_point_ratio: 0.50
-  spec_type_aliases: ["HandToHandSavage", "DualWield"]
+  spec_type_aliases: ["DualWield"]
 ```
 
 ### 1. Intended Role
@@ -179,7 +179,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Two_Handed"
   min_point_ratio: 0.50
-  spec_type_aliases: ["TwoHandedSavage", "TwoHanded"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -313,8 +313,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Hand_To_Hand"
+  secondary_line: "Parry"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ParrySavage", "DualWield"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

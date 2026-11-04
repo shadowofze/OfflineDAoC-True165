@@ -45,7 +45,7 @@ Close-quarters area devastation and coordinated explosive burst. In RvR, the Dar
 - **PBAoE Darkness Cleave**: Coordinate with Midgard's melee assist train; activate `Mastery of Concentration` or `Static Tempest` and detonate rapid PBAoE Darkness waves into clustered enemy zergs.
 - **Darkness Debuff & Assist**: Cast Darkness resistance debuff on high-priority tanks or casters; assist fellow Midgard casters with Darkness DD.
 - **Snare Defense**: Apply Darkness Snare to enemy peelers pursuing Midgard Shamans or Healers.
-- **Positioning**: 1200â€“1350 units back during initial approach; collapse into PBAoE range under frontline cover.
+- **Positioning**: 1200–1350 units back during initial approach; collapse into PBAoE range under frontline cover.
 
 ### 5. Mode: PvP
 - **Burst & Kite**: Open with Snare -> Quick Cast Darkness DD -> Pop `Mastery of Concentration` if closed upon and finish with PBAoE Darkness pulses.
@@ -69,7 +69,7 @@ Close-quarters area devastation and coordinated explosive burst. In RvR, the Dar
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
-  - **Zone Priority**: **Outside Open-World Leveling Strongly Prioritized** (Gotar, Raumarik, Uppland, Myrkwood). Open northern expanses afford essential 1500â€“2000 unit clear kiting lanes and safe pre-cast distances.
+  - **Zone Priority**: **Outside Open-World Leveling Strongly Prioritized** (Gotar, Raumarik, Uppland, Myrkwood). Open northern expanses afford essential 1500–2000 unit clear kiting lanes and safe pre-cast distances.
   - **Dungeon Suitability**: **SOLO EMBARGO / PROHIBITED SOLO**. Dungeons (Spindelhalla, Cursed Tomb, Varv) have narrow winding corridors (<800 unit sightlines), low ceilings, and dense patrol links. Because physical hits cause 100% spell interrupts and Runemasters wear light cloth armor without a persistent tank pet, soloing in dungeons results in immediate interrupts and death. **Only enter dungeons when grouped with a dedicated chain tank and healer**.
 - **Target Con Selection**:
   - **Optimal (Blue / High Blue)**: Primary grinding target. Target melts under 2 to 3 Darkness nukes with zero spell resists.
@@ -87,7 +87,7 @@ Close-quarters area devastation and coordinated explosive burst. In RvR, the Dar
   - **Safety Check**: Scan 1000 units for wandering snow bears or wolves before sitting; reposition into cleared clearings.
   - **Resume Threshold**: Stand and resume hunting only when Mana >= 85% and Health >= 90%.
 - **Emergency Escape Protocol**:
-  - On add or early melee close: QuickCast baseline Root / Darkness Snare -> 180Â° turn -> Sprint retreat to open safe zone.
+  - On add or early melee close: QuickCast baseline Root / Darkness Snare -> 180° turn -> Sprint retreat to open safe zone.
 
 ### 7. Offensive Priorities
 1. PBAoE Darkness Pulses: Priority 100 (Unleash into mob cluster anchored on pet at 85% HP)
@@ -108,7 +108,7 @@ Close-quarters area devastation and coordinated explosive burst. In RvR, the Dar
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Group Camp Center
-- **PBAoE Range**: 0â€“350 units from the mob cluster centered on the pet (during 85% burn phase)
+- **PBAoE Range**: 0–350 units from the mob cluster centered on the pet (during 85% burn phase)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities
@@ -186,7 +186,7 @@ Maximum distance elimination and burst execution. The Runecarving Runemaster set
 - **Bolt Opening**: Open from maximum range (1875 units) on enemy cloth casters, healers, or archers with Cold Bolt.
 - **Cold Debuff & Nuke**: Apply Cold resistance debuff to the assist target, then follow with rapid spec Cold DD nukes.
 - **Rune Damage Shields**: Keep Rune Damage Shields active on Midgard tanks and melee peelers.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Bolt & Burst**: Cold Bolt opener -> Quick Cast Cold DD -> Cold Debuff -> Follow-up Cold DD to delete target.
@@ -246,7 +246,7 @@ Maximum distance elimination and burst execution. The Runecarving Runemaster set
 3. Enemy Caster / Healer: Priority 80 (For Cold Bolt in RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Group Camp Center (1000â€“1350 units from target pack)
+- **Anchor**: Midline / Group Camp Center (1000–1350 units from target pack)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities
@@ -382,7 +382,7 @@ Range suppression and area containment. The Suppression Runemaster blinds opposi
 3. Primary Focus Target: Priority 80 (For Suppression DD)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Group Camp Center (1000â€“1350 units from target pack)
+- **Anchor**: Midline / Group Camp Center (1000–1350 units from target pack)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities

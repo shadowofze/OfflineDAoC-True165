@@ -15,7 +15,7 @@ default_personality: "Tactical"
 - **Core Specialization Lines**:
   - `Wind Magic`: Air Elemental Minion Summons (swift melee elementals that sprint to target, stun on contact, and relentlessly interrupt casting), Wind Direct Damage, baseline Pulsing Bladeturn (PBT), and Nearsight.
   - `Cold Magic`: Ice Elemental Minion Summons (ranged elementals that pelt enemies with cold damage and snares), Cold Direct Damage, Cold Area-of-Effect Snare, and Ice Bolts.
-  - `Earth Magic`: Earth Elemental Minion Summons (durable, high-hitpoint elementals that taunt and absorb hits), Pulse Bladeturn (PBT up to 4â€“6 second pulse rate at 50 Earth), Earth Direct Damage, and Area of Effect Root.
+  - `Earth Magic`: Earth Elemental Minion Summons (durable, high-hitpoint elementals that taunt and absorb hits), Pulse Bladeturn (PBT up to 4–6 second pulse rate at 50 Earth), Earth Direct Damage, and Area of Effect Root.
 - **Base Abilities**: Sprint, Quick Cast.
 - **Albion's Elemental Conjurer**: The Theurgist overwhelms opposing forces by manifesting autonomous elementals that interrupt, snare, and harass enemies while shielding allies behind impenetrable Pulsing Bladeturn barriers.
 
@@ -42,10 +42,10 @@ The Air Theurgist is Albion's premier caster-suppression engine. It specializes 
 Maximum disruption through elemental swarms. The Air Theurgist identifies high-value enemy casting targets and floods them with Air Elementals, rendering them completely incapable of completing spell casts, while maintaining defensive Bladeturn for the group.
 
 ### 4. Mode: RvR
-- **Caster Suppression Swarm**: Spam Air Elementals (2â€“4 minions) onto enemy primary healers (Druids, Healers, Shamans) and heavy nukers (Eldritches, Runemasters) from 1500 units away.
+- **Caster Suppression Swarm**: Spam Air Elementals (2–4 minions) onto enemy primary healers (Druids, Healers, Shamans) and heavy nukers (Eldritches, Runemasters) from 1500 units away.
 - **Wind DD Burst**: Once enemy casters are disrupted and unable to cast, assist Albion nukers with rapid Wind DD strikes.
 - **Pulse Bladeturn Maintenance**: Keep baseline Pulse Bladeturn running continuously to mitigate incoming physical attacks on Albion squishies.
-- **Positioning**: 1350â€“1500 units back in the caster core.
+- **Positioning**: 1350–1500 units back in the caster core.
 
 ### 5. Mode: PvP
 - **Swarm & Overwhelm**: Summon 2 Air Elementals -> Stun on impact -> Quick Cast Wind DD -> Summon 3rd Elemental -> Finish target with Wind DD while opponent is locked down.
@@ -64,7 +64,7 @@ Maximum disruption through elemental swarms. The Air Theurgist identifies high-v
 - **THE 85% MOB HEALTH TRIGGER**:
   - Once the pet's pulsing damage shield whittles the mob pack down to **85% health**, the Air Theurgist unleashes:
   - Cast **Wind Direct Damage** into the primary kill target within the cluster.
-  - If a tough elite or high-threat mob is in the pack, summon 1â€“2 Air Elementals directly onto that elite to accelerate its demise!
+  - If a tough elite or high-threat mob is in the pack, summon 1–2 Air Elementals directly onto that elite to accelerate its demise!
 - **Strict Stationary Discipline**:
   - Stay put at the camp anchor. Never flee backwards out of camp for range.
 
@@ -107,7 +107,7 @@ Maximum disruption through elemental swarms. The Air Theurgist identifies high-v
 3. Primary Focus Target: Priority 80 (For Wind DD)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Group Camp Center (1000â€“1350 units from target pack)
+- **Anchor**: Midline / Group Camp Center (1000–1350 units from target pack)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities
@@ -119,7 +119,7 @@ Maximum disruption through elemental swarms. The Air Theurgist identifies high-v
 
 ### 12. Resource Management
 - **Elemental Mana Consumption**: Summoning multiple elementals consumes significant power.
-- **Throttling**: Limit elemental spam to 2â€“3 active pets in PvE.
+- **Throttling**: Limit elemental spam to 2–3 active pets in PvE.
 - **MCL Timing**: Activate `AtlasOF_MCL` when power drops below 25%.
 
 ### 13. What the AI SHOULD Do
@@ -183,9 +183,9 @@ Ranged bombardment and movement denial. The Ice Theurgist slows advancing enemie
 
 ### 4. Mode: RvR
 - **Area Snare Barrier**: Cast AoE Cold Snare across enemy approach paths to break up charging melee zergs.
-- **Ice Elemental Turrets**: Summon 2â€“3 Ice Elementals that establish stationary ranged fire onto enemy lines.
+- **Ice Elemental Turrets**: Summon 2–3 Ice Elementals that establish stationary ranged fire onto enemy lines.
 - **Cold DD Burst**: Coordinate with Albion assist train to drop heavy Cold DD on snared targets.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Snare & Snipe**: Cast AoE/Single Cold Snare -> Summon Ice Elemental -> Backpedal -> Quick Cast Cold DD -> Ice Bolt finisher.
@@ -201,7 +201,7 @@ Ranged bombardment and movement denial. The Ice Theurgist slows advancing enemie
 - **THE 85% MOB HEALTH TRIGGER**:
   - Once the pet's pulsing damage shield brings the mob cluster down to **85% health**, the Ice Theurgist unleashes:
   - Cast **Cold Direct Damage** on the primary focus target in the cluster.
-  - Summon 1â€“2 Ice Elementals to provide continuous ranged fire into the cluster!
+  - Summon 1–2 Ice Elementals to provide continuous ranged fire into the cluster!
 - **Strict Stationary Discipline**:
   - Remain strictly stationed at the camp anchor. Never flee backwards out of camp.
 
@@ -223,7 +223,7 @@ Ranged bombardment and movement denial. The Ice Theurgist slows advancing enemie
   - **Sit / Rest Threshold**: Drop to sit when Mana < 25% or Health < 50%.
   - **Resume Threshold**: Resume hunting at Mana >= 85%, Health >= 90%.
 - **Emergency Escape Protocol**:
-  - QuickCast AoE Root -> 180Â° turn and Sprint retreat.
+  - QuickCast AoE Root -> 180° turn and Sprint retreat.
 
 ### 7. Offensive Priorities
 1. Cold Snare on Loose Break-Off Add: Priority 100
@@ -243,7 +243,7 @@ Ranged bombardment and movement denial. The Ice Theurgist slows advancing enemie
 3. Clustered Melee Forces: Priority 80 (For AoE Cold Snare)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Group Camp Center (1000â€“1350 units from target pack)
+- **Anchor**: Midline / Group Camp Center (1000–1350 units from target pack)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities
@@ -310,7 +310,7 @@ match_specs:
 Master of Pulsing Bladeturn (PBT 50), Earth Tank Elemental Conjurer, Area-of-Effect Root Controller, and Group Shield Anchor.
 
 ### 2. Intended Role Summary
-The Earth Theurgist is Albion's ultimate defensive shield. By specializing heavily in Earth Magic (up to 50 Earth), it provides the fastest-pulsing, highest-tier Pulsing Bladeturn (PBT) in the game, refreshing melee-absorption bubbles across the entire group every 4â€“6 seconds. Combined with durable, taunting Earth Elementals and Area-of-Effect Roots, the Earth Theurgist provides supreme group defense.
+The Earth Theurgist is Albion's ultimate defensive shield. By specializing heavily in Earth Magic (up to 50 Earth), it provides the fastest-pulsing, highest-tier Pulsing Bladeturn (PBT) in the game, refreshing melee-absorption bubbles across the entire group every 4–6 seconds. Combined with durable, taunting Earth Elementals and Area-of-Effect Roots, the Earth Theurgist provides supreme group defense.
 
 ### 3. Combat Philosophy
 Impenetrable physical mitigation and area crowd control. The Earth Theurgist ensures Pulsing Bladeturn never lapses, pins enemy melee forces with Area Roots, conjures rock-hard Earth Elementals to absorb heavy hits, and chips away at targets with Earth DD.
@@ -319,7 +319,7 @@ Impenetrable physical mitigation and area crowd control. The Earth Theurgist ens
 - **Maximum PBT Coverage**: Maintain 50 Earth Pulsing Bladeturn at all times; this pulse negates an enormous volume of enemy melee and archer burst.
 - **Area Root Lockdown**: Cast AoE Root on charging enemy frontline tanks to leave them stranded while Albion's casters destroy their backline.
 - **Earth Elemental Walls**: Summon Earth Elementals to screen against enemy stealthers and absorb hits from hard-hitting melee.
-- **Positioning**: 1200â€“1350 units back, securely in the center of the Albion support core.
+- **Positioning**: 1200–1350 units back, securely in the center of the Albion support core.
 
 ### 5. Mode: PvP
 - **PBT Defense & Root**: Keep PBT active -> Cast Single/AoE Root -> Summon Earth Elemental to tank opponent -> Cast Earth DD from safety.
@@ -380,7 +380,7 @@ Impenetrable physical mitigation and area crowd control. The Earth Theurgist ens
 3. Clustered Melee Forces: Priority 80 (For AoE Root in RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Group Camp Center (1000â€“1200 units from target pack)
+- **Anchor**: Midline / Group Camp Center (1000–1200 units from target pack)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities

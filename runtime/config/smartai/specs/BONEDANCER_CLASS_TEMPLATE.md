@@ -45,7 +45,7 @@ Pet swarm harassment and physical pressure. In RvR, the Bonedancer sends skeleta
 - **Minion Swarm Attack**: Order Skeletal Commander and minion squad to swarm enemy primary healers or cloth casters, delivering non-stop melee interrupts and ranged archery.
 - **Body DD Assist**: Assist Midgard nukers with Body Direct Damage on debuffed focus targets.
 - **Minion Screen**: Keep skeletal minions positioned between enemy stealthers and Midgard support.
-- **Positioning**: 1200â€“1350 units back in the Midgard caster line.
+- **Positioning**: 1200–1350 units back in the Midgard caster line.
 
 ### 5. Mode: PvP
 - **Swarm & Drain**: Command minions to engage opponent -> Quick Cast Body DD -> Apply Body debuff -> Overwhelm target while minions absorb hits.
@@ -108,7 +108,7 @@ Pet swarm harassment and physical pressure. In RvR, the Bonedancer sends skeleta
 3. Enemy Support / Casters: Priority 80 (For Minion Harassment in RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Group Camp Center (1000â€“1200 units from target pack)
+- **Anchor**: Midline / Group Camp Center (1000–1200 units from target pack)
 - **Minions**: Stationed on Passive alongside the Bonedancer at camp
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
@@ -186,7 +186,7 @@ Self-sustaining magical annihilation. The Darkness Bonedancer softens targets wi
 - **Lifedrain Focus**: Coordinate with Midgard nukers; apply Darkness debuff to primary kill target and melt them with spec Darkness Lifedrains.
 - **Caster Minion Barrage**: Position caster minions at range to fire auxiliary lifedrains and snares into the enemy lines.
 - **Snare Defense**: Apply Darkness Snare to enemy peelers charging Midgard casters.
-- **Positioning**: 1200â€“1350 units back.
+- **Positioning**: 1200–1350 units back.
 
 ### 5. Mode: PvP
 - **Snare & Drain**: Cast Snare -> Quick Cast Darkness Lifedrain -> Deploy Caster Minion -> Repeat Lifedrain to burn target while sustaining full health.
@@ -245,7 +245,7 @@ Self-sustaining magical annihilation. The Darkness Bonedancer softens targets wi
 3. Enemy Caster / Support: Priority 75 (For RvR burst)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Group Camp Center (1000â€“1350 units from mob cluster)
+- **Anchor**: Midline / Group Camp Center (1000–1350 units from mob cluster)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities
@@ -384,7 +384,7 @@ Mass attrition paired with autonomous group healing. The Suppression Bonedancer 
 3. Primary Focus Target: Priority 80 (For Suppression DD)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Group Camp Center (1000â€“1350 units from target pack)
+- **Anchor**: Midline / Group Camp Center (1000–1350 units from target pack)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities

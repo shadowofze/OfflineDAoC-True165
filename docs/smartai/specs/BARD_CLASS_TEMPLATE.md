@@ -29,7 +29,7 @@ default_personality: "Supportive"
 match_specs:
   primary_line: "Music"
   min_point_ratio: 0.50
-  spec_type_aliases: ["MusicBard"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -46,7 +46,7 @@ Total area lockdown and mana sustain. The Music Bard neutralizes opposing forces
 - **AoE Root Peeling**: Drop AoE Root on charging enemy melee trains to isolate them from their healers.
 - **Song Twisting**: Run Speed of the Realm to position; toggle Power and Health songs in combat.
 - **SOS Authority**: Activate `AtlasOF_SOS` (Speed of Sound) to secure rapid group engages or flawless tactical disengages.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Mez & Reset**: Land single or AoE Mez, reset distance, apply roots, and assist partner with shouts and secondary heals.
@@ -110,7 +110,7 @@ Total area lockdown and mana sustain. The Music Bard neutralizes opposing forces
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -165,7 +165,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Regrowth"
   min_point_ratio: 0.50
-  spec_type_aliases: ["RegrowthBard"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -181,7 +181,7 @@ Life preservation through heal triage and mana cycling. The Regrowth Bard balanc
 - **Primary Group Triage**: Prioritize friendly crowd-controllers, main tanks, and light casters under assist-train focus.
 - **Disease & Poison Curing**: Rapidly cleanse diseases and poisons off group members.
 - **Song Maintenance**: Keep pulsing Health and Power regeneration songs active while cycling heals.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Pillar Kiting**: Maneuver around terrain obstacles while casting heals on self and partner.
@@ -248,7 +248,7 @@ Life preservation through heal triage and mana cycling. The Regrowth Bard balanc
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -256,14 +256,14 @@ Life preservation through heal triage and mana cycling. The Regrowth Bard balanc
 2. `AtlasOF_Purge`: Priority 100
 3. `AtlasOF_MasteryOfConcentration`: Priority 95
 4. Spec Major Heal (`HealBig`): Priority 90 (Target HP < 50%)
-5. `HealEfficient` / Minor Heal: Priority 85 (Target HP 50%â€“85%)
+5. `HealEfficient` / Minor Heal: Priority 85 (Target HP 50%–85%)
 6. Group Heal: Priority 80 (3+ allies < 70% HP)
 
 ### 12. Resource Management
 - **Mana Floor**: 20%
 - **Triage Thresholds**:
-  - Target HP 70%â€“85%: `HealEfficient`
-  - Target HP 35%â€“70%: `HealBig`
+  - Target HP 70%–85%: `HealEfficient`
+  - Target HP 35%–70%: `HealBig`
   - Target HP < 35%: `Mastery of Concentration` + `HealBig`
   - 3+ members < 70%: `HealGroup`
 
@@ -309,7 +309,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Nurture"
   min_point_ratio: 0.50
-  spec_type_aliases: ["NurtureBard"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -389,7 +389,7 @@ Sustained group endurance and buff uptime. The Nurture Bard maximizes song poten
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor during pet pulling.
 
 ### 11. Ability Usage Priorities

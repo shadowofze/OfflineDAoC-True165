@@ -69,8 +69,10 @@ namespace DOL.AI.Brain
             if (living == null || living == Body || !living.IsAlive || living.ObjectState != GameObject.eObjectState.Active ||
                 IsUntargetable(living) || !GameServer.ServerRules.IsAllowedToAttack(Body, living, true))
                 return;
-            // Mesmerized, or rooted by a root that damage breaks: the blast would free it.
-            _blastCandidates.Add(new(center.GetDistanceTo(living), IsEngagedEnemy(living), IsBreakablyControlled(living)));
+            // Mesmerized, or rooted by a root that damage breaks: the blast would free it. /petpull: a monster the
+            // player's pet holds above 85% is left to the pet the same way (no blast may reach it yet).
+            _blastCandidates.Add(new(center.GetDistanceTo(living), IsEngagedEnemy(living),
+                IsBreakablyControlled(living) || CompanionEngagementMode.PetPullProtects(Body, living)));
         }
 
         private bool HasBlastPlayerLike()
@@ -275,8 +277,10 @@ namespace DOL.AI.Brain
             BotAoePolicy.Blast blast = EvaluateBlast(Body, best);
             if (blast.Worthwhile)
                 return CastPointBlank(best, blast.Hits);
+            // /petpull, stay put: point blank spells are cast where the caster stands; the pet brings the pack in.
             if (!BotAoePolicy.MayWalkIn(HasGroupToHoldTheMonsters(), false, Body.IsBeingInterrupted, now,
-                    _pointBlankBackoffUntil, _pointBlankFailures) || Body.MaxSpeed <= 0 || HasBlastPlayerLike())
+                    _pointBlankBackoffUntil, _pointBlankFailures) || Body.MaxSpeed <= 0 || HasBlastPlayerLike() ||
+                CompanionEngagementMode.PetPullLeader(Body) != null)
                 return false;
 
             GamePlayer defensiveLeader = CompanionEngagementMode.DefensiveLeader(Body);

@@ -46,7 +46,7 @@ Continuous health buffering and agile defense. The Enhancement Friar layers HoTs
 - **HoT Buffering**: Maintain spec Heal-over-Time (HoT) on friendly frontline tanks (Armsman, Paladin) and friendly casters taking fire.
 - **Buff Maintenance**: Keep spec AF, Str/Con, Dex/Qui, and Resists active on all 8 group members.
 - **Evade Peeling**: Intercept enemy stealthers targeting the Cleric line; utilize Evade 4 + Counterstrike (Evade Stun) to lock down attackers.
-- **Positioning**: Midline (400â€“600 units from casters).
+- **Positioning**: Midline (400–600 units from casters).
 
 ### 5. Mode: PvP
 - **Staff Dueling**: Trade blows with high Evade 4 and Parry; land evade stuns; cycle HoT and baseline heals to outlast opponents.
@@ -114,7 +114,7 @@ Continuous health buffering and agile defense. The Enhancement Friar layers HoTs
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline (Between frontline tanks and backline casters)
-- **Target Range**: 300â€“600 units
+- **Target Range**: 300–600 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor during pet pulling.
 
 ### 11. Ability Usage Priorities
@@ -378,7 +378,7 @@ Life support protected by evasion. The Rejuvenation Friar focuses primarily on a
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1300â€“1450 units
+- **Target Range**: 1300–1450 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor during pet pulling.
 
 ### 11. Ability Usage Priorities

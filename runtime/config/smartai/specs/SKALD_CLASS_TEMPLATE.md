@@ -10,7 +10,7 @@ default_personality: "Aggressive"
 # Class: Skald (Midgard)
 
 ## Shared Class Capabilities
-- **Armor Type**: Chain (Level 20+), Studded (1â€“19).
+- **Armor Type**: Chain (Level 20+), Studded (1–19).
 - **Weapon Slots**: One-Handed Sword, Axe, Hammer; Two-Handed Sword, Axe, Hammer; Small and Medium Shields.
 - **Core Specialization Lines**:
   - `Battlesongs`: Midgard's premier Group Speed (Speed of the Sound / Song Speed 5), Group Melee Damage Add Song, Instant Direct Damage Shouts, Instant Area-of-Effect Mesmerize Song, and Combat Health Regeneration Song.
@@ -29,7 +29,7 @@ default_personality: "Aggressive"
 match_specs:
   primary_line: "Battlesongs"
   min_point_ratio: 0.50
-  spec_type_aliases: ["SongSkald", "Mid"]
+  spec_type_aliases: ["Mid"]
 ```
 
 ### 1. Intended Role
@@ -47,7 +47,7 @@ Song management, disruption, and rapid backline peeling. The Skald positions bet
 - **Damage Add Twisting**: Maintain pulsing Damage Add song to grant bonus melee damage to all Midgard fighters.
 - **Instant DD Shouts**: Fire instant DD shouts on cooldown against enemy casters to interrupt critical casts.
 - **Peel Duty**: Intercept enemy stealthers (Infiltrators, Nightshades) charging Midgard healers; apply stunning melee styles.
-- **Positioning**: Flexible midline (400â€“600 units ahead of healers, 400 units behind main tanks).
+- **Positioning**: Flexible midline (400–600 units ahead of healers, 400 units behind main tanks).
 
 ### 5. Mode: PvP
 - **Engage & Disrupt**: Open with instant Mez song -> Close distance with speed -> Land rear/side positional weapon stun -> Unleash instant DD shouts -> Finish with weapon style chain.
@@ -177,7 +177,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Sword"  # Or Axe / Hammer
   min_point_ratio: 0.50
-  spec_type_aliases: ["TwoHandSkald", "TwoHanded"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -311,8 +311,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Sword"  # Or Axe / Hammer with Shield
+  secondary_line: "Shields"
   min_point_ratio: 0.50
-  spec_type_aliases: ["OneHandAndShieldSkald", "OneHandAndShield"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

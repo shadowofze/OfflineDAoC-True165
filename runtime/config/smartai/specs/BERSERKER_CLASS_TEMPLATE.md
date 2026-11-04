@@ -1,4 +1,4 @@
-﻿---
+---
 schema_version: 1
 class_name: "Berserker"
 class_id: 31
@@ -10,7 +10,7 @@ default_personality: "Aggressive"
 # Class: Berserker (Midgard)
 
 ## Shared Class Capabilities
-- **Armor Type**: Studded (Level 20+), Leather (1â€“19).
+- **Armor Type**: Studded (Level 20+), Leather (1–19).
 - **Weapon Slots**: Dual Wield via Left Axe (Sword, Axe, or Hammer in main hand, Left Axe in offhand).
 - **Core Specialization Lines**:
   - `Left Axe`: Midgard's dual-wield combat mastery, delivering vicious two-axe style chains, side/rear stuns, armor-piercing bleeds, and relentless offhand double-strikes.
@@ -29,14 +29,14 @@ default_personality: "Aggressive"
 match_specs:
   primary_line: "Left_Axe"
   min_point_ratio: 0.50
-  spec_type_aliases: ["LeftAxeBerserker", "LeftAxe"]
+  spec_type_aliases: ["LeftAxe"]
 ```
 
 ### 1. Intended Role
 Primary Dual-Axe Striker, Positional Flanker (Rear/Side Stuns & Bleeds), High-Sustained Physical DPS, and Break-Off Add Interceptor.
 
 ### 2. Intended Role Summary
-The Left Axe Blender Berserker is Midgard's premier physical meat-grinder. By maximizing Left Axe to 50 alongside 50 in primary weapon specialization (Sword, Axe, or Hammer), it attains near-guaranteed offhand double-swings, devastating positional style chains, and relentless melee pressure.
+The Left Axe Blender Berserker is Midgard's premier physical meat-grinder. By maximizing Left Axe to 50 alongside 50 in primary weapon specialization (Sword, Axe, or Hammer), it attains near-guaranteed offhand double-swings, devastating positional style chains, and relentless melee pressure. At the right moment it triggers Vendo Form (Berserk) for guaranteed critical style strikes, deleting priority casters and support before they can react.
 
 ### 3. Combat Philosophy
 Ferocious offensive pressure and flanking execution. The Berserker flanks engaged targets, lands brutal side/rear Left Axe style chains, and overwhelms opposing casters and healers with extreme swing volume.
@@ -45,6 +45,7 @@ Ferocious offensive pressure and flanking execution. The Berserker flanks engage
 - **Melee Assist Train**: Charge with Midgard's heavy frontline; focus called enemy casters or healers with Left Axe style chains.
 - **Positional Execution**: Maneuver to rear or side angles to land high-damage stuns and bleeds.
 - **Peel Enforcement**: Intercept enemy stealthers attacking Midgard Shamans or Healers; shred them with dual-axe burst.
+- **Vendo Shock Charge**: Trigger Vendo Form when closing within melee range of enemy primary healers or cloth casters; land guaranteed critical Left Axe styles.
 - **Positioning**: Flank / Melee assist train (tight on called target).
 
 ### 5. Mode: PvP
@@ -52,6 +53,7 @@ Ferocious offensive pressure and flanking execution. The Berserker flanks engage
 
 ### 6a. Mode: PvE Standard
 - **Flanking Melee DPS**: Assist main tank on designated targets; position behind mobs to execute rear style chains without taking front parry/block checks.
+- **Elite Mob Burn**: Activate Vendo Form on high-health boss or elite mobs to rapidly melt them down.
 
 ### 6b. Mode: PvE Pet Pulling (Flanking Blender & Break-Off Interceptor Role)
 - **Role During Pet Pulling**: The Berserker is **NOT the puller and NOT the aggro holder**. It acts as **stationary melee burst and break-off mob destroyer**.
@@ -97,9 +99,10 @@ Ferocious offensive pressure and flanking execution. The Berserker flanks engage
 
 ### 7. Offensive Priorities
 1. Left Axe Style Burst on Loose Break-Off Add: Priority 100
-2. Positional Rear / Side Left Axe Style Chain on Focus Target (at 85% HP): Priority 90
-3. Anytime Left Axe Style Chain: Priority 85
-4. Flanking Bleed / Stun Style: Priority 80
+2. Vendo Form Activation on High-Threat Target (at 85% HP): Priority 95
+3. Positional Rear / Side Left Axe Style Chain on Focus Target (at 85% HP): Priority 90
+4. Anytime Left Axe Style Chain: Priority 85
+5. Flanking Bleed / Stun Style: Priority 80
 
 ### 8. Defensive Priorities
 1. Purge (AtlasOF_Purge): Priority 100
@@ -119,31 +122,35 @@ Ferocious offensive pressure and flanking execution. The Berserker flanks engage
 
 ### 11. Ability Usage Priorities
 1. `AtlasOF_Purge`: Priority 100
-2. Left Axe Weapon Styles: Priority 95 (At 85% mob health)
-3. Positional Stun Style: Priority 90
-4. `AtlasOF_Determination`: Priority 85
-5. `AtlasOF_Toughness`: Priority 80
+2. Vendo Form (Berserk): Priority 95 (On priority target)
+3. Left Axe Weapon Styles: Priority 95 (At 85% mob health)
+4. Positional Stun Style: Priority 90
+5. `AtlasOF_Determination`: Priority 85
+6. `AtlasOF_Toughness`: Priority 80
 
 ### 12. Resource Management
 - **Endurance**: Left Axe consumes moderate endurance; rely on group Skald for endurance chants during sustained engagements.
+- **Vendo Vulnerability**: Vendo Form increases damage taken; ensure group Healer has line of sight and is ready to heal during frenzy.
 
 ### 13. What the AI SHOULD Do
 - Hold melee attacks until the mob pack arrives at camp and drops to 85% health.
 - Intercept and burst down any loose add that breaks toward group healers.
 - Position on the rear or flank of focus targets to maximize Left Axe style hit rates.
+- Activate Vendo Form on high-priority targets to secure instant kills.
 - Maintain stationary camp discipline during pet pulling.
 
 ### 14. What the AI SHOULD NOT Do
 - Never charge out of camp to attack mobs while they are traveling to camp.
 - Never taunt the primary mob cluster off the puller's pet.
 - Never attack mobs from the front if flank or rear positioning is accessible.
+- Never pop Vendo Form when health is below 40% (avoids suicide).
 
 ### 15. Target Selection Matrix
 - **Condition: Loose add breaks toward healer**: Select Add -> Charge Left Axe Melee Style -> Eliminate Add.
 - **Condition: Mob Pack at Pet & HP <= 85%**: Select Primary Focus Target -> Move to Flank/Rear -> Execute Left Axe Style Chain.
 
 ### 16. Fallback Behavior
-- **Low Health (< 30%)**: Fall back toward Healer, enter parry stance, and call for heals.
+- **Low Health (< 30%)**: Cancel Vendo Form if active, fall back toward Healer, enter parry stance, and call for heals.
 
 ### 17. Suggested Realm Ability Progression Order
 Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
@@ -173,8 +180,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Left_Axe"
+  secondary_line: "Parry"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ParryBerserker", "LeftAxe"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -292,144 +300,6 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 8. `AtlasOF_MasteryOfArms` (Rank 1) - 1 pt [Total: 26]
 9. `AtlasOF_MasteryOfArms` (Rank 2) - 3 pts [Total: 29]
 10. `AtlasOF_MasteryOfArms` (Rank 3) - 6 pts [Total: 35] (Style damage)
-11. `AtlasOF_AvoidanceOfMagic` (Rank 1) - 1 pt [Total: 36]
-12. `AtlasOF_AvoidanceOfMagic` (Rank 2) - 3 pts [Total: 39]
-13. `AtlasOF_Toughness` (Rank 1) - 1 pt [Total: 40]
-14. `AtlasOF_Toughness` (Rank 2) - 3 pts [Total: 43]
-15. `AtlasOF_Toughness` (Rank 3) - 6 pts [Total: 49]
-16. `AtlasOF_FirstAid` (Rank 1) - 1 pt [Total: 50]
-
----
-
-## Specialization 3: Vendo Burst Frenzy Berserker
-- **role**: MeleeDPS
-- **default_personality**: Aggressive
-
-```yaml
-match_specs:
-  primary_line: "Left_Axe"
-  min_point_ratio: 0.50
-  spec_type_aliases: ["VendoBurstBerserker", "LeftAxe"]
-```
-
-### 1. Intended Role
-Vendo Form Shock Assassin, Critical Burst Striker, Priority Target Executioner, and Break-Off Add Vaporizer.
-
-### 2. Intended Role Summary
-The Vendo Burst Frenzy Berserker specializes in explosive shock warfare. By combining 50 Left Axe and 50 base weapon with timely activation of Vendo Form (Berserk), it guarantees 100% critical style strikes and massive damage amplification, annihilating priority enemy casters and support in a matter of seconds.
-
-### 3. Combat Philosophy
-All-or-nothing shock lethality. The Vendo Berserker identifies high-value targets, triggers Vendo Form upon closing distance, and deletes enemies in 2â€“3 strikes before defensive reactions can form.
-
-### 4. Mode: RvR
-- **Vendo Shock Charge**: Trigger Vendo Form when closing within melee range of enemy primary healers or cloth casters; land guaranteed critical Left Axe styles.
-- **Burst Assist**: Vaporize called targets before enemy support can land heals.
-- **Positioning**: Flank / Priority target dive.
-
-### 5. Mode: PvP
-- **Vendo Annihilation**: Close distance -> Pop Vendo Form -> Land guaranteed critical Left Axe positional chain -> Obliterate opponent in seconds.
-
-### 6a. Mode: PvE Standard
-- **Elite Mob Burn**: Activate Vendo Form on high-health boss or elite mobs to rapidly melt them down.
-
-### 6b. Mode: PvE Pet Pulling (Burst Vaporizer Role)
-- **Role During Pet Pulling**: The Vendo Berserker is **NOT the puller**. It acts as **stationary melee burst and break-off mob destroyer**.
-- **Hold Position at Camp**:
-  - Remain strictly stationed beside the group at camp during the pull.
-- **Do NOT Taunt Main Mob Pack**:
-  - Let the mobs stay on the pet. Do NOT taunt or pull threat off the pet puller's pet.
-- **Break-Off Add Elimination**:
-  - If any mob breaks away from the pet toward the healers, **the Berserker immediately engages it**:
-  - Intercept the loose add and shred it with Left Axe style chains!
-- **THE 85% MOB HEALTH TRIGGER**:
-  - Once the pet's pulsing damage shield brings the mob cluster down to **85% health**, the Berserker steps in:
-  - Engage the primary focus target in the cluster with Left Axe style chains.
-  - On tough high-health targets, pop **Vendo Form** to vaporize the focus mob immediately!
-- **Strict Stationary Discipline**:
-  - Remain strictly stationed at camp. Never chase mobs outside camp.
-
-### 6c. Mode: Solo Leveling & Dungeon Strategy
-- **Environment & Zone Preference**:
-  - **Zone Priority**: **Both Dungeons and Outdoors Highly Viable**.
-  - **Dungeon Suitability**: **BURST DISPATCH SPECIALIST**. Berserk mode turns every hit into a guaranteed critical strike, allowing the Berserker to vaporize tough single mobs in corridors before patrols arrive.
-  - **Corridor Pull Isolation**: Pull single targets to cleared corners; trigger burst.
-- **Target Con Selection**:
-  - **Optimal (Blue / High Blue)**: Instant kill turnover.
-  - **Secondary (Yellow)**: Standard target.
-  - **Restricted (Orange)**: Prime target for Berserk cooldown window.
-  - **Prohibited (Red / Purple)**: Avoid solo.
-- **Pull & Engagement Sequence**:
-  - 1. Pull target into safe hallway.
-  - 2. Opener: Activate Berserk if high Yellow/Orange con.
-  - 3. Frenzy Combo: Land high-damage Left Axe styles with 100% critical rate.
-  - 4. Finisher: Left Axe execution style.
-- **Downtime & Rest Protocol**:
-  - **Sit / Rest Threshold**: Sit when Health < 50% or Endurance < 25%.
-  - **Resume Threshold**: Resume at Health >= 90%, Endurance >= 85%.
-- **Emergency Escape Protocol**:
-  - Sprint retreat to safety.
-
-### 7. Offensive Priorities
-1. Left Axe Style Burst on Loose Break-Off Add: Priority 100
-2. Vendo Form Activation on High-Threat Target (at 85% HP): Priority 95
-3. Left Axe Style Chain on Focus Target: Priority 90
-4. Positional Stun / Bleed Style: Priority 85
-
-### 8. Defensive Priorities
-1. Purge (AtlasOF_Purge): Priority 100
-2. Determination CC Reduction: Priority 95
-3. First Aid (AtlasOF_FirstAid): Priority 85
-4. Parry Defense: Priority 80
-
-### 9. Target Priorities
-1. Loose Break-off Mob threatening group healers: Priority 100 (For Left Axe Burst)
-2. Primary Focus Target (at 85% HP): Priority 90 (For Vendo Burst)
-3. Enemy Primary Healers / Casters: Priority 85 (In RvR)
-
-### 10. Positioning Preferences
-- **Anchor**: Camp Center / Melee Flank (adjacent to pet anchor)
-- **Pull Phase**: Stationary at camp anchor; never leave the camp.
-
-### 11. Ability Usage Priorities
-1. `AtlasOF_Purge`: Priority 100
-2. Vendo Form (Berserk): Priority 95 (On priority target)
-3. Left Axe Weapon Styles: Priority 90 (At 85% mob health)
-4. `AtlasOF_Determination`: Priority 85
-5. `AtlasOF_Toughness`: Priority 80
-
-### 12. Resource Management
-- **Vendo Vulnerability**: Vendo Form increases damage taken; ensure group Healer has line of sight and is ready to heal during frenzy.
-
-### 13. What the AI SHOULD Do
-- Hold melee attacks until the mob pack arrives at camp and drops to 85% health.
-- Intercept and burst down any loose add that breaks toward group healers.
-- Activate Vendo Form on high-priority targets to secure instant kills.
-- Maintain stationary camp discipline during pet pulling.
-
-### 14. What the AI SHOULD NOT Do
-- Never charge out of camp to attack mobs while they are traveling to camp.
-- Never pop Vendo Form when health is below 40% (avoids suicide).
-- Never taunt the primary mob cluster off the puller's pet.
-
-### 15. Target Selection Matrix
-- **Condition: Loose add breaks toward healer**: Select Add -> Charge Left Axe Melee Style -> Eliminate Add.
-- **Condition: Mob Pack at Pet & HP <= 85%**: Select Primary Focus Target -> Trigger Vendo Form -> Execute Left Axe Style Chain.
-
-### 16. Fallback Behavior
-- **Low Health (< 30%)**: Cancel Vendo Form if active, fall back toward Healer, call for heals.
-
-### 17. Suggested Realm Ability Progression Order
-Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
-1. `AtlasOF_Purge` (Rank 1) - 5 pts [Total: 5]
-2. `AtlasOF_Determination` (Rank 1) - 1 pt [Total: 6]
-3. `AtlasOF_Determination` (Rank 2) - 3 pts [Total: 9]
-4. `AtlasOF_Determination` (Rank 3) - 6 pts [Total: 15]
-5. `AtlasOF_MasteryOfArms` (Rank 1) - 1 pt [Total: 16]
-6. `AtlasOF_MasteryOfArms` (Rank 2) - 3 pts [Total: 19]
-7. `AtlasOF_MasteryOfArms` (Rank 3) - 6 pts [Total: 25] (Boosts style damage)
-8. `AtlasOF_MasteryOfPain` (Rank 1) - 1 pt [Total: 26]
-9. `AtlasOF_MasteryOfPain` (Rank 2) - 3 pts [Total: 29]
-10. `AtlasOF_MasteryOfPain` (Rank 3) - 6 pts [Total: 35] (Melee critical chance)
 11. `AtlasOF_AvoidanceOfMagic` (Rank 1) - 1 pt [Total: 36]
 12. `AtlasOF_AvoidanceOfMagic` (Rank 2) - 3 pts [Total: 39]
 13. `AtlasOF_Toughness` (Rank 1) - 1 pt [Total: 40]

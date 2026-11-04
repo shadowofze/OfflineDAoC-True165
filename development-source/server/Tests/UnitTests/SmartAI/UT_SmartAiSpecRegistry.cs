@@ -258,6 +258,74 @@ public class UT_SmartAiSpecRegistry
         Assert.That(SmartAiSpecRegistry.ResolveSpec(three, untrained, null), Is.Null, "An untrained companion: the legacy AI, not a guess");
     }
 
+    /// <summary>secondary_line (owner 2026-11-04): specs on one primary line told apart by their second line.</summary>
+    [Test]
+    public void Resolve_SecondaryLineSeparatesSpecsOnOneLine()
+    {
+        string Spec(int n, string name, string secondary) =>
+            $"## Specialization {n}: {name}\n- **role**: MeleeDPS\n\n```yaml\nmatch_specs:\n  primary_line: \"Dual_Wield\"\n" +
+            (secondary == null ? "" : $"  secondary_line: \"{secondary}\"\n") +
+            "  min_point_ratio: 0.40\n  spec_type_aliases: []\n```\n\n" + Sections() + "\n---\n\n";
+        string text = "---\nschema_version: 1\nclass_name: \"Mercenary\"\nclass_id: 11\nrealm: \"Albion\"\n---\n\n" +
+            Spec(1, "Pure Dual Wield", null) + Spec(2, "Shield Flanker", "Shields") + Spec(3, "High Parry Duelist", "Parry");
+        var (merc, issues) = ParseAndValidate(text, "albion/mercenary.md");
+        Assert.That(Errors(issues), Is.Empty);
+        Assert.That(issues.Where(i => i.Message.Contains("share primary_line")), Is.Empty, "Told apart: no warning");
+
+        Func<string, int> Levels(int dw, int shields, int parry) => key => key switch
+        {
+            "Dual Wield" => dw, "Shields" => shields, "Parry" => parry, _ => 1,
+        };
+        Assert.That(SmartAiSpecRegistry.ResolveSpec(merc, Levels(40, 1, 1), null)?.Name, Is.EqualTo("Pure Dual Wield"));
+        Assert.That(SmartAiSpecRegistry.ResolveSpec(merc, Levels(40, 30, 1), null)?.Name, Is.EqualTo("Shield Flanker"));
+        Assert.That(SmartAiSpecRegistry.ResolveSpec(merc, Levels(40, 10, 30), null)?.Name, Is.EqualTo("High Parry Duelist"));
+    }
+
+    /// <summary>The owner's Thane rule (2026-11-04): Shields above 35 the Shield Thane, none the Two-Handed Thane, some
+    /// Shields up to 35 the Battle Hybrid.</summary>
+    [Test]
+    public void Resolve_SecondaryLevelRanges_TheThaneRule()
+    {
+        string Spec(int n, string name, string extra) =>
+            $"## Specialization {n}: {name}\n- **role**: DefensiveTank\n\n```yaml\nmatch_specs:\n  primary_line: \"Stormcalling\"\n" + extra +
+            "  min_point_ratio: 0.40\n  spec_type_aliases: []\n```\n\n" + Sections() + "\n---\n\n";
+        string text = "---\nschema_version: 1\nclass_name: \"Thane\"\nclass_id: 21\nrealm: \"Midgard\"\n---\n\n" +
+            Spec(1, "Stormcalling Shield", "  secondary_line: \"Shields\"\n  secondary_min_level: 36   # above 35\n") +
+            Spec(2, "Two-Handed Thunder", "") +
+            Spec(3, "Battle Hybrid", "  secondary_line: \"Shields\"\n  secondary_min_level: 2\n  secondary_max_level: 35\n");
+        var (thane, issues) = ParseAndValidate(text, "midgard/thane.md");
+        Assert.That(Errors(issues), Is.Empty);
+        Assert.That(issues.Where(i => i.Message.Contains("primary_line")), Is.Empty, "The ranges don't overlap: no warning");
+
+        string Thane(int shields) => SmartAiSpecRegistry.ResolveSpec(thane, key => key switch
+        {
+            "Stormcalling" => 48, "Shields" => shields, _ => 1,
+        }, null)?.Name;
+        Assert.That(Thane(42), Is.EqualTo("Stormcalling Shield"));
+        Assert.That(Thane(36), Is.EqualTo("Stormcalling Shield"));
+        Assert.That(Thane(35), Is.EqualTo("Battle Hybrid"));
+        Assert.That(Thane(2), Is.EqualTo("Battle Hybrid"));
+        Assert.That(Thane(1), Is.EqualTo("Two-Handed Thunder"), "No Shields trained");
+    }
+
+    [Test]
+    public void Validator_OverlappingSecondaryRangesWarn()
+    {
+        string text = ClericText(rejuvYaml: "match_specs:\n  primary_line: \"Smite\"\n  secondary_line: \"Rejuvenation\"\n  secondary_min_level: 10\n  min_point_ratio: 0.5\n")
+            .Replace("  primary_line: \"Smite\"\n  min_point_ratio: 0.50", "  primary_line: \"Smite\"\n  secondary_line: \"Rejuvenation\"\n  secondary_max_level: 20\n  min_point_ratio: 0.50");
+        var (_, issues) = ParseAndValidate(text);
+        Assert.That(issues.Select(i => i.Message), Has.Some.Contains("overlapping secondary_line"));
+        string bad = ClericText(rejuvYaml: "match_specs:\n  primary_line: \"Rejuvenation\"\n  secondary_line: \"Smite\"\n  secondary_min_level: 30\n  secondary_max_level: 10\n  min_point_ratio: 0.5\n");
+        Assert.That(Errors(ParseAndValidate(bad).Issues), Has.Some.Contains("is above secondary_max_level"));
+    }
+
+    [Test]
+    public void Validator_UnknownSecondaryLineIsAnError()
+    {
+        string text = ClericText(rejuvYaml: "match_specs:\n  primary_line: \"Rejuvenation\"\n  secondary_line: \"FakeLine\"\n  min_point_ratio: 0.5\n");
+        Assert.That(Errors(ParseAndValidate(text).Issues), Has.Some.Contains("unknown secondary_line 'FakeLine'"));
+    }
+
     [Test]
     public void PointsInvested_FollowsTheSpecCost()
     {

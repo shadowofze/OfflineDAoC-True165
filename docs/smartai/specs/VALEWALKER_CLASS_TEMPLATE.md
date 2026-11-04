@@ -29,7 +29,7 @@ default_personality: "Aggressive"
 match_specs:
   primary_line: "Arboreal_Path"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ArborealScytheValewalker", "TwoHanded"]
+  spec_type_aliases: ["TwoHanded"]
 ```
 
 ### 1. Intended Role
@@ -177,7 +177,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Scythe"
   min_point_ratio: 0.50
-  spec_type_aliases: ["PureScytheValewalker", "TwoHanded"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -313,8 +313,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Scythe"
+  secondary_line: "Parry"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ParryScytheValewalker", "TwoHanded"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

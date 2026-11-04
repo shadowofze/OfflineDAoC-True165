@@ -10,7 +10,7 @@ default_personality: "Tactical"
 # Class: Hunter (Midgard)
 
 ## Shared Class Capabilities
-- **Armor Type**: Studded (Level 20+), Leather (1â€“19).
+- **Armor Type**: Studded (Level 20+), Leather (1–19).
 - **Weapon Slots**: Composite Bow (Midgard's heavy recurve bow); Two-Handed Spear; One-Handed Sword.
 - **Core Specialization Lines**:
   - `Composite Bow`: Rapid-fire long-range physical archery (Critical Shot, Power Shot, Rapid Fire, Point Blank Shot).
@@ -170,7 +170,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "CompositeBow"
   min_point_ratio: 0.50
-  spec_type_aliases: ["SniperHunter", "Ranged"]
+  spec_type_aliases: ["Ranged"]
 ```
 
 ### 1. Intended Role
@@ -184,7 +184,7 @@ Ranged sniping and pet screening. The Sniper Hunter establishes a concealed firi
 
 ### 4. Mode: RvR
 - **Caster Elimination**: Snipe enemy cloth casters and primary healers from maximum range with Critical Shot and Trueshot.
-- **Positioning**: Elevated backline vantage point (1600â€“1875 units).
+- **Positioning**: Elevated backline vantage point (1600–1875 units).
 
 ### 5. Mode: PvP
 - **Snipe & Kite**: Critical Shot opener -> Trueshot -> Command wolf to intercept -> Rapid Fire -> Finish target.
@@ -202,7 +202,7 @@ Ranged sniping and pet screening. The Sniper Hunter establishes a concealed firi
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
-  - **Zone Priority**: **Outside Open-World Leveling Strongly Prioritized** (Gotar, Uppland, Raumarik). Open snowy plains provide the essential 1800â€“2000 unit clear sightlines required for Critical Shot openers, Pin/Snare arrows, and outdoor kiting.
+  - **Zone Priority**: **Outside Open-World Leveling Strongly Prioritized** (Gotar, Uppland, Raumarik). Open snowy plains provide the essential 1800–2000 unit clear sightlines required for Critical Shot openers, Pin/Snare arrows, and outdoor kiting.
   - **Dungeon Suitability**: **RESTRICTED / AVOID SOLO**. Confined dungeon corridors eliminate maximum bow range advantage and force immediate melee combat where a pure archer is at a severe disadvantage. Stay outdoors unless grouped.
 - **Target Con Selection**:
   - **Optimal (Blue / High Blue)**: 2 to 3 bow shots kill target before it reaches melee distance.
@@ -210,7 +210,7 @@ Ranged sniping and pet screening. The Sniper Hunter establishes a concealed firi
   - **Restricted (Orange)**: Only engage with full distance and clear outdoor retreat lane.
   - **Prohibited (Red / Purple)**: Strictly avoid solo.
 - **Pull & Engagement Sequence**:
-  - 1. Max range setup (1800â€“2000 units) from stealth in open field.
+  - 1. Max range setup (1800–2000 units) from stealth in open field.
   - 2. Opener: Critical Shot from stealth.
   - 3. Snare: Follow with Pin / Snare Arrow as target charges.
   - 4. Rapid Shots: Fire standard arrows while target crawls forward.
@@ -219,7 +219,7 @@ Ranged sniping and pet screening. The Sniper Hunter establishes a concealed firi
   - **Sit / Rest Threshold**: Rest in stealth when Endurance < 20% or Health < 50%.
   - **Resume Threshold**: Stand when Endurance >= 90%, Health >= 90%.
 - **Emergency Escape Protocol**:
-  - Pin Arrow add -> turn 180Â° -> Sprint retreat -> enter Stealth.
+  - Pin Arrow add -> turn 180° -> Sprint retreat -> enter Stealth.
 
 ### 7. Offensive Priorities
 1. Rapid Fire / Melee on Loose Break-Off Add: Priority 100
@@ -239,7 +239,7 @@ Ranged sniping and pet screening. The Sniper Hunter establishes a concealed firi
 3. Enemy Light Armor Caster / Support: Priority 85 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Camp Center / Midline (1000â€“1200 units from mob cluster)
+- **Anchor**: Camp Center / Midline (1000–1200 units from mob cluster)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities
@@ -299,7 +299,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Beastcraft"
   min_point_ratio: 0.50
-  spec_type_aliases: ["BeastcraftHunter", "TwoHanded"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

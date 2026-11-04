@@ -30,7 +30,7 @@ default_personality: "Tactical"
 match_specs:
   primary_line: "Instruments"
   min_point_ratio: 0.50
-  spec_type_aliases: ["InstrumentMinstrel"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -114,7 +114,7 @@ Tactical mobility, tempo control, and instant disruption. The Instruments Minstr
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Flexible
-- **Target Range**: 300â€“800 units (Able to dart into melee or peel backline)
+- **Target Range**: 300–800 units (Able to dart into melee or peel backline)
 - **Camp Anchor**: Stay stationed with the group during pet pulls.
 
 ### 11. Ability Usage Priorities
@@ -169,7 +169,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Slash"
   min_point_ratio: 0.50
-  spec_type_aliases: ["SlashMinstrel"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -295,7 +295,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Thrust"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ThrustMinstrel"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

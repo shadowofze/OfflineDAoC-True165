@@ -1,3 +1,4 @@
+using System;
 using DOL.GS;
 
 namespace DOL.AI.Brain
@@ -92,7 +93,64 @@ namespace DOL.AI.Brain
             Body.TargetObject = target;
             if (Body.attackComponent?.AttackState == true)
                 Body.StopAttack();
-            return CheckSpells(eCheckSpellType.Offensive);
+            if (CheckSpells(eCheckSpellType.Offensive))
+                return true;
+            // Nothing could start: out of spell range, walk in as the legacy offense does (ApproachForOffensiveSpell
+            // also keeps /petpull's stay-put). Without this a caster whose spec bans melee would stand still for good.
+            return ApproachForOffensiveSpell(target);
+        }
+
+        /// <summary>
+        /// SmartAI heal thresholds (owner 2026-11-04): the legacy triage chose the target and a direct heal; a bot whose
+        /// spec gives section 12 thresholds casts the heal those name for the target's health instead, when it is ready
+        /// (CheckHealSpell: known, power, not disabled). Cures, heals over time and resurrections are not touched, and
+        /// neither is a target outside every band. Any SmartAI error keeps the legacy choice.
+        /// </summary>
+        internal Spell SmartAiHealChoice(GameLiving target, Spell chosen)
+        {
+            if (!DOL.GS.SmartAI.SmartAiConfig.IsEnabled || target == null || chosen == null || BotBody == null ||
+                chosen != BotBody.HealEfficient && chosen != BotBody.HealBig && chosen != BotBody.HealInstant &&
+                chosen != BotBody.HealGroup && chosen != BotBody.HealInstantGroup)
+                return chosen;
+            try
+            {
+                if (DOL.GS.SmartAI.SmartAiSpecRegistry.Active.Resolve(BotBody) is not { } spec)
+                    return chosen;
+                DOL.GS.SmartAI.SmartSpecProfile profile = DOL.GS.SmartAI.SmartSpecProfile.For(spec);
+                if (profile.HealBands.Count == 0 && profile.GroupHeal == null)
+                    return chosen;
+                string kind = DOL.GS.SmartAI.SmartHealThresholds.Choose(profile.HealBands, profile.GroupHeal, target.HealthPercent,
+                    MembersBelow, heal => CheckHealSpell(HealOfKind(heal)));
+                return kind == null ? chosen : HealOfKind(kind);
+            }
+            catch (Exception e)
+            {
+                DOL.GS.SmartAI.SmartAiFallback.ReportFailure("heal threshold choice", e);
+                return chosen;
+            }
+        }
+
+        private Spell HealOfKind(string kind) => kind switch
+        {
+            "HealEfficient" => BotBody.HealEfficient,
+            "HealBig" => BotBody.HealBig,
+            "HealInstant" => BotBody.HealInstant,
+            "HealGroup" => BotBody.HealGroup,
+            "HealInstantGroup" => BotBody.HealInstantGroup,
+            "HealOverTime" => BotBody.HealOverTime,
+            _ => null,
+        };
+
+        /// <summary>Group members (and the bot) alive, in support reach, under this health.</summary>
+        private int MembersBelow(int percent)
+        {
+            if (Body.Group == null)
+                return Body.HealthPercent < percent ? 1 : 0;
+            int n = 0;
+            foreach (GameLiving m in Body.Group.GetMembersInTheGroup())
+                if (m is { IsAlive: true } && InSupportReach(m) && m.HealthPercent < percent)
+                    n++;
+            return n;
         }
 
         /// <summary>The whole legacy offense (target, pets, taunts, spells, bow and melee).</summary>

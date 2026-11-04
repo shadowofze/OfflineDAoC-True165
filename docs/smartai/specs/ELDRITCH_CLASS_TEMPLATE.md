@@ -85,7 +85,7 @@ Decisive area devastation and sight denial. In RvR, the Mana Eldritch nearsights
   - **Safety Check**: Scan 1000 units for wandering spraggons or moor bugs before sitting; reposition into cleared clearings.
   - **Resume Threshold**: Stand and resume hunting only when Mana >= 85% and Health >= 90%.
 - **Emergency Escape Protocol**:
-  - QuickCast baseline Root / Snare -> 180Â° turn -> Sprint retreat to open safe zone.
+  - QuickCast baseline Root / Snare -> 180° turn -> Sprint retreat to open safe zone.
 
 ### 7. Offensive Priorities
 1. PBAoE Mana Pulses: Priority 100 (Unleash into mob cluster anchored on pet at 85% HP)
@@ -107,7 +107,7 @@ Decisive area devastation and sight denial. In RvR, the Mana Eldritch nearsights
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Group Camp Center
-- **PBAoE Range**: 0â€“350 units from the mob cluster centered on the pet (during burn phase)
+- **PBAoE Range**: 0–350 units from the mob cluster centered on the pet (during burn phase)
 - **Pull Phase**: Stationary at camp anchor; never flee backwards for range.
 
 ### 11. Ability Usage Priorities
@@ -185,7 +185,7 @@ Long-range bolt assassination and heavy single-target nuking. The Void Eldritch 
 - **Bolt Opening**: Open on high-value enemy casters, healers, or archers with Cold Bolt from 1800 units.
 - **Cold Debuff Assist**: Cast Cold resistance debuff on the Main Assist's target, then burst with spec DD.
 - **Cast Through Root**: Activate `AtlasOF_CastThroughRoot` to nuke rooted targets without breaking their root state!
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Bolt & Burst**: Open with Cold Bolt -> Cold Debuff -> `Quick Cast` + Matter DD -> Root opponent if they close distance.
@@ -242,7 +242,7 @@ Long-range bolt assassination and heavy single-target nuking. The Void Eldritch 
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -311,7 +311,7 @@ Tactical area control and energy execution. The Light Eldritch locks down incomi
 - **AoE Mesmerize Opening**: Cast maximum-range AoE Mesmerize on clustered enemy groups.
 - **Disease Blanket**: Cast Disease on enemy healers to cut healing received by 50%.
 - **Energy DD Burst**: Assist the assist train with Energy DD nukes on called targets.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Mez & Stun Control**: Cycle AoE/single Mez and single Stun to create distance and burn with Energy DD.
@@ -372,7 +372,7 @@ Tactical area control and energy execution. The Light Eldritch locks down incomi
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities

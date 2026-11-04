@@ -45,7 +45,7 @@ Methodical control and safe pacing. The Summoning Spiritmaster initiates combat 
 - **Pet Disruption**: Send spirit pet to interrupt high-priority enemy healers or crowd-controllers (Bards, Sorcerers).
 - **Pet Buffing**: Keep spec damage shields, haste, and stat buffs active on the pet to maximize melee harassment.
 - **Active RAs**: Trigger `AtlasOF_WhipOfEncouragement` or `AtlasOF_ExcitedFrenzy` to turn the spirit pet into a lethal assassin against light-armor casters.
-- **Positioning**: 1350â€“1500 units behind frontline; stay anchored near friendly peelers.
+- **Positioning**: 1350–1500 units behind frontline; stay anchored near friendly peelers.
 
 ### 5. Mode: PvP
 - **Pet Pressure**: Command pet to attack enemy archers or casters to push back cast bars continuously.
@@ -74,7 +74,7 @@ Methodical control and safe pacing. The Summoning Spiritmaster initiates combat 
   - Healers in the group ARE allowed to heal the pet, but **MUST wait until incoming mobs have lost around 5% of their life** (~95% HP from damage shield contact hits) before casting direct heals.
   - Group healers cast their **best smallest heal** (`HealEfficient`), escalating to a bigger heal only on massive spike damage.
   - Pre-cast Health Regeneration / HoTs from Shaman stay running on the pet.
-- **Group Stays Put (Strict Stationary Discipline â€” No Running for Range)**:
+- **Group Stays Put (Strict Stationary Discipline — No Running for Range)**:
   - The entire group remains firmly anchored at camp. Group members do **NOT** run away or kite backwards for casting range.
   - The Spiritmaster brings the mobs directly into the parked group.
 - **The 85% Mob Health AoE Trigger**:
@@ -121,7 +121,7 @@ Methodical control and safe pacing. The Summoning Spiritmaster initiates combat 
 
 ### 10. Positioning Preferences
 - **Anchor**: Group Camp Center / Backline
-- **Target Range**: 1200â€“1400 units
+- **Target Range**: 1200–1400 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -199,7 +199,7 @@ Lethal ranged burst and target suppression. The Darkness Spiritmaster uses long-
 - **Target Assassination**: Assist Midgard's Main Assist (MA) by focusing high-yield Cold DD nukes on called targets.
 - **Snare Control**: Apply long-range Cold Snare to enemy melee peelers and tanks charging the caster line.
 - **Debuff Coordination**: Cast Cold resistance debuff prior to burst cycles on high-health targets.
-- **Positioning**: 1350â€“1500 units back. Maintain clear lines of fire while staying behind friendly shield tanks.
+- **Positioning**: 1350–1500 units back. Maintain clear lines of fire while staying behind friendly shield tanks.
 
 ### 5. Mode: PvP
 - **Kite & Drain**: Apply Cold snare, kite backwards, and use Lifedrain to recover health while sustaining damage.
@@ -258,7 +258,7 @@ Lethal ranged burst and target suppression. The Darkness Spiritmaster uses long-
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1300â€“1500 units
+- **Target Range**: 1300–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -397,7 +397,7 @@ Decisive area lockdown and burst annihilation. In RvR, the Suppression Spiritmas
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Group Camp Center
-- **PBAoE Range**: 0â€“350 units from the mob cluster centered on the pet (during burn phase)
+- **PBAoE Range**: 0–350 units from the mob cluster centered on the pet (during burn phase)
 - **Pull Phase**: Stationary at camp anchor; never flee backwards for range.
 
 ### 11. Ability Usage Priorities

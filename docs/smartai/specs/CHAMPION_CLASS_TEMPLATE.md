@@ -10,7 +10,7 @@ default_personality: "Tactical"
 # Class: Champion (Hibernia)
 
 ## Shared Class Capabilities
-- **Armor Type**: Scale (Level 20+), Reinforced (1â€“19).
+- **Armor Type**: Scale (Level 20+), Reinforced (1–19).
 - **Weapon Slots**: One-Handed Blades, Blunt, Piercing; Large Weapons (heavy two-handed weapons); Medium Shields.
 - **Core Specialization Lines**:
   - `Valor`: Crippling debuff magic combined with instant Direct Damage (DD) shouts, instant Snares, Strength/Constitution debuffs, Dexterity/Quickness debuffs, and melee haste debuffs that cripple enemy physical combat effectiveness.
@@ -31,7 +31,7 @@ default_personality: "Tactical"
 match_specs:
   primary_line: "Valor"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ValorShieldChampion", "OneHandAndShield"]
+  spec_type_aliases: ["OneHandAndShield"]
 ```
 
 ### 1. Intended Role
@@ -47,7 +47,7 @@ Debilitation and physical lockdown. The Champion casts instant debuffs to weaken
 - **Instant Stat Debuffs**: Cast Strength/Constitution and Dexterity/Quickness debuffs onto enemy melee rushers and assist targets.
 - **Dedicated Healer Guard**: Anchor beside Hibernian Bards/Druids; maintain active `Guard` to absorb incoming melee strikes.
 - **Shield Slam & Snare**: Slam incoming stealthers or melee with a 9-second shield stun; apply instant Valor Snare to fleeing targets.
-- **Positioning**: Midline anchor (200â€“300 units ahead of Bard/Druid).
+- **Positioning**: Midline anchor (200–300 units ahead of Bard/Druid).
 
 ### 5. Mode: PvP
 - **Debuff & Slam**: Instant Str/Con debuff -> Instant Dex/Qui debuff -> Shield Slam (9s stun) -> Positional 1H style chain -> Instant DD shout finisher.
@@ -114,7 +114,7 @@ Debilitation and physical lockdown. The Champion casts instant debuffs to weaken
 3. Enemy Melee Attacking Backline (RvR): Priority 80
 
 ### 10. Positioning Preferences
-- **Anchor**: Tight Backline / Camp Center (within 150â€“200 units of guarded Bard/Druid)
+- **Anchor**: Tight Backline / Camp Center (within 150–200 units of guarded Bard/Druid)
 - **Pull Phase**: Stationary at camp anchor; never pursue mobs outside camp.
 
 ### 11. Ability Usage Priorities
@@ -176,7 +176,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Large_Weapons"
   min_point_ratio: 0.50
-  spec_type_aliases: ["LargeWeaponChampion", "TwoHanded"]
+  spec_type_aliases: ["TwoHanded"]
 ```
 
 ### 1. Intended Role
@@ -311,8 +311,9 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 ```yaml
 match_specs:
   primary_line: "Blades"  # Or Blunt / Piercing
+  secondary_line: "Shields"
   min_point_ratio: 0.50
-  spec_type_aliases: ["HighWeaponShieldChampion", "OneHandHybrid"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role

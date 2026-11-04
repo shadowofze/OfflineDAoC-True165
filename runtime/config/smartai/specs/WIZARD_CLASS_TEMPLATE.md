@@ -68,7 +68,7 @@ Close-quarters area devastation and mobility denial. In RvR, the Ice Wizard posi
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
-  - **Zone Priority**: **Outside Open-World Leveling Strongly Prioritized** (Salisbury Plains, Campacorentin Station, Black Mountains North, Dartmoor). Open zones provide crucial 1500â€“2000 unit kiting lanes, predictable mob pathing, and maximum spell pre-cast distance.
+  - **Zone Priority**: **Outside Open-World Leveling Strongly Prioritized** (Salisbury Plains, Campacorentin Station, Black Mountains North, Dartmoor). Open zones provide crucial 1500–2000 unit kiting lanes, predictable mob pathing, and maximum spell pre-cast distance.
   - **Dungeon Suitability**: **SOLO EMBARGO / PROHIBITED SOLO**. Dungeons (Tomb of Mithra, Catacombs, Tepok's Mine) feature narrow corridors (<800 unit sightlines), low ceilings, and tight patrolling spawns. Because physical hits cause 100% spell interrupts and Ice Wizards wear fragile cloth armor without a persistent tank pet, soloing in dungeons results in immediate interrupts and death. **Only enter dungeons when grouped with a dedicated plate tank and primary healer**.
 - **Target Con Selection**:
   - **Optimal (Blue / High Blue)**: Primary grinding targets. Guarantees near-zero spell resists, rapid kill turnaround (<8 seconds), and minimal downtime.
@@ -85,7 +85,7 @@ Close-quarters area devastation and mobility denial. In RvR, the Ice Wizard posi
   - **Safety Check**: Scan 1000 units for wandering hostiles before sitting. If a patrol approaches within 600 units, stand and reposition 500 units away into cleared territory.
   - **Resume Threshold**: Stand and resume hunting only when Mana >= 85% and Health >= 90%.
 - **Emergency Escape Protocol**:
-  - If multiple hostiles link or Health drops < 30%: Trigger QuickCast + AoE Cold Root / Snare, turn 180Â°, activate Sprint, and flee toward open guarded zones or bindstone.
+  - If multiple hostiles link or Health drops < 30%: Trigger QuickCast + AoE Cold Root / Snare, turn 180°, activate Sprint, and flee toward open guarded zones or bindstone.
 
 ### 7. Offensive Priorities
 1. PBAoE Ice Pulses: Priority 100 (Unleash into mob cluster anchored on pet at 85% HP)
@@ -106,7 +106,7 @@ Close-quarters area devastation and mobility denial. In RvR, the Ice Wizard posi
 
 ### 10. Positioning Preferences
 - **Anchor**: Midline / Group Camp Center
-- **PBAoE Range**: 0â€“350 units from the mob cluster centered on the pet (during burn phase)
+- **PBAoE Range**: 0–350 units from the mob cluster centered on the pet (during burn phase)
 - **Pull Phase**: Stationary at camp anchor; never flee backwards for range.
 
 ### 11. Ability Usage Priorities
@@ -184,7 +184,7 @@ Extreme range elimination and high-velocity burst. The Fire Wizard opens engagem
 - **Bolt Opening**: Open on high-value enemy casters, healers, or archers with Fire Bolt from 1800 units.
 - **Fire Debuff Assist**: Cast Fire resistance debuff on the Main Assist's target, then burst with spec Fire DD.
 - **Volcanic Pillar**: Drop `AtlasOF_VolcanicPillar` on clustered enemy groups or siege engines.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Bolt & Burst**: Open with Fire Bolt -> Debuff -> `Quick Cast` + Fire DD -> Finish with follow-up nukes before target closes distance.
@@ -219,7 +219,7 @@ Extreme range elimination and high-velocity burst. The Fire Wizard opens engagem
   - **Safety Check**: Verify no roaming predators within 1000 units before sitting; reposition into cleared clearings.
   - **Resume Threshold**: Resume combat only when Mana >= 90% and Health >= 90%.
 - **Emergency Escape Protocol**:
-  - If add links or mob closes distance unexpectedly: QuickCast baseline Root, 180Â° turn, activate Sprint, and disengage.
+  - If add links or mob closes distance unexpectedly: QuickCast baseline Root, 180° turn, activate Sprint, and disengage.
 
 ### 7. Offensive Priorities
 1. Fire Resistance Debuff: Priority 90 (Cast on primary target before burst)
@@ -241,7 +241,7 @@ Extreme range elimination and high-velocity burst. The Fire Wizard opens engagem
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities
@@ -310,7 +310,7 @@ Battlefield containment and physical mitigation. The Earth Wizard immobilizes in
 - **AoE Root Control**: Cast maximum-range AoE Root on charging enemy melee trains to peel them off the Albion backline.
 - **Matter DD Burst**: Assist the assist train with Matter DD nukes on called targets.
 - **Damage Shield**: Keep damage shield active on friendly frontline tanks.
-- **Positioning**: 1350â€“1500 units back.
+- **Positioning**: 1350–1500 units back.
 
 ### 5. Mode: PvP
 - **Root & Nuke**: Pin opponent with AoE/single Root, step out of melee reach, and burn them down with Matter DD.
@@ -371,7 +371,7 @@ Battlefield containment and physical mitigation. The Earth Wizard immobilizes in
 
 ### 10. Positioning Preferences
 - **Anchor**: Backline
-- **Target Range**: 1350â€“1500 units
+- **Target Range**: 1350–1500 units
 - **Stationary Camp Discipline**: Hold ground firmly at camp anchor; never retreat to seek max range.
 
 ### 11. Ability Usage Priorities

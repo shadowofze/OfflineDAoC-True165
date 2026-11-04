@@ -51,7 +51,9 @@ namespace DOL.GS.SmartAI
                 Error(0, "no '## Specialization N: Name' sections");
 
             var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var lines = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            // (primary key, secondary key) -> the level ranges taken: two specs on one primary line need different
+            // secondary lines, or non-overlapping level ranges on the same one (a pure spec, no secondary line, is 0-0).
+            var lines = new Dictionary<(string, string), List<(int Lo, int Hi, string Name)>>();
             foreach (SmartSpecDefinition s in c.Specs)
             {
                 string who = s.Name.Length > 0 ? $"'{s.Name}'" : "a specialization";
@@ -79,10 +81,27 @@ namespace DOL.GS.SmartAI
                 else
                 {
                     m.PrimaryLineKey = key;
-                    if (lines.TryGetValue(key, out string other))
-                        Warn(m.Line, $"{who} and '{other}' share primary_line '{m.PrimaryLine}'; a bot with that top line gets '{other}'");
+                    string secondaryKey = string.Empty;
+                    if (m.SecondaryLine.Length > 0)
+                    {
+                        if (game.TryResolveSpecLine(m.SecondaryLine, out string sk))
+                            m.SecondaryLineKey = secondaryKey = sk;
+                        else
+                            Error(m.Line, $"{who}: unknown secondary_line '{m.SecondaryLine}'");
+                    }
+                    int lo = secondaryKey.Length == 0 ? 0 : m.SecondaryLow;
+                    int hi = secondaryKey.Length == 0 ? 0 : m.SecondaryHigh;
+                    if (lo > hi)
+                        Error(m.Line, $"{who}: secondary_min_level {m.SecondaryMinLevel} is above secondary_max_level {m.SecondaryMaxLevel}");
+                    if (!lines.TryGetValue((key, secondaryKey), out var taken))
+                        lines[(key, secondaryKey)] = taken = new List<(int, int, string)>();
+                    string other = taken.FirstOrDefault(r => r.Lo <= hi && lo <= r.Hi).Name;
+                    if (other != null)
+                        Warn(m.Line, secondaryKey.Length == 0
+                            ? $"{who} and '{other}' share primary_line '{m.PrimaryLine}' with no secondary_line; a bot with that top line gets '{other}' (give one a secondary_line)"
+                            : $"{who} and '{other}' share primary_line '{m.PrimaryLine}' and overlapping secondary_line '{m.SecondaryLine}' levels; only '{other}' can match there");
                     else
-                        lines[key] = s.Name;
+                        taken.Add((lo, hi, s.Name));
                 }
                 if (double.IsNaN(m.MinPointRatio) || m.MinPointRatio <= 0 || m.MinPointRatio > 1)
                     Error(m.Line, $"{who}: min_point_ratio must be above 0 and at most 1");

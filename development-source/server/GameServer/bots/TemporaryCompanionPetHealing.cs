@@ -144,7 +144,9 @@ namespace DOL.GS
                 if (IsPartyControlledPet(companion, nearby, out _))
                     targets.Add(nearby);
             }
-            targets.RemoveWhere(target => !IsLegalHealingCandidate(companion, target));
+            targets.RemoveWhere(target => !IsLegalHealingCandidate(companion, target) ||
+                // /petpull: the pet keeps the aggro; no heal until a monster on it has lost ~5% (CompanionEngagementMode)
+                CompanionEngagementMode.PetPullHoldsPetHeal(player, target));
             return new List<GameNPC>(targets)
                 .OrderBy(target => HealingPriority(companion, target))
                 .ThenBy(target => target.HealthPercent)

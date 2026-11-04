@@ -10,7 +10,7 @@ default_personality: "Tactical"
 # Class: Scout (Albion)
 
 ## Shared Class Capabilities
-- **Armor Type**: Studded (Level 20+), Leather (1â€“19).
+- **Armor Type**: Studded (Level 20+), Leather (1–19).
 - **Weapon Slots**: Longbow (Albion's massive long-range bow); One-Handed Slashing and Thrusting; Medium and Large Shields (unique among archers!).
 - **Core Specialization Lines**:
   - `Longbow`: Extreme-range physical missile archery (Critical Shot, Power Shot, Rapid Fire, Point Blank Shot).
@@ -29,8 +29,9 @@ default_personality: "Tactical"
 ```yaml
 match_specs:
   primary_line: "Longbow"
+  secondary_line: "Shields"
   min_point_ratio: 0.50
-  spec_type_aliases: ["ShieldArcherScout", "OneHandAndShield"]
+  spec_type_aliases: ["OneHandAndShield"]
 ```
 
 ### 1. Intended Role
@@ -46,7 +47,7 @@ Ranged elimination backed by close-quarters crowd control. The Scout snipes targ
 - **Extreme-Range Sniping**: Engage enemy casters and support from 1875+ units with Critical Shot and Trueshot.
 - **Slam Peel**: When enemy stealthers attack Albion support or close in, slam them with a 9-second shield stun, step back, and fire point-blank arrows.
 - **Scouting**: Provide advance reconnaissance from stealth.
-- **Positioning**: Elevated backline (1500â€“1800 units from enemy forces).
+- **Positioning**: Elevated backline (1500–1800 units from enemy forces).
 
 ### 5. Mode: PvP
 - **Snipe & Slam**: Critical Shot opener -> Trueshot -> Swap to Shield -> Shield Slam (9s stun) -> Backpedal 5 paces -> Point Blank Shot -> Finish with melee.
@@ -80,7 +81,7 @@ Ranged elimination backed by close-quarters crowd control. The Scout snipes targ
   - **Restricted (Orange)**: Engage only with Sure Shot / Critical Shot available and full endurance.
   - **Prohibited (Red / Purple)**: Strictly avoid solo.
 - **Pull & Engagement Sequence**:
-  - 1. Stealth into position at maximum corridor sightline (600â€“800 units) from target.
+  - 1. Stealth into position at maximum corridor sightline (600–800 units) from target.
   - 2. Opener: Fire Longbow shot (Critical Shot / standard heavy arrow) from stealth.
   - 3. Weapon Swap: Immediately swap to Shield and One-Handed Thrust weapon as mob charges.
   - 4. Stun Lockdown: Land Shield Slam as mob enters melee range (9-second stun).
@@ -109,7 +110,7 @@ Ranged elimination backed by close-quarters crowd control. The Scout snipes targ
 3. Enemy Light Armor Caster / Support: Priority 85 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Midline / Healer Side (within 150â€“200 units of group healer)
+- **Anchor**: Midline / Healer Side (within 150–200 units of group healer)
 - **Pull Phase**: Stationary at camp anchor; never retreat or shoot early.
 
 ### 11. Ability Usage Priorities
@@ -169,7 +170,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Longbow"
   min_point_ratio: 0.50
-  spec_type_aliases: ["SniperScout", "Ranged"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
@@ -183,7 +184,7 @@ Maximum distance elimination. The Sniper Scout sets up in elevated vantage point
 
 ### 4. Mode: RvR
 - **Caster Elimination**: Target enemy primary healers and cloth nukers from maximum range; coordinate opening volleys with fellow archers.
-- **Positioning**: Extreme range vantage point (1600â€“1875 units).
+- **Positioning**: Extreme range vantage point (1600–1875 units).
 
 ### 5. Mode: PvP
 - **Snipe & Kite**: Critical Shot opener -> Trueshot -> Rapid Fire -> Kite with sprint if closed upon.
@@ -200,7 +201,7 @@ Maximum distance elimination. The Sniper Scout sets up in elevated vantage point
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
-  - **Zone Priority**: **Outside Open-World Leveling Strongly Prioritized** (Salisbury Plains, Avalon Marsh, Dartmoor). Open zones provide the essential 1800â€“2000 unit clear sightlines required for Critical Shot openers, Pin/Snare shots, and outdoor kiting.
+  - **Zone Priority**: **Outside Open-World Leveling Strongly Prioritized** (Salisbury Plains, Avalon Marsh, Dartmoor). Open zones provide the essential 1800–2000 unit clear sightlines required for Critical Shot openers, Pin/Snare shots, and outdoor kiting.
   - **Dungeon Suitability**: **RESTRICTED / AVOID SOLO**. Confined dungeon corridors eliminate maximum bow range advantage and force immediate melee combat where a pure archer is at a severe disadvantage. Stay outdoors unless grouped.
 - **Target Con Selection**:
   - **Optimal (Blue / High Blue)**: 2 to 3 bow shots kill target before it reaches melee distance.
@@ -208,7 +209,7 @@ Maximum distance elimination. The Sniper Scout sets up in elevated vantage point
   - **Restricted (Orange)**: Only engage with full distance and clear outdoor retreat lane.
   - **Prohibited (Red / Purple)**: Strictly avoid solo.
 - **Pull & Engagement Sequence**:
-  - 1. Max range setup (1800â€“2000 units) from stealth in open field.
+  - 1. Max range setup (1800–2000 units) from stealth in open field.
   - 2. Opener: Critical Shot from stealth.
   - 3. Snare: Follow with Pin / Snare Arrow as target charges.
   - 4. Rapid Shots: Fire standard arrows while target crawls forward.
@@ -217,7 +218,7 @@ Maximum distance elimination. The Sniper Scout sets up in elevated vantage point
   - **Sit / Rest Threshold**: Rest in stealth when Endurance < 20% or Health < 50%.
   - **Resume Threshold**: Stand when Endurance >= 90%, Health >= 90%.
 - **Emergency Escape Protocol**:
-  - Pin Arrow add -> turn 180Â° -> Sprint retreat -> enter Stealth.
+  - Pin Arrow add -> turn 180° -> Sprint retreat -> enter Stealth.
 
 ### 7. Offensive Priorities
 1. Rapid Fire / Melee on Loose Break-Off Add: Priority 100
@@ -237,7 +238,7 @@ Maximum distance elimination. The Sniper Scout sets up in elevated vantage point
 3. Enemy Light Armor Caster / Support: Priority 85 (In RvR)
 
 ### 10. Positioning Preferences
-- **Anchor**: Camp Center / Midline (1000â€“1200 units from mob cluster)
+- **Anchor**: Camp Center / Midline (1000–1200 units from mob cluster)
 - **Pull Phase**: Stationary at camp anchor; never retreat out of camp.
 
 ### 11. Ability Usage Priorities
@@ -296,7 +297,7 @@ Budget: 50 Realm Ability Points (Old Frontiers / Classic 1.65 Rules)
 match_specs:
   primary_line: "Thrust"  # Or SlashingWeapon
   min_point_ratio: 0.50
-  spec_type_aliases: ["MeleeHunterScout", "OneHandAndShield"]
+  spec_type_aliases: []
 ```
 
 ### 1. Intended Role
