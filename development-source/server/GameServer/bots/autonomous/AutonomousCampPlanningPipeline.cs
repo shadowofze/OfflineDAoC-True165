@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
+using DOL.AI.Brain;
 
 namespace DOL.GS
 {
@@ -13,7 +14,7 @@ namespace DOL.GS
         // metadata is world-lifetime data; mesh queries remain on the game loop.
         private sealed record CampMonster(string InternalId, string Name, int X, int Y, int Z,
             int EffectiveLevel, ushort CurrentRegionID, Zone CurrentZone,
-            AutonomousDungeonGoalCatalog.Point DungeonPoint);
+            AutonomousDungeonGoalCatalog.Point DungeonPoint, int AggroRange = 0, bool Aggressive = false);
 
         private static BackgroundSnapshotBuilder<CampMonster[], CampCatalogCell[]> _campBuilder;
         private static CampCatalogCell[] _campDraft;
@@ -126,8 +127,11 @@ namespace DOL.GS
                         AutonomousAuditedCampPolicy.IsBotExcludedNpc(npc)) continue;
                     AutonomousDungeonGoalCatalog.Point point = null;
                     if (npc.CurrentZone.IsDungeon) AutonomousDungeonGoalCatalog.TryGet(npc, out point);
+                    // Aggro data for the SmartAI area search around camps (SmartWorldKnowledge).
+                    int aggroRange = npc.Brain is StandardMobBrain mob ? mob.AggroRange : 0;
+                    bool aggressive = npc.Brain is StandardMobBrain mobBrain && mobBrain.AggroLevel > 0 && aggroRange > 0;
                     monsters.Add(new(npc.InternalID ?? string.Empty, npc.Name, npc.X, npc.Y, npc.Z, npc.EffectiveLevel,
-                        npc.CurrentRegionID, npc.CurrentZone, point));
+                        npc.CurrentRegionID, npc.CurrentZone, point, aggroRange, aggressive));
                 }
             }
             return monsters.ToArray();

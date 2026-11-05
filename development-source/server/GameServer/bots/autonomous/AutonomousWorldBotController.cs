@@ -1525,6 +1525,9 @@ namespace DOL.GS
                     return true;
                 }
 
+                // SmartAI: members walk to the meeting point on their own; they go around monsters on the way.
+                if (GuardLoneMemberTravel(bot, approach, null))
+                    return true;
                 if (!IssuePath(bot, approach, preciseArrival: true))
                 {
                     AutonomousBotGroupCoordinator.ReportUnreachableRendezvous(
@@ -1817,7 +1820,10 @@ namespace DOL.GS
                     ? strategicDestination
                     : AutonomousBotGroupCoordinator.FormationPoint(bot, strategicDestination, tight);
                 if (Vector3.DistanceSquared(new(bot.X, bot.Y, bot.Z), independentFormation) > 60 * 60)
-                    IssuePath(bot, independentFormation);
+                {
+                    if (!GuardLoneMemberTravel(bot, independentFormation, null))
+                        IssuePath(bot, independentFormation);
+                }
                 else
                 {
                     bot.StopMovingOnPath();
@@ -1832,7 +1838,9 @@ namespace DOL.GS
             }
             else
             {
-                IssuePath(bot, formation, retargetWhileMoving: true);
+                // SmartAI: far behind the leader, the member is on its own; it goes around monsters on the way.
+                if (!GuardLoneMemberTravel(bot, formation, leader))
+                    IssuePath(bot, formation, retargetWhileMoving: true);
             }
             SetStatus(bot, "Traveling in group formation", directive.SharedGoal,
                 $"Keeping formation with {leader.Name}; the party clears dungeon threats before advancing",
@@ -3512,12 +3520,16 @@ namespace DOL.GS
                     region: camp => camp.RegionId,
                     position: camp => new Vector3(destinations[camp.Id].X,
                         destinations[camp.Id].Y, destinations[camp.Id].Z));
-                int selectedLevel = smartBand != null
-                    ? smartBand.Select(legal.Select(camp => camp.AverageMobLevel), planningLevel)
-                    : AutonomousGroupTargetPolicy.SelectFixedEightManLevel(
+                // SmartAI keeps every camp in the band; SmartCampChooser weighs level against safety and history.
+                if (smartBand != null)
+                    legal = legal.Where(camp => smartBand.Allows(planningLevel, camp.AverageMobLevel));
+                else
+                {
+                    int selectedLevel = AutonomousGroupTargetPolicy.SelectFixedEightManLevel(
                         legal.Select(camp => camp.AverageMobLevel), planningLevel,
                         _groupDirective.PreferredLevelBonus, groupSize);
-                legal = legal.Where(camp => camp.AverageMobLevel == selectedLevel);
+                    legal = legal.Where(camp => camp.AverageMobLevel == selectedLevel);
+                }
             }
             else
             {
@@ -3564,8 +3576,11 @@ namespace DOL.GS
             // This is the deployed selection point. Each distinct verified
             // location has one entry; outdoor draws are weighted by live spawns
             // (capped) with no distance or name preference.
-            AutonomousBotDecisionEngine.Camp chosen = AutonomousBotDecisionEngine.SelectWithinEnvironment(
-                legalCells, environment, Random.Shared);
+            string smartWhy = null;
+            AutonomousBotDecisionEngine.Camp chosen = (sharedGroup
+                    ? SmartChooseGroupCamp(legalCells, destinations, planningLevel, smartBand, out smartWhy)
+                    : null) ??
+                AutonomousBotDecisionEngine.SelectWithinEnvironment(legalCells, environment, Random.Shared);
             bool usedDeathFallback = false;
             if (chosen == null && !sharedGroup && _deathDifficultySteps > 0)
             {
@@ -3590,7 +3605,7 @@ namespace DOL.GS
                 : new(chosen.IsDungeon ? eAutonomousActivity.Dungeon : sharedGroup ? eAutonomousActivity.GroupGrind : eAutonomousActivity.Grind,
                     chosen.Id, usedDeathFallback
                         ? $"No {maximumTargetCon.ToString().ToLowerInvariant()}-or-easier XP camp exists; selected the safest available non-grey alternative."
-                        : $"Selected a live {environment.ToString().ToLowerInvariant()} camp from {legalCells.Length:N0} reachable level-valid spawn cells.");
+                        : smartWhy ?? $"Selected a live {environment.ToString().ToLowerInvariant()} camp from {legalCells.Length:N0} reachable level-valid spawn cells.");
             if (!destinations.TryGetValue(decision.TargetId, out CampDestination selected))
                 return;
 
@@ -3842,7 +3857,10 @@ namespace DOL.GS
 
                 AddStarterCamps(cells, snapshot);
                 AddVerifiedDungeonCamps(cells, liveByZoneAndName);
-                return cells.ToArray();
+                CampCatalogCell[] built = cells.ToArray();
+                // SmartAI: zone levels and the area search around each camp, from the same snapshot (this worker).
+                BuildSmartWorldKnowledge(snapshot, built);
+                return built;
         }
 
         private static bool IsSourceEmptyCamp(string campId) =>

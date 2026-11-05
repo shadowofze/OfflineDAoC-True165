@@ -1197,6 +1197,8 @@ namespace DOL.GS
                 PersistentRecord.Activity = "Defeated; reassessing target difficulty";
                 PersistentRecord.ObjectiveProgress = "The next grind target will be a lower con, never below green";
                 MarkAutonomousStateDirty();
+                // SmartAI groups learn where they die (at the camp, or on the way: SmartWorldLearning).
+                AutonomousWorldBotController.SmartLearnDeath(this);
             }
 
             base.ProcessDeath(killer);

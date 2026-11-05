@@ -98,6 +98,27 @@ Type `/petpull` before you send your pet in to gather monsters:
 
 Type `/petpull` again (or `/petpull off`) to stop. It works with `/defensive` and `/aggressive`.
 
+## Where gamebot groups level
+
+With SmartAI on, autonomous gamebot groups choose their camps and travel more carefully:
+
+- **Pull level.** A gear score (armour and weapon against the wearer's level; the tank counts double), the group's
+  level, size, tank, healer and recent wipes set the hardest con colour the group pulls.
+- **Zones first.** Groups prefer zones whose typical monster is close to what they can pull.
+- **Area search.** Every camp is checked for aggressive monsters of other kinds around it. A camp inside a
+  hard monster's aggro range is picked much less often.
+- **Learning.** Groups remember their kills and deaths per camp, and where members died on the road. Deadly
+  camps and areas are picked less, safe ones more. Old results fade (half of their weight a week by default).
+- **Travel.** A member walking alone (to the meeting point, back after a death, or far behind the leader) goes
+  around aggressive monsters on its route. The leader keeps extra room for the members beside it.
+
+Two files in `runtime/server/state-165` hold this. Delete either one to start over:
+
+- `smartai-world.json`: the zone level ranges and the settings. Edit `settings`, or add your own range or
+  `"skip": true` for a zone under `overrides`. The server rewrites only `generated` and picks up your edits
+  without a restart.
+- `smartai-learning.json`: what the groups learned.
+
 ## Tools and reporting problems
 
 Target a companion or bot and type:

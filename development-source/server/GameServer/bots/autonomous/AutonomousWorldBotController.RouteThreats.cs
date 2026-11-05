@@ -35,7 +35,9 @@ namespace DOL.GS
         /// the bot is holding, or the camp was given up); false lets the walk continue, with a
         /// detour waypoint set when the bot is going around a monster.
         /// </summary>
-        private bool GuardOpenWorldTravel(GameBot bot, Vector3 destination)
+        /// <param name="loneMember">SmartAI: a group member walking on its own (GuardLoneMemberTravel). It only goes
+        /// around a monster on its route; it never pulls, holds or gives up the camp.</param>
+        private bool GuardOpenWorldTravel(GameBot bot, Vector3 destination, bool loneMember = false)
         {
             if (!AutonomousRouteThreatPolicy.Enabled || bot.Brain is not BotBrain brain ||
                 bot.CurrentZone == null || bot.CurrentZone.IsDungeon || bot.CurrentRegion?.IsDungeon == true ||
@@ -44,7 +46,7 @@ namespace DOL.GS
                 AutonomousRealmRaid.GetView(bot.Group) != null)
                 return false;
             bool grouped = _groupDirective?.IsDynamic == true;
-            if (grouped && _groupDirective.Leader != bot)
+            if (grouped && _groupDirective.Leader != bot && !loneMember)
                 return false;
             long now = GameLoop.GameLoopTime;
             if (now < _nextRouteThreatScanTick)
@@ -75,6 +77,9 @@ namespace DOL.GS
             bool ranged = BotSpellPower.IsOffensiveCaster(bot) ||
                           characterClass is eCharacterClass.Scout or eCharacterClass.Hunter or eCharacterClass.Ranger;
             int margin = ranged ? AutonomousRouteThreatPolicy.RangedMargin : AutonomousRouteThreatPolicy.MeleeMargin;
+            // SmartAI: a group leader in formation leaves room for the members walking beside it.
+            if (grouped && !loneMember && DOL.GS.SmartAI.SmartAiConfig.IsEnabled)
+                margin += DOL.GS.SmartAI.SmartWorldConfig.Current.FormationClearance;
 
             GameNPC[] threats = bot.GetNPCsInRadius((ushort)AutonomousRouteThreatPolicy.ScanRadius)
                 .Where(npc => IsExperienceMonster(npc) && npc.IsAlive && !npc.InCombat &&
@@ -123,6 +128,10 @@ namespace DOL.GS
                                now - _lastRouteThreatRetargetTick >= AutonomousRouteThreatPolicy.RetargetCooldownMilliseconds;
             RouteThreatAction action = AutonomousRouteThreatPolicy.Decide(con, grouped, pack, bossLike,
                 detour.HasValue, detours, mayRetarget, lowLevelSolo: !grouped && bot.Level < 5);
+            // A lone member goes around anything the policy would act on; with no way around it walks on (and
+            // defends itself) - it is not the puller and its camp belongs to the party.
+            if (loneMember && action != RouteThreatAction.Ignore)
+                action = detour.HasValue && detours < 2 ? RouteThreatAction.Detour : RouteThreatAction.Ignore;
             if (action == RouteThreatAction.Ignore)
                 return false;
 

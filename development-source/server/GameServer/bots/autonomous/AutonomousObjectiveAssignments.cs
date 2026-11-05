@@ -98,6 +98,7 @@ public static class AutonomousObjectiveAssignments
         record.ObjectivePveKills++;
         bot.MarkAutonomousStateDirty();
         AutonomousCampDangerBench.RecordKill(record.CurrentCampId);
+        AutonomousWorldBotController.SmartLearnKill(bot);
     }
 
     public static bool HasActiveRvrTenure(OfflineWorldBotRecord record, DateTime utcNow)
