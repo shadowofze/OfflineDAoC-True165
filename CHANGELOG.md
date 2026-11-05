@@ -23,6 +23,8 @@ hold). Its changelog has the history of everything this version inherits.
 - SmartAI: bots and companions use Mastery of Concentration (a caster under attack) and Bunker of Faith (the group taking burst damage) when their spec lists them, with the player abilities' effects, numbers and reuse timers.
 - SmartAI: list casters (Wizard, Sorcerer, Theurgist, Cabalist, Runemaster, Spiritmaster, Bonedancer, Eldritch, Enchanter, Mentalist, Animist) QuickCast their next spell when something is attacking them, and a Mentalist its heal; the player rules apply (double power, 30 seconds before the next one). Other bots still never QuickCast.
 - SmartAI class files: Clerics, Healers, Druids, Nightshades, Valewalkers and Necromancers no longer list Quick Cast, which they don't have.
+- Fixed: a monster vanished with no kill credit and no loot when a hired companion or an invited gamebot hit it before you or your pet. Its Bring A Friend check looked for the companion's owner, which only /spawn helpers have, failed, and the server removed the monster. Hired companions' pets now bring friends for you too, as /spawn helpers' pets did.
+- Fixed: healer bots sometimes vanished when their group broke up while they were about to resurrect or buff someone.
 
 - Combat: a monster on its last sliver of health no longer falls over before the hit that kills it.
 - World: two Albion banners floating in the air over Camelot Hills are gone.
