@@ -22,7 +22,8 @@ With it off, every bot plays exactly as before. SmartAI also protects your game:
 ## What changes
 
 **Every class.** Each of the 39 classes has a strategy file that describes its specializations. A bot plays the
-specialization it has trained most. A companion's specialization comes only from the points you train.
+specialization it has trained most. A companion's specialization comes only from the points you train. You can
+edit these files to change how a class plays: see [SMARTAI-CLASS-FILES.md](SMARTAI-CLASS-FILES.md).
 
 **Healers**
 
