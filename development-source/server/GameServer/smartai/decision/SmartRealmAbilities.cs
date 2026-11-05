@@ -9,7 +9,7 @@ namespace DOL.GS.SmartAI
     /// chose in the companion window) and gamebots alike.
     /// - Only the actives whose handlers work for a bot: the four gamebots already use (Purge, Ignore Pain, Second Wind,
     ///   First Aid) plus Mystic Crystal Lore (its handler only messages players). Mastery of Concentration and Bunker of
-    ///   Faith are player-only in their handlers (they do nothing, or fail, for a bot) and stay out.
+    ///   Faith are player-only in their handlers, so SmartAI uses its own versions of them (SmartRealmAbilityActions).
     /// - A spec fires one only when its section 11 lists it, the line's condition holds, and the ability's own hard
     ///   precondition holds (no Purge without crowd control on the bot...). One use per second at most.
     /// - The ability executes through its own handler (cost, reuse timer and effects unchanged).
@@ -24,6 +24,7 @@ namespace DOL.GS.SmartAI
             AutonomousBotRealmAbilities.Purge, AutonomousBotRealmAbilities.PurgeReduced,
             AutonomousBotRealmAbilities.IgnorePain, AutonomousBotRealmAbilities.IgnorePainTank,
             AutonomousBotRealmAbilities.SecondWind, AutonomousBotRealmAbilities.FirstAid, Mcl,
+            SmartRealmAbilityActions.MasteryOfConcentration, SmartRealmAbilityActions.BunkerOfFaith,
         ];
 
         public static bool IsSafe(string key) => Array.IndexOf(Safe, key) >= 0;
@@ -37,6 +38,11 @@ namespace DOL.GS.SmartAI
             AutonomousBotRealmAbilities.SecondWind => p.InCombat && !p.Incapacitated && p.SelfEndurancePercent < 25,
             AutonomousBotRealmAbilities.FirstAid => !p.InCombat && p.SelfHealthPercent < 75,
             Mcl => !p.InCombat && p.SelfManaPercent < 75,
+            // A caster in a fight that is being hit or has a melee enemy on it: its casts can't be interrupted for 15 s.
+            SmartRealmAbilityActions.MasteryOfConcentration => p.InCombat && !p.Incapacitated && !p.Silenced && p.IsCaster &&
+                (p.BeingInterrupted || p.MeleeAttackersOnSelf > 0),
+            // Burst damage on the group: two members under 65%, or one under 40%.
+            SmartRealmAbilityActions.BunkerOfFaith => p.InCombat && !p.Incapacitated && (p.MembersBelow65 >= 2 || p.MembersBelow40 >= 1),
             _ => false,
         };
 
@@ -66,8 +72,19 @@ namespace DOL.GS.SmartAI
                 return false;
             gate.NextCheck = now + CheckIntervalMs;
 
-            SmartAbilityRule rule = Choose(profile, p, key => bot.GetAbility(key) is TimedRealmAbility ra && bot.GetSkillDisabledDuration(ra) <= 0);
-            if (rule == null || bot.GetAbility(rule.Key) is not TimedRealmAbility ability)
+            SmartAbilityRule rule = Choose(profile, p, key => bot.GetAbility(key) is RealmAbility ra &&
+                (ra is TimedRealmAbility || SmartRealmAbilityActions.Handles(key)) && bot.GetSkillDisabledDuration(ra) <= 0);
+            if (rule == null)
+                return false;
+            // Mastery of Concentration and Bunker of Faith: SmartAI's own versions (their handlers are player-only).
+            if (SmartRealmAbilityActions.Handles(rule.Key))
+            {
+                if (!SmartRealmAbilityActions.TryExecute(bot, bot.GetAbility(rule.Key)))
+                    return false;
+                used = rule;
+                return true;
+            }
+            if (bot.GetAbility(rule.Key) is not TimedRealmAbility ability)
                 return false;
             ability.Execute(bot);
             // A Purge with nothing to remove only blocks itself for a moment; only a real use starts the long timer.

@@ -35,6 +35,35 @@ public class UT_SmartAiAbilities
     public void CombatCooldownGate(int target, bool player, bool allowed) =>
         Assert.That(SmartAbilityPolicy.CombatCooldownAllowed(target, player), Is.EqualTo(allowed));
 
+    [TestCase(true, true, false, 0, true, true)]     // a caster being hit
+    [TestCase(true, true, false, 1, false, true)]    // a melee enemy on it
+    [TestCase(true, true, false, 0, false, false)]   // nobody on it
+    [TestCase(false, true, false, 2, true, false)]   // out of combat
+    [TestCase(true, false, false, 2, true, false)]   // not a caster
+    [TestCase(true, true, true, 2, true, false)]     // stunned or mezzed
+    public void MasteryOfConcentration_WhenPressured(bool combat, bool caster, bool cc, int melee, bool interrupted, bool wanted) =>
+        Assert.That(SmartRealmAbilities.Wanted(SmartRealmAbilityActions.MasteryOfConcentration, new SmartBotPerception
+        {
+            InCombat = combat, IsCaster = caster, Incapacitated = cc, MeleeAttackersOnSelf = melee, BeingInterrupted = interrupted,
+        }), Is.EqualTo(wanted));
+
+    [TestCase(true, 2, 0, true)]    // two hurt
+    [TestCase(true, 0, 1, true)]    // one nearly dead
+    [TestCase(true, 1, 0, false)]
+    [TestCase(false, 3, 2, false)]  // out of combat
+    public void BunkerOfFaith_OnGroupBurst(bool combat, int below65, int below40, bool wanted) =>
+        Assert.That(SmartRealmAbilities.Wanted(SmartRealmAbilityActions.BunkerOfFaith, new SmartBotPerception
+        {
+            InCombat = combat, MembersBelow65 = below65, MembersBelow40 = below40,
+        }), Is.EqualTo(wanted));
+
+    [Test]
+    public void MocAndBof_AreSmartAiAbilities()
+    {
+        Assert.That(SmartRealmAbilities.IsSafe(SmartRealmAbilityActions.MasteryOfConcentration), Is.True);
+        Assert.That(SmartRealmAbilities.IsSafe(SmartRealmAbilityActions.BunkerOfFaith), Is.True);
+    }
+
     [Test]
     public void ShippedTanks_GuardTheirHealer()
     {

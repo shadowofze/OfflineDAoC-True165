@@ -184,6 +184,21 @@ namespace DOL.AI.Brain
             return best;
         }
 
+        /// <summary>Enemies of this bot's fight in melee reach that are swinging at it (Mastery of Concentration).</summary>
+        internal int SmartAiMeleeAttackersOnMe()
+        {
+            int n = 0;
+            foreach (var entry in AggroList)
+            {
+                GameLiving enemy = entry.Key;
+                if (enemy is { IsAlive: true } && enemy.TargetObject == Body &&
+                    enemy.ActiveWeaponSlot != eActiveWeaponSlot.Distance && enemy.attackComponent?.AttackState == true &&
+                    enemy.CurrentRegionID == Body.CurrentRegionID && Body.IsWithinRadius(enemy, Body.MeleeAttackRange + 50))
+                    n++;
+            }
+            return n;
+        }
+
         /// <summary>The whole legacy offense (target, pets, taunts, spells, bow and melee).</summary>
         internal void SmartAiFullOffense(bool allowHeals)
         {

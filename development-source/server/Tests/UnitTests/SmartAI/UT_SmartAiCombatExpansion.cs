@@ -46,9 +46,9 @@ public class UT_SmartAiCombatExpansion
     [Test]
     public void Rejuvenation_KeepsOnlyTheAbilitiesABotCanUse()
     {
-        // Its section 11: Purge, QuickCast (no key), MoC and Bunker of Faith (player-only handlers), MCL.
+        // Its section 11: Purge, MoC and Bunker of Faith (SmartAI's own versions), MCL.
         Assert.That(Profile("Rejuvenation Cleric").Abilities.Select(a => (a.Key, a.Priority)),
-            Is.EqualTo(new[] { ("AtlasOF_Purge", 100), ("AtlasOF_MCL", 80) }));
+            Is.EqualTo(new[] { ("AtlasOF_Purge", 100), ("AtlasOF_MasteryOfConcentration", 90), ("AtlasOF_BunkerOfFaith", 85), ("AtlasOF_MCL", 80) }));
     }
 
     [Test]
@@ -81,8 +81,8 @@ public class UT_SmartAiCombatExpansion
     [TestCase("AtlasOF_SecondWind", true)]
     [TestCase("AtlasOF_FirstAid", true)]
     [TestCase("AtlasOF_MCL", true)]
-    [TestCase("AtlasOF_MasteryOfConcentration", false)]
-    [TestCase("AtlasOF_BunkerOfFaith", false)]
+    [TestCase("AtlasOF_MasteryOfConcentration", true)]
+    [TestCase("AtlasOF_BunkerOfFaith", true)]
     public void OnlyBotSafeActives(string key, bool safe) => Assert.That(SmartRealmAbilities.IsSafe(key), Is.EqualTo(safe));
 
     [Test]

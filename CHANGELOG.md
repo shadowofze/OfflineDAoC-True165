@@ -20,6 +20,7 @@ hold). Its changelog has the history of everything this version inherits.
 - SmartAI: class strategy files are active for all 39 classes; specs that share a main line are told apart by a second line and its level (for example a Thane's Shields, an Infiltrator's Envenom), and the Berserker's Vendo play is part of the Left Axe spec.
 - SmartAI: tanks keep Guard and Protect on the group's healer when their spec says so; Berserk waits until the bot is above 40% health and is not spent on a nearly dead monster; casters with an instant spell turn it on an enemy that is casting.
 - Bots: Blademasters use Triple Wield and Flurry, Mercenaries use Dirty Tricks and Flurry, and Heroes now really turn into the stag (Stag never started for bots before, and locked itself for hours). Bots with 7 or more in Shields face an archer that is shooting them and Engage it, walking in with the shield up. All of it with the player rules and numbers; Flurry treats gamebots and companions as players.
+- SmartAI: bots and companions use Mastery of Concentration (a caster under attack) and Bunker of Faith (the group taking burst damage) when their spec lists them, with the player abilities' effects, numbers and reuse timers.
 - SmartAI class files: Clerics, Healers, Druids, Nightshades, Valewalkers and Necromancers no longer list Quick Cast, which they don't have.
 
 - Combat: a monster on its last sliver of health no longer falls over before the hit that kills it.

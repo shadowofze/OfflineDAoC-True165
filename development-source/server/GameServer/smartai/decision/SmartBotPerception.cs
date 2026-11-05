@@ -41,6 +41,12 @@ namespace DOL.GS.SmartAI
         public bool TargetIsGroupTarget { get; init; }
         /// <summary>What the bot chose in its last think, if within the commitment window (Phase 11).</summary>
         public SmartActionFamily? StickyFamily { get; init; }
+        /// <summary>Enemies in melee reach swinging at this bot.</summary>
+        public int MeleeAttackersOnSelf { get; init; }
+        /// <summary>Something other than the bot itself is interrupting it (hits, attacks on it).</summary>
+        public bool BeingInterrupted { get; init; }
+        /// <summary>The bot has power to cast (a caster class).</summary>
+        public bool IsCaster { get; init; }
 
         public static SmartBotPerception Build(BotBrain brain, GameBot bot, GameLiving target)
         {
@@ -74,6 +80,9 @@ namespace DOL.GS.SmartAI
                 HasTarget = hasTarget,
                 TargetHealthPercent = hasTarget ? target.HealthPercent : 0,
                 TargetControlled = hasTarget && BotBrain.IsBreakablyControlled(target),
+                MeleeAttackersOnSelf = brain.SmartAiMeleeAttackersOnMe(),
+                BeingInterrupted = bot.IsBeingInterruptedByOther,
+                IsCaster = bot.MaxMana > 0,
             };
         }
 
