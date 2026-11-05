@@ -285,6 +285,9 @@ namespace DOL.GS
                     _groupDirective = AutonomousBotGroupCoordinator.Pulse(bot);
                     _nextGroupPulseTick = nowTick + 1_500 + bot.ObjectID % 500;
                 }
+                // SmartAI: a bot just raised beside aggressive monsters walks out of their aggro first.
+                if (SmartReviveRetreat(bot))
+                    return true;
                 string assignmentId = bot.PersistentRecord?.ObjectiveAssignmentId ?? string.Empty;
                 if (!string.Equals(_observedObjectiveAssignmentId, assignmentId, StringComparison.Ordinal))
                 {
@@ -1497,6 +1500,9 @@ namespace DOL.GS
             bool tight = bot.CurrentRegion?.IsDungeon == true || bot.CurrentZone?.IsDungeon == true;
             // Reserve movement completion margin inside the attendance circle.
             int arrivalRadius = AutonomousRendezvousAttendance.ApproachRadius(tight);
+            // SmartAI: in the meeting town, bind at its stone before the party sets out.
+            if (distance <= MeetupBindReach && SmartBindAtMeetup(bot, directive))
+                return true;
             if (!AutonomousRendezvousAttendance.IsAtSlot(position, formation, tight))
             {
                 bot.WakeRecoveryRest();

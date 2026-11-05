@@ -178,6 +178,26 @@ public class UT_SmartAiWorld
     }
 
     [Test]
+    public void ASafeSpotIsOutsideEveryAggroRangePlusTheMargin()
+    {
+        var threats = new[] { new AutonomousSmartSafeSpot.Threat(0, 0, 500) };
+        Assert.That(AutonomousSmartSafeSpot.IsClear(new System.Numerics.Vector3(800, 0, 0), threats, 350), Is.False, "850 reach");
+        Assert.That(AutonomousSmartSafeSpot.IsClear(new System.Numerics.Vector3(900, 0, 0), threats, 350), Is.True);
+        Assert.That(AutonomousSmartSafeSpot.IsClear(new System.Numerics.Vector3(0, 0, 0), new AutonomousSmartSafeSpot.Threat[0], 350), Is.True);
+    }
+
+    [Test]
+    public void SafeSpotCandidatesStartHereThenRingOutward()
+    {
+        var around = new System.Numerics.Vector3(1000, 1000, 50);
+        var list = new List<System.Numerics.Vector3>(AutonomousSmartSafeSpot.Candidates(around));
+        Assert.That(list, Has.Count.EqualTo(25));
+        Assert.That(list[0], Is.EqualTo(around));
+        Assert.That(System.Numerics.Vector3.Distance(list[1], around), Is.EqualTo(500).Within(0.5));
+        Assert.That(System.Numerics.Vector3.Distance(list[24], around), Is.EqualTo(1500).Within(0.5));
+    }
+
+    [Test]
     public void TheChooserPrefersTheSafeCamp()
     {
         // Two camps alike but one sits inside a purple monster's aggro.

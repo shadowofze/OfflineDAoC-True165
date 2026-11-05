@@ -58,13 +58,31 @@ public class UT_SmartAiGroupPull
     {
         Assert.That(SmartGroupPullPolicy.Band(6, 30, 95, true, true, 0).Highest, Is.EqualTo(ConColor.RED));
         Assert.That(SmartGroupPullPolicy.Band(6, 15, 95, true, true, 0).Highest, Is.EqualTo(ConColor.ORANGE));
-        Assert.That(SmartGroupPullPolicy.Band(6, 5, 95, true, true, 0).Highest, Is.EqualTo(ConColor.YELLOW));
+        Assert.That(SmartGroupPullPolicy.Band(6, 5, 95, true, true, 0).Highest, Is.EqualTo(ConColor.ORANGE));
+    }
+
+    [Test]
+    public void GearIsJudgedAgainstWhatIsNormalForTheLevel()
+    {
+        Assert.That(SmartGroupPullPolicy.ExpectedGearScore(6), Is.EqualTo(45));
+        Assert.That(SmartGroupPullPolicy.ExpectedGearScore(50), Is.EqualTo(80));
+        // Groups from the 2026-11-05 run, which all got green-blue before the retune.
+        Assert.That(SmartGroupPullPolicy.Band(5, 6, 63, true, true, 0).Highest, Is.EqualTo(ConColor.YELLOW));
+        Assert.That(SmartGroupPullPolicy.Band(6, 7, 74, true, true, 0).Highest, Is.EqualTo(ConColor.ORANGE));
+        // Weak gear: the full-group floor keeps yellow.
+        SmartPullBand weak = SmartGroupPullPolicy.Band(6, 4, 22, true, true, 0);
+        Assert.That(weak.Highest, Is.EqualTo(ConColor.YELLOW));
+        Assert.That(weak.Lowest, Is.EqualTo(ConColor.BLUE));
+        Assert.That(weak.Why, Does.Contain("yellow floor"));
+        // No floor without a healer, or after a wipe.
+        Assert.That(SmartGroupPullPolicy.Band(6, 4, 22, true, false, 0).Highest, Is.EqualTo(ConColor.BLUE));
+        Assert.That(SmartGroupPullPolicy.Band(6, 4, 22, true, true, 1).Highest, Is.EqualTo(ConColor.BLUE));
     }
 
     [Test]
     public void WeakGearMissingRolesAndWipesLowerTheBandButNeverBelowBlue()
     {
-        Assert.That(SmartGroupPullPolicy.Band(8, 50, 80, true, true, 0).Highest, Is.EqualTo(ConColor.RED));
+        Assert.That(SmartGroupPullPolicy.Band(8, 50, 70, true, true, 0).Highest, Is.EqualTo(ConColor.RED));
         Assert.That(SmartGroupPullPolicy.Band(8, 50, 60, true, true, 0).Highest, Is.EqualTo(ConColor.ORANGE));
         Assert.That(SmartGroupPullPolicy.Band(8, 50, 95, false, true, 0).Highest, Is.EqualTo(ConColor.RED));
         Assert.That(SmartGroupPullPolicy.Band(8, 50, 95, true, true, 5).Highest, Is.EqualTo(ConColor.ORANGE));

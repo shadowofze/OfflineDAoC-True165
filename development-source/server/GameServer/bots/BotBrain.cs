@@ -644,6 +644,9 @@ namespace DOL.AI.Brain
         private DbInventoryItem _pendingExchangeItem;
         private int _pendingExchangePrice;
         private AutonomousWorldBotController _autonomousWorldController;
+
+        /// <summary>This gamebot's world controller (null until its first autonomous turn).</summary>
+        internal AutonomousWorldBotController AutonomousController => _autonomousWorldController;
         private long _nextFidelityCheckTick;
         private long _nextNaturalMobWakeTick;
         private eAutonomousFidelity _cachedFidelity = eAutonomousFidelity.Efficient;

@@ -1430,7 +1430,13 @@ namespace DOL.GS
             // True 1.65 Mode: a solo gamebot releases to its own bind, as a player does, not to the bind stone nearest
             // its body (owner 2026-10-31 run: level-4 bots died to level-11 sveawolves beside the West Svealand inn,
             // released at that inn's stone and died again, up to 12 times an hour).
-            if (Classic165Mode.IsOn && IsAutonomousWorldBot && Group == null && returnToParty &&
+            // SmartAI: a group member releases to its own bind too, which it set at the party's meeting town
+            // (AutonomousWorldBotController.SmartBindAtMeetup); one that never bound keeps the nearest stone.
+            bool smartPveParty = Group != null && DOL.GS.SmartAI.SmartAiConfig.IsEnabled &&
+                AutonomousObjectiveAssignments.Is(this, eAutonomousObjectiveKind.GroupPve) &&
+                AutonomousRealmRaid.GetView(Group) == null;
+            if (Classic165Mode.IsOn && IsAutonomousWorldBot && (Group == null || smartPveParty) &&
+                returnToParty &&
                 PersistentRecord is { BindRegionId: > 0 } bindRecord && WorldMgr.GetRegion((ushort)bindRecord.BindRegionId) != null &&
                 (bindRecord.BindX != 0 || bindRecord.BindY != 0))
             {
@@ -1528,6 +1534,8 @@ namespace DOL.GS
             AfterRevive165(released: false);
             Brain?.FSM?.SetCurrentState(eFSMStateType.FOLLOW);
             Brain?.Start();
+            // SmartAI: raised beside aggressive monsters, it steps out of their aggro first.
+            (Brain as BotBrain)?.AutonomousController?.SmartAfterRevive(this);
             Say(Random.Shared.Next(3) switch
             {
                 0 => $"My thanks, {caster?.Name ?? "friend"}. I am ready to continue.",

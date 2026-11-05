@@ -119,22 +119,31 @@ namespace DOL.GS.SmartAI
         }
 
         /// <summary>
-        /// Pure: the pull band.
+        /// The gear score a bot of this level normally has (improvised from the 2026-11-05 test run, where level 4-9
+        /// groups scored 22-74: low-level bots wear starter pieces below their level and leave slots empty).
+        /// </summary>
+        public static int ExpectedGearScore(int level) => level < 10 ? 45 : level < 20 ? 60 : level < 35 ? 70 : 80;
+
+        /// <summary>
+        /// Pure: the pull band (retuned 2026-11-05 after the first test run put every low-level group on green-blue).
         /// - Size: 8 purple, 6-7 red, 4-5 orange, smaller yellow.
-        /// - Level (lower levels are hit harder by a higher monster; below 10 each level is a whole colour): below 10
-        ///   two colours down, 10-19 one down.
-        /// - Gear: 90+ as is, 75-89 one down, 55-74 two down, below 55 three down.
+        /// - Level (lower levels are hit harder by a higher monster; below 10 each level is a whole colour): below 20
+        ///   one colour down.
+        /// - Gear, against what is normal for the level (ExpectedGearScore): at or above it as is, 80% of it one down,
+        ///   60% two down, below that three down.
         /// - No tank one down, no healer one down; recent wipes one down each (at most two).
+        /// - A group of five or more with a tank and a healer never goes below yellow, unless it has wiped.
         /// - Never above purple or below blue for the top; the bottom is one colour below the top (green under blue).
         /// </summary>
         public static SmartPullBand Band(int groupSize, int averageLevel, int gearScore, bool hasTank, bool hasHealer, int wipes)
         {
             int top = groupSize >= 8 ? 3 : groupSize >= 6 ? 2 : groupSize >= 4 ? 1 : 0;
             var why = new List<string> { $"size {groupSize}" };
-            int levelSteps = averageLevel < 10 ? 2 : averageLevel < 20 ? 1 : 0;
+            int levelSteps = averageLevel < 20 ? 1 : 0;
             if (levelSteps > 0)
                 why.Add($"level {averageLevel} -{levelSteps}");
-            int gearSteps = gearScore >= 90 ? 0 : gearScore >= 75 ? 1 : gearScore >= 55 ? 2 : 3;
+            double gearRatio = gearScore / (double)ExpectedGearScore(averageLevel);
+            int gearSteps = gearRatio >= 1.0 ? 0 : gearRatio >= 0.8 ? 1 : gearRatio >= 0.6 ? 2 : 3;
             if (gearSteps > 0)
                 why.Add($"gear -{gearSteps}");
             top -= levelSteps + gearSteps;
@@ -142,6 +151,11 @@ namespace DOL.GS.SmartAI
             if (!hasHealer) { top--; why.Add("no healer -1"); }
             int wipeSteps = Math.Clamp(wipes, 0, 2);
             if (wipeSteps > 0) { top -= wipeSteps; why.Add($"wipes -{wipeSteps}"); }
+            if (groupSize >= 5 && hasTank && hasHealer && wipeSteps == 0 && top < (int)ConColor.YELLOW)
+            {
+                top = (int)ConColor.YELLOW;
+                why.Add("full group: yellow floor");
+            }
             top = Math.Clamp(top, (int)ConColor.BLUE, (int)ConColor.PURPLE);
             int bottom = Math.Max((int)ConColor.GREEN, top - 1);
             return new SmartPullBand((ConColor)bottom, (ConColor)top, gearScore, string.Join(", ", why));

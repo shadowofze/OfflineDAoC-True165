@@ -351,7 +351,11 @@ public static partial class AutonomousBotGroupCoordinator
             session.MeetupPlanned = true;
             session.PlannedCamp = camp;
             string where = session.RendezvousName;
-            if (camp != null && WorldMgr.GetRegion(camp.RegionId) is Region campRegion)
+            // SmartAI (owner 2026-11-05): meet at the formation town, the one nearest the leader, and travel to the camp
+            // together. Moving the meetup to the town nearest the camp sent every member there alone; in the
+            // 2026-11-05 test run one Albion party lost a member three times on the way to Prydwen Keep and broke up.
+            bool travelTogether = DOL.GS.SmartAI.SmartAiConfig.IsEnabled;
+            if (!travelTogether && camp != null && WorldMgr.GetRegion(camp.RegionId) is Region campRegion)
             {
                 Vector3 campPoint = new(camp.X, camp.Y, camp.Z);
                 float current = session.RendezvousRegion == camp.RegionId ? Vector3.Distance(session.Rendezvous, campPoint) : float.MaxValue;
@@ -379,6 +383,7 @@ public static partial class AutonomousBotGroupCoordinator
             session.LeaderReadyForAssembly = true;
             RebaseAttendance(session, members);
             Log.Info($"AUTONOMOUS_GROUP_MEETUP_PLANNED group={session.Id} town=\"{where}\" region={session.RendezvousRegion} " +
+                     (travelTogether ? "smartai=travel-together " : string.Empty) +
                      $"camp=\"{camp?.MonsterName ?? "none"}\" campRegion={camp?.RegionId ?? 0} " +
                      $"campDistance={(camp != null && camp.RegionId == session.RendezvousRegion ? (int)Vector3.Distance(session.Rendezvous, new(camp.X, camp.Y, camp.Z)) : -1)}");
             WriteSessionMetadata(session, members);
@@ -2623,6 +2628,8 @@ public static partial class AutonomousBotGroupCoordinator
                 other.GetDistanceTo(member) <= CohesionRadius))
             .ThenBy(member => member.DatabaseID)
             .FirstOrDefault();
+        if (TryChooseSmartLocalRegroup(session, members, anchor))
+            return;
         if (anchor != null && TryChooseRendezvous(anchor, session.ObjectiveKind,
                 out Vector3 nearby, out string nearbyName, out ushort nearbyRegion))
         {
@@ -2668,6 +2675,60 @@ public static partial class AutonomousBotGroupCoordinator
             session.RendezvousRegion = previousRegion;
             session.Rendezvous = previousPoint;
             TryBuildRendezvousSlots(session, BotMembers(session.Group));
+        }
+    }
+
+    /// <summary>
+    /// SmartAI (owner 2026-11-05: the survivors should not all run back for one member): while at least half the
+    /// party is alive and together, it regroups at a safe spot beside the survivors (AutonomousSmartSafeSpot) and
+    /// rests there while the fallen walk back from their bind. A worse loss keeps the town regroup.
+    /// </summary>
+    private static bool TryChooseSmartLocalRegroup(Session session, GameBot[] members, GameBot anchor)
+    {
+        if (!DOL.GS.SmartAI.SmartAiConfig.IsEnabled || anchor?.CurrentRegion == null || members.Length < 2 ||
+            anchor.CurrentZone?.IsDungeon == true || anchor.CurrentRegion.IsDungeon)
+            return false;
+        // A fight spreads the party; survivors within 2,000 units of each other count as together.
+        int together = members.Count(m => m.IsAlive && m.CurrentRegionID == anchor.CurrentRegionID &&
+            m.GetDistanceTo(anchor) <= 2_000);
+        if (together * 2 < members.Length)
+            return false;
+        try
+        {
+            Vector3 here = new(anchor.X, anchor.Y, anchor.Z);
+            int level = (int)Math.Round(members.Average(m => m.Level));
+            Vector3 spot = here;
+            if (!AutonomousSmartSafeSpot.TryFind(anchor.CurrentRegion, here, here, level, out Vector3 found, out bool safe, out _))
+            {
+                if (!safe)
+                    return false;
+            }
+            else
+                spot = found;
+            if (!AutonomousRendezvousNavigation.TryChoosePoint(PathfindingProvider.Instance, anchor.CurrentZone, spot, out Vector3 point))
+                return false;
+            Vector3 previous = session.Rendezvous;
+            string previousName = session.RendezvousName;
+            ushort previousRegion = session.RendezvousRegion;
+            session.Rendezvous = point;
+            session.RendezvousName = $"a safe spot in {anchor.CurrentZone?.Description ?? "the field"}";
+            session.RendezvousRegion = anchor.CurrentRegionID;
+            if (TryBuildRendezvousSlots(session, members))
+            {
+                Log.Info($"SMARTAI_GROUP_LOCAL_REGROUP group={session.Id} alive={together}/{members.Length} " +
+                         $"at={session.RendezvousRegion}:{(int)point.X},{(int)point.Y} moved={(int)Vector3.Distance(here, point)}");
+                return true;
+            }
+            session.Rendezvous = previous;
+            session.RendezvousName = previousName;
+            session.RendezvousRegion = previousRegion;
+            TryBuildRendezvousSlots(session, members);
+            return false;
+        }
+        catch (Exception e)
+        {
+            DOL.GS.SmartAI.SmartAiFallback.ReportFailure("local regroup", e);
+            return false;
         }
     }
 

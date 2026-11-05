@@ -109,8 +109,15 @@ With SmartAI on, autonomous gamebot groups choose their camps and travel more ca
   hard monster's aggro range is picked much less often.
 - **Learning.** Groups remember their kills and deaths per camp, and where members died on the road. Deadly
   camps and areas are picked less, safe ones more. Old results fade (half of their weight a week by default).
-- **Travel.** A member walking alone (to the meeting point, back after a death, or far behind the leader) goes
-  around aggressive monsters on its route. The leader keeps extra room for the members beside it.
+- **Travel.** A new group meets at the town nearest its leader and walks to the camp together, instead of each
+  member walking alone to a town near the camp. A member walking alone (to the meeting point, back after a death,
+  or far behind the leader) goes around aggressive monsters on its route. The leader keeps extra room for the
+  members beside it.
+- **Binding.** At the meeting town each member binds at the town's bind stone, as a player would, and a group
+  member who releases goes back to that bind.
+- **After a death.** A bot raised beside aggressive monsters first walks out of their aggro. When one member dies
+  but at least half the party is still together, the survivors wait and rest at a safe spot nearby while the fallen
+  walk back; only a worse loss sends the party to a town to regroup.
 
 Two files in `runtime/server/state-165` hold this. Delete either one to start over:
 
