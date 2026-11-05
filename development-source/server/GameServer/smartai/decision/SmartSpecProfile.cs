@@ -268,6 +268,9 @@ namespace DOL.GS.SmartAI
         public string MeleeBanReason { get; }
         /// <summary>Section 12's mana floor; offensive spells below it score a quarter.</summary>
         public int ManaFloorPercent { get; }
+        /// <summary>Section 12's "Sit Between Heals": 0 = never; else the bot sits in a PvE fight while every group member
+        /// is above this health (SmartCombatSit).</summary>
+        public int SitBetweenHealsAbovePercent { get; }
         /// <summary>The spec says when to heal. If not, offense keeps the legacy habit of healing on the way.</summary>
         public bool HasTriageRules { get; }
         /// <summary>Section 11's realm abilities SmartAI can fire, highest priority first.</summary>
@@ -307,6 +310,7 @@ namespace DOL.GS.SmartAI
             MeleeBanned = meleeBanned;
             MeleeBanReason = reason;
             ManaFloorPercent = spec.ManaFloorPercent ?? 0;
+            SitBetweenHealsAbovePercent = spec.SitBetweenHealsAbovePercent is int sit and > 0 and < 100 ? sit : 0;
             HasTriageRules = rules.Any(r => r.Family == SmartActionFamily.Triage && r.Priority > 0);
         }
 

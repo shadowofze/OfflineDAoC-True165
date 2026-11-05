@@ -1355,6 +1355,9 @@ namespace DOL.GS.Spells
 			GamePlayer playerCaster = Caster as GamePlayer;
 			DbInventoryItem playerWeapon = null;
 
+			// /smartai debuggroup: the spell a group member (player or bot) just cast. Read only.
+			DOL.GS.SmartAI.SmartGroupCombatLog.SpellLanded(Caster, Spell, target);
+
 			// True 1.65 Mode: a bot's staff wears from its harmful spells like a player's (audit 2026-10-31).
 			if (Caster is GameBot wearingBot && !HasPositiveEffect)
 				ItemWear165.Wear(wearingBot, wearingBot.ActiveWeapon);

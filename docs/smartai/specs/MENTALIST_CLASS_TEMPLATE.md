@@ -53,6 +53,7 @@ Lethal burst coordination and continuous health regeneration. The Light Mentalis
 ### 6a. Mode: PvE Standard
 - **Assist DPS**: Assist main tank on designated target.
 - **HoT Sustain**: Keep HoT running on main tank.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (HoT Provider & Sniper Role)
 - **Role During Pet Pulling**: The Mentalist is **NOT the puller**. It acts as stationary HoT support, stun peeler, and sniper.
@@ -71,6 +72,7 @@ Lethal burst coordination and continuous health regeneration. The Light Mentalis
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
 - **The 85% Mob Health Trigger**:
   - Once mobs reach **85% health**, unleash spec Energy DD nukes on the designated primary kill target.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -127,6 +129,7 @@ Lethal burst coordination and continuous health regeneration. The Light Mentalis
 ### 12. Resource Management
 - **Mana Floor**: 20%
 - **HoT Efficiency**: Refresh HoT only when 1–2 ticks remain.
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Keep Heal-over-Time (HoT) active on the pet 100% of the time during pet pulls.
@@ -193,6 +196,7 @@ Group resource sustainability paired with wide-area attrition. The Mana Mentalis
 ### 6a. Mode: PvE Standard
 - **Multi-Mob AoE DoT**: Blanket multi-mob pulls in spec AoE DoTs once tanks establish aggro.
 - **Power Transfer**: Top off the party healer's mana during prolonged dungeon encounters.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (AoE DoT & Battery Role)
 - **Role During Pet Pulling**: The Mana Mentalist is **NOT the puller**. It acts as stationary power battery, peeler, and AoE DoT finisher.
@@ -210,6 +214,7 @@ Group resource sustainability paired with wide-area attrition. The Mana Mentalis
   - Once the pet's pulsing damage shield whittles the incoming mob cluster down to **85% health**, the Mana Mentalist unleashes **AoE DoTs** into the center of the cluster around the pet to accelerate the group melt!
 - **Group Stays Put (Strict Stationary Discipline)**:
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -264,6 +269,7 @@ Group resource sustainability paired with wide-area attrition. The Mana Mentalis
 ### 12. Resource Management
 - **Power Reserve Floor**: 25% (Reserve power for mana transfers to healers)
 - **Transfer Rule**: Do not transfer mana to allies if self mana is below 35%.
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Maintain continuous group Power Regeneration buff.
@@ -330,6 +336,7 @@ Battlefield containment and mass confusion. The Mentalism Mentalist immobilizes 
 ### 6a. Mode: PvE Standard
 - **Add Containment**: Immediately cast AoE Root on roaming adds that aggro during combat.
 - **Assist DPS**: Burn down primary target with Mentalism DD.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (Root Controller & Peeler Role)
 - **Role During Pet Pulling**: The Mentalism Mentalist is **NOT the puller**. It acts as stationary root controller and burst support.
@@ -342,6 +349,7 @@ Battlefield containment and mass confusion. The Mentalism Mentalist immobilizes 
   - Once the pet's pulsing damage shield whittles the incoming mob cluster down to **85% health**, the Mentalism Mentalist casts spec **Mentalism DD** into the designated primary kill target within the cluster.
 - **Group Stays Put (Strict Stationary Discipline)**:
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -394,6 +402,7 @@ Battlefield containment and mass confusion. The Mentalism Mentalist immobilizes 
 
 ### 12. Resource Management
 - **Mana Floor**: 20% (Reserve power for emergency roots and peels)
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Root incoming enemy melee trains in RvR with AoE Root.

@@ -428,6 +428,33 @@ namespace DOL.GS
             if (Mana < MaxMana) m_powerRegenerationTimer?.Start(GetPowerRegenerationInterval());
         }
 
+        // ---- SmartAI: sitting between heals in a PvE fight (owner 2026-11-05, SmartCombatSit)
+        // Only the seat a player takes: the player's seated regeneration interval (in combat, too), no evade, parry or
+        // block, no rest lock and no bot fast rest. It stands to cast, attack or move, and when an enemy hits it.
+
+        /// <summary>Seated between heals: seated without the rest lock.</summary>
+        public bool IsCombatSeated => _seatedForClients && !_recoveryRestLocked;
+
+        /// <summary>When it last stood from a sit between heals (it waits a little before sitting again).</summary>
+        internal long CombatSeatStoodAt { get; private set; }
+
+        internal bool SitBetweenHeals()
+        {
+            if (!Classic165Mode.IsOn || !IsAlive || _recoveryRestLocked || IsMoving || IsCasting || IsAttacking)
+                return false;
+            if (!_seatedForClients)
+                SetSeatedForClients(true);
+            return true;
+        }
+
+        internal void StandFromCombatSeat()
+        {
+            if (!IsCombatSeated)
+                return;
+            SetSeatedForClients(false);
+            CombatSeatStoodAt = GameLoop.GameLoopTime;
+        }
+
         /// <summary>
         /// Moves an already-running ordinary regeneration timer onto the
         /// bot-only fast cadence when the two-second quiet window opens. The
@@ -3075,9 +3102,12 @@ namespace DOL.GS
                 !BotSongTwistPolicy.IsMobileSong(this, spell))
                 WakeRecoveryRest();
             // 1.65 Mode: a seated bot stands to cast, as a player does (a song keeps the rest; it sits again after)
-            if (_seatedForClients)
+            if (IsCombatSeated)
+                StandFromCombatSeat();
+            else if (_seatedForClients)
                 SetSeatedForClients(false);
             bool started = base.CastSpell(spell, line, spellCastingAbilityHandler, checkLos);
+            DOL.GS.SmartAI.SmartGroupCombatLog.Cast(this, spell, TargetObject, started);
             if (spell.IsHarmful || spell.IsHealing)
                 Trace165($"{(started ? "cast" : "refused")} {spell.Name} d={TraceDistance165()}");
             LogCompanionCast165(spell, started ? "cast" : "refused");
@@ -3099,6 +3129,8 @@ namespace DOL.GS
             // parked party is still recovering.
             if (target != null && IsRecoveryResting)
                 return;
+            if (target != null)
+                StandFromCombatSeat();
 
             // A ranged shot owns its aim/release animation.  Reissuing the
             // same target every think pulse used to reset that state, producing
@@ -3111,6 +3143,8 @@ namespace DOL.GS
                 (TargetObject == target || rangeAttackComponent.AutoFireTarget == target))
                 return;
 
+            if (target != null && (!attackComponent.AttackState || TargetObject != target))
+                DOL.GS.SmartAI.SmartGroupCombatLog.Attack(this, target);
             if (target != null && (!attackComponent.AttackState || TargetObject != target))
                 Trace165($"attack {target.Name} {ActiveWeaponSlot} d={(target.CurrentRegion == CurrentRegion ? (int)GetDistanceTo(target) : -1)}");
             base.StartAttack(target);
@@ -3335,6 +3369,14 @@ namespace DOL.GS
             {
                 _lastHitTrace165 = GameLoop.GameLoopTime;
                 Trace165($"hit by {ad.Attacker.Name} {ad.AttackResult} {ad.Damage + ad.CriticalDamage} hp={HealthPercent}% pow={ManaPercent}%");
+            }
+            DOL.GS.SmartAI.SmartGroupCombatLog.Touch(this);
+            // SmartAI: a bot sitting between heals gets up when an enemy attacks it
+            if (ad?.Attacker != null && IsCombatSeated)
+            {
+                StandFromCombatSeat();
+                if (Brain is BotBrain wokenBrain)
+                    wokenBrain.NextThinkTick = GameLoop.GameLoopTime;
             }
             // Notify BotBrain of the attack so it can add aggro and transition to combat state
             if (Brain is BotBrain botBrain)
@@ -5431,6 +5473,8 @@ namespace DOL.GS
 
             if (speed > 0 && IsRecoveryResting)
                 return;
+            if (speed > 0)
+                StandFromCombatSeat();
 
             // Persistent actors use collision-safe navigation for every ordinary
             // walk order, including combat approaches and service interactions.
@@ -5447,6 +5491,8 @@ namespace DOL.GS
         {
             if (speed > 0 && IsRecoveryResting)
                 return;
+            if (speed > 0)
+                StandFromCombatSeat();
             base.PathTo(position, speed);
         }
 
@@ -5454,6 +5500,8 @@ namespace DOL.GS
         {
             if (target != null && IsRecoveryResting)
                 return;
+            if (target != null)
+                StandFromCombatSeat();
             base.Follow(target, minDistance, maxDistance);
         }
 

@@ -31,6 +31,8 @@ namespace DOL.GS
             AutonomousWorldBotController.PrepareCampPlanningTick();
             if (SmartAI.SmartAiConfig.IsEnabled)
                 SmartAI.SmartAiCoordinator.PrepareTick();
+            // /smartai debuggroup: writes each group's completed fights (also for legacy-AI groups)
+            SmartAI.SmartGroupCombatLog.Tick();
             int lastValidIndex;
 
             try

@@ -57,6 +57,7 @@ Ally survival is paramount. The Mending Shaman maintains backline positioning, t
 - **Aggro Management**: Hold major heals for 1.5 seconds on pull until the frontline tank lands initial taunt or melee styles to prevent pulling healing aggro.
 - **Pacing**: Monitor group mana. Call for rest when party mana drops below 35%.
 - **Emergency Add Control**: If an un-taunted monster charges the party (`TryShamanPveAddRoot`), cast single-target root (Creeper) while the add is > 300 units away, then resume group healing.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling
 - **Mobs Stay on the Pet (Damage Shield Does the Damage)**:
@@ -75,6 +76,7 @@ Ally survival is paramount. The Mending Shaman maintains backline positioning, t
 - **Group Triage & 85% AoE Window**:
   - Maintain triage on group members if they take stray or incidental damage.
   - At ~85% mob health, when AoE casters begin blasting the pack, maintain stationary heal support on party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -135,6 +137,7 @@ Ally survival is paramount. The Mending Shaman maintains backline positioning, t
   - Target HP 35%–70%: `HealBig` (Major Heal)
   - Target HP < 35%: `Mastery of Concentration` + `HealBig`
   - 3+ members < 70%: `HealGroup`
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Monitor group crowd-control status and trigger `Purge` decisively.
@@ -217,6 +220,7 @@ Enrich and sustain the group. The Aug Shaman ensures Midgard's heavy melee front
 - **Endo Supply**: Ensure continuous uptime of spec Endurance Regeneration so melee party members can style without running dry.
 - **Pre-Combat Buffing**: Cast full suite of base and spec buffs during setup phase.
 - **Add Containment**: Execute `TryShamanPveAddRoot` to lock down roaming adds targeting the party.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling
 - **Mobs Stay on the Pet (Damage Shield Does the Damage)**:
@@ -235,6 +239,7 @@ Enrich and sustain the group. The Aug Shaman ensures Midgard's heavy melee front
 - **Group Triage & 85% AoE Window**:
   - Maintain triage and endurance regen on group members.
   - At ~85% mob health, when AoE casters begin blasting the pack, maintain stationary support on party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -292,6 +297,7 @@ Enrich and sustain the group. The Aug Shaman ensures Midgard's heavy melee front
 - **Triage Thresholds**:
   - Target HP 50%–75%: Baseline `HealEfficient`
   - Target HP < 50%: Baseline `HealBig`
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Keep group Endurance Regeneration active 100% of the time during combat.
@@ -370,6 +376,7 @@ Offensive disruption and pressure. The Cave Shaman cripples enemy coordination b
 - **Add Lockdown**: Prioritize rooting roaming adds that aggro onto the group using single-target root (Creeper), keeping them isolated until the primary target dies.
 - **Offensive Rotation**: Once adds are controlled and group is stable, cast Disease on the main target, apply DoT, and cast DD/Bolt when recasts are up.
 - **Secondary Healing**: Cast baseline heals if the group healer is incapacitated or out of mana.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling
 - **Mobs Stay on the Pet (Damage Shield Does the Damage)**:
@@ -388,6 +395,7 @@ Offensive disruption and pressure. The Cave Shaman cripples enemy coordination b
     - Cast **AoE Disease** (`Plague` / `Epidemic`) into the cluster around the pet to slow attack speeds and soften the entire pack.
     - Cast **AoE DoT / Stacking DoTs** onto the clustered mobs to accelerate the burn.
   - Maintain strict stationary positioning while channeling spells into the cluster surrounding the pet.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -447,6 +455,7 @@ Offensive disruption and pressure. The Cave Shaman cripples enemy coordination b
 ### 12. Resource Management
 - **Mana Reserve Floor**: 20% (Reserve power for emergency CC and spot heals)
 - **AoE Conservation**: If mana drops below 30%, stop casting AoE DoTs and transition to high-efficiency single-target spells.
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Open RvR engagements with AoE Disease on enemy caster/healer lines.

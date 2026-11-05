@@ -55,6 +55,7 @@ All actions prioritize ally survival over offensive action. The Rejuvenation Cle
 - **Aggro Management**: Hold major heals for 1.5 seconds on pull until the main tank lands a taunt style (`StylesTaunt`) or offensive spell to prevent pulling initial healing aggro.
 - **Pacing**: Monitor group mana. Alert group to rest when mana drops below 35%. Prioritize resting between pulls.
 - **Emergency Adds**: If an un-taunted add targets the Cleric, cast instant stun (if trained) or step directly to the tank while continuing triage.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling
 - **Mobs Stay on the Pet (Damage Shield Does the Damage)**:
@@ -72,6 +73,7 @@ All actions prioritize ally survival over offensive action. The Rejuvenation Cle
 - **Group Triage & 85% AoE Window**:
   - Maintain triage on group members if they take stray or incidental damage.
   - At ~85% mob health, when AoE casters begin blasting the pack, maintain stationary heal support on party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -131,6 +133,7 @@ All actions prioritize ally survival over offensive action. The Rejuvenation Cle
   - Target HP < 35%: `HealInstant` + `HealBig`
   - 3+ members < 70%: `HealSpread` / `HealGroup`
   - Fallen Ally: Cast `Combat Resurrection` only when incoming group damage has stabilized.
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Pre-cast heals on tanks initiating large pulls or absorbing focus trains.
@@ -142,7 +145,7 @@ All actions prioritize ally survival over offensive action. The Rejuvenation Cle
 - MUST NOT engage in melee combat under any circumstances.
 - MUST NOT cast offensive Smite spells while any ally is below 85% HP.
 - MUST NOT use area-of-effect spells near crowd-controlled (mezzed) targets.
-- MUST NOT sit to rest while any group member has active combat aggro within 2000 units.
+- MUST NOT sit during a fight while any party member is at or below 90% health, while a monster is attacking the Cleric, or against enemy players.
 - MUST NOT break line-of-sight to the group's main tank.
 - MUST NOT cast direct heals on the pet before mobs have lost ~5% of their life during an active pet pull.
 - MUST NOT cast large heals on the pet when a small efficient heal is sufficient to sustain it.
@@ -213,6 +216,7 @@ Maintains maximum spec Armor Factor (AF), Strength/Constitution, and Dexterity/Q
 - **Pre-Pull Buffing**: Cast full suite of spec buffs before initiating camp pulls.
 - **Secondary Healing**: Cover spot-heals on off-tanks and DPS, allowing the primary healer to conserve mana for the main tank.
 - **Add Lockdown**: Step in to stun loose monster adds with shield styles until the main tank can establish aggro.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling
 - **Pre-Pull Pet Durability Buffing**:
@@ -230,6 +234,7 @@ Maintains maximum spec Armor Factor (AF), Strength/Constitution, and Dexterity/Q
 - **Cast Embargo on Main Pack Above ~85% Mob Health**:
   - Hold all offensive casting on the main cluster while mobs are above ~85% health.
   - Once the pack reaches ~85% health, provide support casting or spot-heals on party members as needed while AoE casters melt the cluster down.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -285,6 +290,7 @@ Maintains maximum spec Armor Factor (AF), Strength/Constitution, and Dexterity/Q
 - **Mana Floor**: 25% (Reserve mana for emergency spot-heals and rebuffing fallen allies)
 - **Buff Priority**: Spec AF > Spec Str/Con > Spec Dex/Qui > Base AF > Base Stats
 - **Heal Thresholds**: Cast `HealEfficient` when ally HP 50%–75%; cast `HealBig` when ally HP < 50%.
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Rebuff fallen group members immediately after they are resurrected and stabilized.
@@ -363,6 +369,7 @@ Operates as an offensive caster with chainmail defense and shield capability. Fo
 - **Focus Fire**: Rapidly burn down targets called by the Main Assist.
 - **Area Smite**: Use targeted holy AoE smite on multi-mob pulls (ensuring no mezzed adds are clipped).
 - **Runner Execution**: Snare or finish low-HP mobs attempting to flee and pull additional camps.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling
 - **Mobs Stay on the Pet (Damage Shield Does the Damage)**:
@@ -376,6 +383,7 @@ Operates as an offensive caster with chainmail defense and shield capability. Fo
 - **The 85% Mob Health AoE Trigger**:
   - **HOLD AoE on Main Pack Above ~85% HP**: While the main pack is above ~85% health, hold all area-of-effect spells and let the damage shield do the work.
   - **UNLEASH AREA OF EFFECT AT ~85% HP**: Once the mob pack reaches approximately **85% health**, immediately begin casting Area of Effect spells (Targeted AoE Smite / Point-Blank AoE Smite) on the pack clustered around the pet to melt the mobs down together with the other group AoE casters.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -433,6 +441,7 @@ Operates as an offensive caster with chainmail defense and shield capability. Fo
 - **Aggressive Mana Floor**: 15% (Permit aggressive mana expenditure to secure kills)
 - **Power Pacing**: Pop MCL and Mana Potions proactively to maintain continuous nuke chains.
 - **Conserve Mode**: If group fight is prolonged and target is > 60% HP, downshift to efficient baseline nukes.
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Synchronize Smite nukes with the Main Assist's target calls.

@@ -73,6 +73,7 @@ namespace DOL.GS.SmartAI
                 // Only for a class that has a file: why this bot has no spec (untrained, a tie) is worth seeing.
                 if (bot.CharacterClass != null && SmartAiSpecRegistry.Active.Classes.ContainsKey(bot.CharacterClass.ID))
                     RecordLegacy(bot, "(no spec)", $"no spec: {how}");
+                SmartGroupCombatLog.Think(bot, new SmartDecision("(no spec)", "Legacy", 0, $"no spec: {how}", GameLoop.GameLoopTime));
                 return false;
             }
             SmartSpecProfile profile = SmartSpecProfile.For(spec);
@@ -108,27 +109,29 @@ namespace DOL.GS.SmartAI
             // Realm abilities first (Phase 6): instant, and Purge is for the moment the bot is mezzed or stunned.
             if (SmartRealmAbilities.TryUse(bot, profile, perception, out SmartAbilityRule used))
             {
-                SmartAiDiagnostics.Record(bot, new SmartDecision(spec.Name, used.Key.Replace("AtlasOF_", ""), used.Priority, used.Source, GameLoop.GameLoopTime));
+                var ability = new SmartDecision(spec.Name, used.Key.Replace("AtlasOF_", ""), used.Priority, used.Source, GameLoop.GameLoopTime);
+                SmartAiDiagnostics.Record(bot, ability);
+                SmartGroupCombatLog.Think(bot, ability, perception, target, default);
                 return true;
             }
 
             // An order or a pull hold stays with the legacy brain.
-            string legacyReason = brain.SmartAiLegacyOwnsTurnReason;
+            string legacyReason = brain.SmartAiLegacyOwnsTurnReason ?? (perception.Incapacitated ? "stunned or mezzed" : null);
             if (legacyReason != null)
             {
                 RecordLegacy(bot, spec.Name, legacyReason);
-                return false;
-            }
-            if (perception.Incapacitated)
-            {
-                RecordLegacy(bot, spec.Name, "stunned or mezzed");
+                SmartGroupCombatLog.Think(bot, new SmartDecision(spec.Name, "Legacy", 0, legacyReason, now), perception, target, default);
                 return false;
             }
 
             Span<SmartActionCandidate> buffer = stackalloc SmartActionCandidate[SmartCandidateGenerator.FamilyCount];
             int count = SmartCandidateGenerator.Generate(profile, perception, buffer);
             bool handled = SmartActionExecutor.Execute(brain, target, profile, perception, buffer[..count], out SmartDecision decision);
-            SmartAiDiagnostics.Record(bot, decision);
+            SmartGroupCombatLog.Think(bot, decision, perception, target, buffer[..count]);
+            // Sitting between heals is recorded once per sit, not every think it stays seated.
+            if (decision.Action != "Sit" || !SmartAiDiagnostics.TryGetRing(bot, out SmartAiDiagnostics.DecisionRing sitRing) ||
+                sitRing.Last?.Action != "Sit")
+                SmartAiDiagnostics.Record(bot, decision);
             // Guard / Protect / Intercept upkeep whatever the action (the legacy brain only ran it in its full offense).
             brain.SmartAiMaintainPeel();
             return handled;

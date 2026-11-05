@@ -43,6 +43,15 @@ namespace DOL.GS.SmartAI
                 }
             }
 
+            // Nothing to cast: a spec with "Sit Between Heals" sits to regain power while the whole group is healthy
+            // (SmartCombatSit; PvE only). Otherwise it stands up, if it was sitting, and the think goes on as before.
+            if (brain.BotBody is { } body && SmartCombatSit.TrySit(brain, body, profile, p, out string sitNote))
+            {
+                brain.AlreadyCheckedHeals = true;
+                decision = new SmartDecision(profile.Spec.Name, "Sit", 0, sitNote, GameLoop.GameLoopTime);
+                return true;
+            }
+
             if (support)
             {
                 // Nothing in the spec applies now: the legacy support turn (buffs, add control, formation), with the

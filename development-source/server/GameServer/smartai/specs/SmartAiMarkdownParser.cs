@@ -316,15 +316,17 @@ namespace DOL.GS.SmartAI
                 }
 
                 int? manaFloor = null;
+                int? sitAbove = null;
                 if (sections.TryGetValue(SmartSpecSectionKeys.Resources, out SmartSpecSection resources))
                 {
                     foreach ((string key, string value) in resources.Values)
                     {
-                        if (key.Contains("Mana Floor", StringComparison.OrdinalIgnoreCase) && Percent.Match(value) is { Success: true } pm)
-                        {
+                        if (manaFloor == null && key.Contains("Mana Floor", StringComparison.OrdinalIgnoreCase) &&
+                            Percent.Match(value) is { Success: true } pm)
                             manaFloor = int.Parse(pm.Groups["n"].Value, CultureInfo.InvariantCulture);
-                            break;
-                        }
+                        else if (sitAbove == null && key.Contains("Sit Between Heals", StringComparison.OrdinalIgnoreCase) &&
+                                 Percent.Match(value) is { Success: true } sm)
+                            sitAbove = int.Parse(sm.Groups["n"].Value, CultureInfo.InvariantCulture);
                     }
                 }
 
@@ -340,6 +342,7 @@ namespace DOL.GS.SmartAI
                     RealmAbilityOrder = realmAbilities,
                     ProhibitionsAreHard = prohibitionTitle.Contains("MUST NOT", StringComparison.OrdinalIgnoreCase),
                     ManaFloorPercent = manaFloor,
+                    SitBetweenHealsAbovePercent = sitAbove,
                 };
             }
         }

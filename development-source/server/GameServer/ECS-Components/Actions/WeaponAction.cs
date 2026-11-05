@@ -359,6 +359,9 @@ namespace DOL.GS
                 eAttackResult.Parried or eAttackResult.Missed or eAttackResult.Fumbled)
                 ItemWear165.Wear(_owner, attackData.Weapon);
 
+            // /smartai debuggroup: a group member's swing (style, position) or defense (parry, block, evade). Read only.
+            DOL.GS.SmartAI.SmartGroupCombatLog.Swing(attackData);
+
             // Notify the target of our attack (sends damage messages, should be before damage).
             target.OnAttackedByEnemy(attackData);
 

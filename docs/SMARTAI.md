@@ -32,6 +32,9 @@ edit these files to change how a class plays: see [SMARTAI-CLASS-FILES.md](SMART
 - An Enhancement Cleric heals instead of smiting when nobody else in the group is healing.
 - Use Mastery of Concentration when a monster reaches them, and Bunker of Faith when the group takes heavy damage (if
   their specialization uses those realm abilities).
+- Sit between heals in a fight against monsters to keep their power up, while everyone in the group is above 90%
+  health and nothing is attacking them (Mentalist, Druid, Healer, Shaman, Cleric, Friar, Warden and Bard, except
+  the melee specializations). They stand to heal, when hit, or when you move.
 
 **Tanks**
 
@@ -105,6 +108,28 @@ Target a companion or bot and type:
 | `/smartai spec` | which specialization the bot fights as, and why |
 | `/smartai group` | the group's main assist, target, strategy and wounded |
 | `/smartai debug` | the bot's last SmartAI decisions (`/smartai debug 32` for more) |
+| `/smartai debuggroup` | records every bot group's finished fights, one file per group (see below) |
+
+**Recording how groups fight.** `/smartai debuggroup` records every group that has a bot in it (`/smartai debuggroup
+mine` records only your group, or your target's). Each group gets its own file in
+`runtime/logs/smart_ai_groups`. A fight is written only once it is over: the whole group, pets included, has been
+out of combat for a few seconds, and no mesmerized or rooted enemy is still near. A fight cut short (the group
+breaks up, you turn recording off, the server stops) is dropped rather than written in part. Each fight has:
+
+- the group: every member's name, kind (player, hired, gamebot), class, level, SmartAI spec, role, personality, and
+  health and power at the start and end;
+- the time since the last fight, how it was spent (resting, the leader moving, other), and the leader's goal for
+  gamebot groups;
+- a timeline: SmartAI decisions when they change (with the options it weighed), every member's spells (players
+  too) as they land, melee styles with where the attacker stood (front, side or back), the group's target calls,
+  deaths, sitting;
+- melee: each member's swings by position, the styles used, styles that did not fire, and their parries, blocks and
+  evades with the reactive styles that followed (a bot that knew a reactive style and didn't use it is marked `!`);
+- a summary per bot, and flags such as a caster meleeing (marked `!`, with its last decision) or a bot that did
+  nothing.
+
+`/smartai debuggroup status` shows what is recorded; `/smartai debuggroup off` stops. Recording stays on until you
+turn it off or the server stops.
 
 Every `/smartai` command and its answer are saved to `runtime/logs/smartai-session-<server start time>.log`. If a bot does
 something odd, run `/smartai debug` on it right away, then send that log file with a short description of what

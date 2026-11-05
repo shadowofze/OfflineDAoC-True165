@@ -55,6 +55,7 @@ Defensive fortification and backline protection. The Nurture Warden anchors near
 ### 6a. Mode: PvE Standard
 - **PBT Uptime**: Ensure PBT is pulsing at all times during combat.
 - **Peel & Taunt**: Peeling loose monsters off casters using shield stun and melee styles.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (PBT Anchor & Peeler Role)
 - **Role During Pet Pulling**: The Warden is **NOT the puller**. It acts as stationary PBT protection, peeler, and secondary healer.
@@ -73,6 +74,7 @@ Defensive fortification and backline protection. The Nurture Warden anchors near
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
 - **The 85% Mob Health Trigger**:
   - At ~85% mob health, engage the designated primary kill target with melee styles while maintaining PBT.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -128,6 +130,7 @@ Defensive fortification and backline protection. The Nurture Warden anchors near
 ### 12. Resource Management
 - **Mana Floor**: 25% (PBT consumes pulsing power; reserve mana for heals and PBT maintenance)
 - **Endurance**: Conserved for shield stuns and peeling styles.
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Keep Pulsing Bladeturn running 100% of the time during combat.
@@ -327,6 +330,7 @@ Life support protected by physical shielding. The Regrowth Warden focuses primar
 
 ### 6a. Mode: PvE Standard
 - **Dedicated Healing**: Manage party triage while keeping PBT active.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (Healer & PBT Role)
 - **Role During Pet Pulling**: The Regrowth Warden is **NOT the puller**. It acts as stationary PBT sustainer and smart pet healer.
@@ -344,6 +348,7 @@ Life support protected by physical shielding. The Regrowth Warden focuses primar
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
 - **The 85% Mob Health Window**:
   - At ~85% mob health, maintain PBT and group heal triage on party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -397,6 +402,7 @@ Life support protected by physical shielding. The Regrowth Warden focuses primar
 
 ### 12. Resource Management
 - **Mana Floor**: 25% (PBT + heals drain power; reserve mana for emergency heals)
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Keep Pulsing Bladeturn running continuously.

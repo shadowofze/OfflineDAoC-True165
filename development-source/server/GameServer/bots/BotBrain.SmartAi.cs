@@ -212,6 +212,16 @@ namespace DOL.AI.Brain
             return n;
         }
 
+        /// <summary>Enemies of this bot's fight targeting it, at any range (SmartCombatSit: no sitting with one on it).</summary>
+        internal int SmartAiEnemiesOnMe()
+        {
+            int n = 0;
+            foreach (var entry in AggroList)
+                if (entry.Key is { IsAlive: true } enemy && enemy.TargetObject == Body && enemy.CurrentRegionID == Body.CurrentRegionID)
+                    n++;
+            return n;
+        }
+
         /// <summary>The whole legacy offense (target, pets, taunts, spells, bow and melee).</summary>
         internal void SmartAiFullOffense(bool allowHeals)
         {

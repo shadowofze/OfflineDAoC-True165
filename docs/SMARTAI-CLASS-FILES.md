@@ -229,7 +229,7 @@ only some of them:
 | **9** | Target Priorities | **Yes**: the friendly lines (whom to heal) |
 | 10 | Positioning Preferences | No |
 | **11** | Ability Usage Priorities | **Yes**: realm abilities, Guard and Protect |
-| **12** | Resource Management | **Yes**: mana floor, heal thresholds |
+| **12** | Resource Management | **Yes**: mana floor, sitting between heals, heal thresholds |
 | 13 | What the AI SHOULD Do | No |
 | **14** | What the AI MUST NOT Do | **Yes**: a melee ban |
 | 15 | Group Responsibilities (or Target Selection Matrix) | No |
@@ -293,12 +293,13 @@ On each combat think:
    | Triage, the group called emergency healing | +30 |
    | Triage, against players with someone below 65% | +10 |
    | Personality, unless someone is below 40% | ×0.80 to ×1.25 |
-   | Offensive spells, below the [mana floor](#section-12-mana-floor-and-heal-thresholds) | ÷4 |
+   | Offensive spells, below the [mana floor](#section-12-mana-floor-sitting-between-heals-and-heal-thresholds) | ÷4 |
    | The same action as the last think (within 1.5 seconds) | +15 |
 
 4. The highest score is tried first. If it has nothing to do (nobody to heal, no spell ready), the next is tried.
-5. If nothing acts: a support bot does its normal support turn; a spec that bans melee holds still; any other bot
-   uses its normal AI for that think.
+5. If nothing acts: a spec with [Sit Between Heals](#section-12-mana-floor-sitting-between-heals-and-heal-thresholds)
+   may sit; otherwise a support bot does its normal support turn, a spec that bans melee holds still, and any other
+   bot uses its normal AI for that think.
 
 A spec that has any triage rule heals only through its triage rules. A spec with no triage rule keeps the normal
 bot habit of healing while attacking.
@@ -362,7 +363,7 @@ shaman, friar, bard and priest:
 
 This works in sections 7, 8, 9 and 11, for any line above priority 0.
 
-## Section 12: mana floor and heal thresholds
+## Section 12: mana floor, sitting between heals and heal thresholds
 
 **Mana floor.** A bullet whose bold label contains `Mana Floor`, with a percentage:
 
@@ -372,6 +373,27 @@ This works in sections 7, 8, 9 and 11, for any line above priority 0.
 
 Below this much power, offensive spells score a quarter of their value, so heals and buffs come first. Heals and
 buffs are never held back by it.
+
+**Sitting between heals.** A bullet whose bold label contains `Sit Between Heals`, with a percentage:
+
+```
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
+```
+
+In a fight against monsters (never against players), a bot with this line sits down to regain power faster when
+nothing in its spec has anything to do: no heal, cure, buff or spell. All of these must hold:
+
+- the bot and every living group member near it are above the percentage;
+- its power is not full;
+- no enemy is targeting it, and it hasn't been hit in the last 4 seconds;
+- it isn't casting, attacking or moving;
+- the group's leader is standing still within 800 units.
+
+It stands up to cast, attack or move, when an enemy hits it, and when any of these stops holding. After standing it
+waits 2.5 seconds before it sits again. Sitting gives the player's sitting regeneration and nothing more; like a
+sitting player, it can't evade, parry or block while seated. Without the line, the bot never sits in a fight. The
+Mentalist, Druid, Healer, Shaman, Cleric, Friar, Warden and Bard files use 90% in every specialization except the
+melee ones (Staff Friar, Battle Warden).
 
 **Heal thresholds.** Bullets that name heal kinds in backticks, with a health range, tell a healer which heal to use:
 

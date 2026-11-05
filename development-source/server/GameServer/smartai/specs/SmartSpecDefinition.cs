@@ -48,6 +48,10 @@ namespace DOL.GS.SmartAI
 
         /// <summary>The "Mana Floor" percentage of section 12, if it gives one.</summary>
         public int? ManaFloorPercent { get; init; }
+
+        /// <summary>The "Sit Between Heals" percentage of section 12, if it gives one: in a PvE fight the bot sits to
+        /// regain power while every group member is above it (SmartCombatSit).</summary>
+        public int? SitBetweenHealsAbovePercent { get; init; }
     }
 
     /// <summary>The ```yaml match_specs``` block.</summary>

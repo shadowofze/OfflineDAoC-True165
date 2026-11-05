@@ -53,6 +53,7 @@ Decisive group neutralization and protection. The Pac Healer dictates combat flo
 ### 6a. Mode: PvE Standard
 - **Add Containment**: Immediately cast AoE Mez or single Mez on any extra monster groups that aggro onto the party.
 - **Secondary Healing**: Assist the primary healer when multiple allies take damage.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (Crowd Control & Triage Role)
 - **Role During Pet Pulling**: The Healer is **NOT the puller**. It acts as stationary crowd control, peeler, and spot-heal support.
@@ -68,6 +69,7 @@ Decisive group neutralization and protection. The Pac Healer dictates combat flo
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
 - **The 85% Mob Health Window**:
   - At ~85% mob health, when AoE casters begin blasting the cluster, maintain group heal triage on party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -122,6 +124,7 @@ Decisive group neutralization and protection. The Pac Healer dictates combat flo
 
 ### 12. Resource Management
 - **Mana Floor**: 25% (Reserve power for emergency CC and critical triage)
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Open RvR battles with AoE Mesmerize.
@@ -190,6 +193,7 @@ Uncompromising ally survival through rapid heal triage. The Mending Healer prior
 - **Aggro Management**: Hold major heals for 1.5 seconds on pull until the frontline tank lands initial taunt to prevent pulling healing aggro.
 - **Pacing**: Monitor group mana. Call for rest when party mana drops below 35%.
 - **Emergency Triage**: Execute group heal if 3+ party members drop below 70% health.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (Dedicated Triage Anchor Role)
 - **Role During Pet Pulling**: The Mending Healer is **NOT the puller**. It acts as stationary triage anchor and smart pet healer.
@@ -206,6 +210,7 @@ Uncompromising ally survival through rapid heal triage. The Mending Healer prior
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
 - **The 85% Mob Health Window**:
   - At ~85% mob health, when AoE casters begin blasting the cluster, maintain stationary group triage on party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -264,6 +269,7 @@ Uncompromising ally survival through rapid heal triage. The Mending Healer prior
   - Target HP 35%–70%: `HealBig`
   - Target HP < 35%: `Mastery of Concentration` + `HealBig`
   - 3+ members < 70%: `HealGroup`
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Heal the pet using smallest heal after mobs lose ~5% health.
@@ -331,6 +337,7 @@ Combat acceleration and group enhancement. The Aug Healer empowers Midgard's hea
 ### 6a. Mode: PvE Standard
 - **Celerity Uptime**: Cast Celerity on pull so tanks and melee DPS burn down targets rapidly.
 - **Secondary Heals**: Interleave heals when primary healer is resting or under pressure.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (Buffer & Secondary Healer Role)
 - **Role During Pet Pulling**: The Aug Healer is **NOT the puller**. It acts as stationary buffer, secondary healer, and peeler support.
@@ -349,6 +356,7 @@ Combat acceleration and group enhancement. The Aug Healer empowers Midgard's hea
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
 - **The 85% Mob Health Window**:
   - At ~85% mob health, when AoE casters begin blasting the cluster, maintain Celerity and secondary heal triage on party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -402,6 +410,7 @@ Combat acceleration and group enhancement. The Aug Healer empowers Midgard's hea
 
 ### 12. Resource Management
 - **Mana Floor**: 25% (Reserve power for Celerity recasting and emergency heals)
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Keep Celerity active on melee fighters continuously.

@@ -22,6 +22,7 @@ namespace DOL.GS.SmartAI
         "/smartai spec - the SmartAI specialization of your target bot",
         "/smartai group - the SmartAI tactical view of your target bot's group (or yours)",
         "/smartai debug [n] - your target bot's last n SmartAI decisions (up to 32)",
+        "/smartai debuggroup [on|mine|off|status] - record every bot group's completed fights to runtime/logs/smart_ai_groups (mine: only your or your target's group)",
         "Every /smartai command and its answer go to runtime/logs/smartai-session-<server start>.log")]
     public sealed class SmartAiCommandHandler : AbstractCommandHandler, ICommandHandler
     {
@@ -63,6 +64,9 @@ namespace DOL.GS.SmartAI
                     break;
                 case "debug":
                     Debug(client, args.Length > 2 && int.TryParse(args[2], out int n) ? n : 10);
+                    break;
+                case "debuggroup":
+                    DebugGroup(client, args.Length > 2 ? args[2].ToLowerInvariant() : "on");
                     break;
                 default:
                     DisplaySyntax(client);
@@ -151,6 +155,9 @@ namespace DOL.GS.SmartAI
                     Say(client, $"  Heal at {band.Min}-{band.Max}%: {string.Join(" then ", band.Heals)}");
                 if (profile.GroupHeal is { } groupHeal)
                     Say(client, $"  Group heal when {groupHeal.Members}+ members are under {groupHeal.Below}%: {string.Join(" then ", groupHeal.Heals)}");
+                if (profile.SitBetweenHealsAbovePercent > 0)
+                    Say(client, $"  Sits between heals in PvE fights while everyone is above {profile.SitBetweenHealsAbovePercent}%" +
+                                (bot.IsCombatSeated ? " (sitting now)." : "."));
                 foreach (SmartAbilityRule rule in profile.Abilities)
                     Say(client, $"  Realm ability {rule.Priority}: {rule.Key.Replace("AtlasOF_", "")}" +
                                 (bot.GetAbility(rule.Key) == null ? " (not trained)" : string.Empty) +
@@ -183,6 +190,46 @@ namespace DOL.GS.SmartAI
             foreach (SmartDecision d in latest)
                 Say(client, $"  {(now - d.GameLoopTime) / 1000.0,5:0.0} s ago: {d.Action}" + (d.Score > 0 ? $" ({d.Score})" : string.Empty) +
                             (d.Note.Length > 0 ? $" - {d.Note}" : string.Empty));
+        }
+
+        private static void DebugGroup(GameClient client, string mode)
+        {
+            switch (mode)
+            {
+                case "on":
+                case "all":
+                    SmartGroupCombatLog.RecordAll();
+                    Say(client, "Recording every group with a bot in it. Each group gets a file in " +
+                                $"{SmartGroupCombatLog.Directory}; a fight is written once the whole group is out of combat.");
+                    break;
+                case "mine":
+                {
+                    Group group = (client.Player.TargetObject as GameLiving)?.Group ?? client.Player.Group;
+                    if (group == null)
+                    {
+                        Say(client, "Join a group, or target a bot in one.");
+                        return;
+                    }
+                    SmartGroupCombatLog.RecordGroup(group);
+                    Say(client, $"Recording {group.LivingLeader?.Name ?? "this"}'s group" +
+                                (SmartGroupCombatLog.CurrentScope == SmartGroupCombatLog.Scope.AllGroups ? " (every group is already recorded)" : string.Empty) +
+                                $" to {SmartGroupCombatLog.FileOf(group)}. A fight is written once the whole group is out of combat.");
+                    break;
+                }
+                case "off":
+                    SmartGroupCombatLog.Stop();
+                    Say(client, $"Group recording off. Fights written this session: {SmartGroupCombatLog.FightsWritten}; " +
+                                $"unfinished fights dropped: {SmartGroupCombatLog.FightsDiscarded}.");
+                    break;
+                case "status":
+                    Say(client, $"Group recording: {SmartGroupCombatLog.CurrentScope switch { SmartGroupCombatLog.Scope.AllGroups => "every group with a bot", SmartGroupCombatLog.Scope.ChosenGroups => "chosen groups", _ => "off" }}; " +
+                                $"{SmartGroupCombatLog.GroupsTracked} group(s) followed; fights written {SmartGroupCombatLog.FightsWritten}, " +
+                                $"unfinished fights dropped {SmartGroupCombatLog.FightsDiscarded}. Folder: {SmartGroupCombatLog.Directory}");
+                    break;
+                default:
+                    Say(client, "Usage: /smartai debuggroup [on|mine|off|status]");
+                    break;
+            }
         }
 
         private static void Personality(GameClient client, string name)

@@ -56,6 +56,7 @@ Ally survival is the supreme mandate. The Regrowth Druid maintains backline posi
 - **Aggro Management**: Hold major heals for 1.5 seconds on pull until the frontline tank lands initial taunt or melee styles to prevent pulling healing aggro.
 - **Pacing**: Monitor group mana. Call for rest when party mana drops below 35%.
 - **Emergency Adds**: If an un-taunted monster targets the Druid, cast instant root or command pet to intercept while continuing triage.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling
 - **Mobs Stay on the Pet (Damage Shield Does the Damage)**:
@@ -73,6 +74,7 @@ Ally survival is the supreme mandate. The Regrowth Druid maintains backline posi
 - **Group Triage & 85% AoE Window**:
   - Maintain triage on group members if they take stray or incidental damage.
   - At ~85% mob health, when AoE casters begin blasting the pack, maintain stationary heal support on party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -132,6 +134,7 @@ Ally survival is the supreme mandate. The Regrowth Druid maintains backline posi
   - Target HP 35%–70%: `HealBig` (Major Heal)
   - Target HP < 35%: `HealInstant` + `HealBig`
   - 3+ members < 70%: `HealSpread` / `HealGroup`
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Monitor group crowd-control status and trigger `Group Purge` decisively.
@@ -212,6 +215,7 @@ Maintains 100% uptime on maximum spec Strength/Constitution, Dexterity/Quickness
 - **Pre-Pull Buffing**: Cast full suite of spec buffs before initiating camp pulls.
 - **Secondary Healing**: Cover spot-heals on party members, conserving main healer mana.
 - **Pet Off-Tank**: Use pet to distract loose monster adds until the main tank can establish aggro.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling
 - **Pre-Pull Pet Durability Buffing**:
@@ -229,6 +233,7 @@ Maintains 100% uptime on maximum spec Strength/Constitution, Dexterity/Quickness
 - **Cast Embargo on Main Pack Above ~85% Mob Health**:
   - Hold all offensive casting on the main cluster while mobs are above ~85% health.
   - Once the pack reaches ~85% health, provide support casting or spot-heals on party members as needed while AoE casters melt the cluster down.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -284,6 +289,7 @@ Maintains 100% uptime on maximum spec Strength/Constitution, Dexterity/Quickness
 - **Mana Floor**: 25% (Reserve mana for emergency spot-heals and rebuffing fallen allies)
 - **Buff Priority**: Spec Str/Con > Spec Dex/Qui > Base AF > Base Stats > Health Regen
 - **Heal Thresholds**: Cast `HealEfficient` when ally HP 50%–75%; cast `HealBig` when ally HP < 50%.
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Rebuff fallen group members immediately after they are resurrected and stabilized.
@@ -360,6 +366,7 @@ Operates as an offensive caster with a formidable pet and superior crowd control
 - **Add Lockdown**: Use Nature Root to park loose monster adds safely away from the group.
 - **Pet Assist**: Command pet to attack the Main Assist target, contributing heavy melee damage.
 - **Focus Fire**: Chain-cast Nature Energy direct damage on called targets.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling
 - **Mobs Stay on the Pet (Damage Shield Does the Damage)**:
@@ -373,6 +380,7 @@ Operates as an offensive caster with a formidable pet and superior crowd control
 - **The 85% Mob Health AoE Trigger**:
   - **HOLD AoE on Main Pack Above ~85% HP**: While the main pack is above ~85% health, hold all area-of-effect spells and let the damage shield do the work.
   - **UNLEASH AREA OF EFFECT AT ~85% HP**: Once the mob pack reaches approximately **85% health**, immediately begin casting Area of Effect spells (AoE Root / targeted AoE spells) on the pack clustered around the pet to melt the mobs down together with the other group AoE casters.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -431,6 +439,7 @@ Operates as an offensive caster with a formidable pet and superior crowd control
 - **Aggressive Mana Floor**: 20% (Permit aggressive mana spend to secure kills and land CC)
 - **Power Pacing**: Pop MCL proactively during long fights.
 - **Conserve Mode**: If target is > 70% HP and pet is dealing steady damage, weave baseline nukes rather than burning max power.
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Land Nature Disease on the primary enemy target to cut all incoming healing by 50%.

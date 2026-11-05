@@ -54,6 +54,7 @@ Total area lockdown and mana sustain. The Music Bard neutralizes opposing forces
 ### 6a. Mode: PvE Standard
 - **Add Containment**: Immediately cast AoE Mez or single Mez on any extra monster groups that aggro onto the party.
 - **Power Regeneration**: Maintain pulsing power song so casters and healers can sustain combat indefinitely.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (Support & Triage Role)
 - **Role During Pet Pulling**: The Bard is **NOT the puller**. It acts as stationary song, CC, and spot-heal support.
@@ -67,6 +68,7 @@ Total area lockdown and mana sustain. The Music Bard neutralizes opposing forces
   - The Bard and group remain firmly anchored at camp. Do **NOT** run away or kite backwards to seek casting range.
 - **The 85% Mob Health Window**:
   - At ~85% mob health, when AoE casters begin blasting the cluster, maintain power songs and spot-heal party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -122,6 +124,7 @@ Total area lockdown and mana sustain. The Music Bard neutralizes opposing forces
 
 ### 12. Resource Management
 - **Mana Floor**: 20% (Songs consume minimal power; reserve mana for CC and emergency heals)
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Open RvR battles with AoE Mesmerize.
@@ -190,6 +193,7 @@ Life preservation through heal triage and mana cycling. The Regrowth Bard balanc
 ### 6a. Mode: PvE Standard
 - **Aggro Management**: Hold major heals for 1.5 seconds on pull until tank secures aggro.
 - **Group Triage**: Cast group heals when 3+ party members drop below 70% health.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (Dedicated Healer & Song Role)
 - **Role During Pet Pulling**: The Regrowth Bard is **NOT the puller**. It acts as stationary triage healer and song support.
@@ -207,6 +211,7 @@ Life preservation through heal triage and mana cycling. The Regrowth Bard balanc
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
 - **The 85% Mob Health Window**:
   - At ~85% mob health, when AoE casters begin blasting the cluster, maintain power songs and group heal triage on party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -266,6 +271,7 @@ Life preservation through heal triage and mana cycling. The Regrowth Bard balanc
   - Target HP 35%–70%: `HealBig`
   - Target HP < 35%: `Mastery of Concentration` + `HealBig`
   - 3+ members < 70%: `HealGroup`
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Heal the pet using smallest heal after mobs lose ~5% health.
@@ -331,6 +337,7 @@ Sustained group endurance and buff uptime. The Nurture Bard maximizes song poten
 
 ### 6a. Mode: PvE Standard
 - **Song Uptime**: Keep songs active 100% of the time; spot-heal when needed.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (Buffer & Peeler Role)
 - **Role During Pet Pulling**: The Nurture Bard is **NOT the puller**. It acts as stationary song buffer and secondary peeler.
@@ -347,6 +354,7 @@ Sustained group endurance and buff uptime. The Nurture Bard maximizes song poten
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
 - **The 85% Mob Health Window**:
   - At ~85% mob health, maintain songs and spot-heal party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -401,6 +409,7 @@ Sustained group endurance and buff uptime. The Nurture Bard maximizes song poten
 
 ### 12. Resource Management
 - **Mana Floor**: 20% (Reserve power for secondary CC and heals)
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Keep Power song active at all times.

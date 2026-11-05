@@ -54,6 +54,7 @@ Continuous health buffering and agile defense. The Enhancement Friar layers HoTs
 ### 6a. Mode: PvE Standard
 - **HoT Tank Support**: Keep HoT ticking on the main tank throughout the fight.
 - **Melee Assist**: Flank the primary target with staff styles while maintaining buffs.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (HoT Anchor & Peeler Role)
 - **Role During Pet Pulling**: The Friar is **NOT the puller**. It acts as stationary HoT provider, peeler, and secondary healer.
@@ -72,6 +73,7 @@ Continuous health buffering and agile defense. The Enhancement Friar layers HoTs
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
 - **The 85% Mob Health Trigger**:
   - At ~85% mob health, engage the designated primary kill target with quarterstaff styles while keeping HoTs ticking.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -127,6 +129,7 @@ Continuous health buffering and agile defense. The Enhancement Friar layers HoTs
 ### 12. Resource Management
 - **Mana Floor**: 20% (HoTs consume steady mana; reserve power for heals and re-buffing)
 - **Endurance**: Quarterstaff styles consume low endurance; reserve 20% for sprint and evade styles.
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Keep Heal-over-Time (HoT) active on the pet 100% of the time during pet pulls.
@@ -319,6 +322,7 @@ Life support protected by evasion. The Rejuvenation Friar focuses primarily on a
 
 ### 6a. Mode: PvE Standard
 - **Dedicated Healing**: Manage party triage while keeping HoTs active.
+- **Sit Between Heals**: When every party member is above 90% health and nothing needs healing, curing or casting, sit to keep power up. Stand to heal the moment anyone is at 90% or below, or when a monster turns on you.
 
 ### 6b. Mode: PvE Pet Pulling (Dedicated Healer & HoT Role)
 - **Role During Pet Pulling**: The Rejuvenation Friar is **NOT the puller**. It acts as stationary triage healer and HoT sustainer.
@@ -338,6 +342,7 @@ Life support protected by evasion. The Rejuvenation Friar focuses primarily on a
   - Stay put at the camp anchor location alongside the group. Do **NOT** run away or kite backwards to seek casting range.
 - **The 85% Mob Health Window**:
   - At ~85% mob health, maintain group heal triage on party members.
+- **Sit Between Heals**: While the pack is on the pet and every party member is above 90% health, sit between heals to keep power up. Stand to heal the pet or a party member, or when a mob breaks off toward you.
 
 ### 6c. Mode: Solo Leveling & Dungeon Strategy
 - **Environment & Zone Preference**:
@@ -391,6 +396,7 @@ Life support protected by evasion. The Rejuvenation Friar focuses primarily on a
 
 ### 12. Resource Management
 - **Mana Floor**: 25% (Reserve power for emergency triage and resurrections)
+- **Sit Between Heals**: 90% (PvE Standard and PvE Pet Pulling: sit to regain power while every party member is above 90% health; stand to cast, when hit, or when the group moves)
 
 ### 13. What the AI SHOULD Do
 - Keep HoT active on the pet 100% of the time.
