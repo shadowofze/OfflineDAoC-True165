@@ -3334,6 +3334,11 @@ namespace DOL.GS
             int planningLevel = sharedGroup ? _groupDirective.AverageLevel : bot.Level;
             int highestMemberLevel = sharedGroup
                 ? bot.Group.GetMembersInTheGroup().Max(member => member.EffectiveLevel) : bot.EffectiveLevel;
+            // SmartAI: the group's gear score, level, make-up and wipes set the con band it pulls (SmartGroupPullPolicy);
+            // null without SmartAI, keeping the +3..+bonus rule below.
+            DOL.GS.SmartAI.SmartPullBand smartBand = sharedGroup
+                ? DOL.GS.SmartAI.SmartGroupPullPolicy.ForGroup(bot.Group, planningLevel, _groupDirective.WipePenalty)
+                : null;
             ConColor maximumTargetCon = MaximumTargetCon(groupSize);
             ConColor naturalMaximumTargetCon = NaturalMaximumTargetCon(groupSize);
             // Normal groups start at yellow-or-better, but every death retry is
@@ -3392,6 +3397,9 @@ namespace DOL.GS
 
                 bool IsValidCampLevel(int level)
                     {
+                        if (sharedGroup && smartBand != null)
+                            return smartBand.Allows(planningLevel, level) &&
+                                ConLevels.GetConColor(ConLevels.GetConLevel(highestMemberLevel, level)) > ConColor.GREY;
                         if (sharedGroup)
                             return level >= planningLevel + 3 &&
                                 level <= planningLevel + _groupDirective.PreferredLevelBonus &&
@@ -3439,7 +3447,9 @@ namespace DOL.GS
                     .Select(level => ConLevels.GetConColor(ConLevels.GetConLevel(bot.EffectiveLevel, level)))
                     .OrderBy(con => con)
                     .ToArray();
-                int averageLevel = sharedGroup
+                int averageLevel = sharedGroup && smartBand != null
+                    ? smartBand.Select(validLevels, planningLevel)
+                    : sharedGroup
                     ? AutonomousGroupTargetPolicy.SelectFixedEightManLevel(validLevels, planningLevel,
                         _groupDirective.PreferredLevelBonus, groupSize)
                     : (int)Math.Round(validLevels.Average());
@@ -3502,9 +3512,11 @@ namespace DOL.GS
                     region: camp => camp.RegionId,
                     position: camp => new Vector3(destinations[camp.Id].X,
                         destinations[camp.Id].Y, destinations[camp.Id].Z));
-                int selectedLevel = AutonomousGroupTargetPolicy.SelectFixedEightManLevel(
-                    legal.Select(camp => camp.AverageMobLevel), planningLevel,
-                    _groupDirective.PreferredLevelBonus, groupSize);
+                int selectedLevel = smartBand != null
+                    ? smartBand.Select(legal.Select(camp => camp.AverageMobLevel), planningLevel)
+                    : AutonomousGroupTargetPolicy.SelectFixedEightManLevel(
+                        legal.Select(camp => camp.AverageMobLevel), planningLevel,
+                        _groupDirective.PreferredLevelBonus, groupSize);
                 legal = legal.Where(camp => camp.AverageMobLevel == selectedLevel);
             }
             else

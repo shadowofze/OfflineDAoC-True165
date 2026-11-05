@@ -43,19 +43,36 @@ namespace DOL.GS.SmartAI
         {
             if (bot == null || bot is not { IsAlive: true } || !Honours(bot) || bot.CurrentSpellHandler != null)
                 return false;
-            if (EffectListService.GetAbilityEffectOnTarget(bot, eEffect.QuickCast) != null)
+            if (IsArmed(bot))
                 return true;
-            Ability qc = bot.GetAbility(Abilities.Quickcast);
-            long sinceLast = bot.CurrentRegion.Time - bot.TempProperties.GetProperty<long>(GamePlayer.QUICK_CAST_CHANGE_TICK);
-            bool lockedOut = qc == null || bot.GetSkillDisabledDuration(SkillBase.GetAbility(Abilities.Quickcast)) > 0 ||
-                             bot.GetSkillDisabledDuration(qc) > 0 ||
-                             bot.TempProperties.GetProperty<long>(GamePlayer.QUICK_CAST_CHANGE_TICK) != 0 &&
-                             sinceLast < QuickCastAbilityHandlerDisable;
-            if (!Wanted(underPressure, bot.MaxMana > 0 ? bot.ManaPercent : 0, bot.attackComponent?.AttackState == true, lockedOut))
+            if (!Wanted(underPressure, bot.MaxMana > 0 ? bot.ManaPercent : 0, bot.attackComponent?.AttackState == true, LockedOut(bot)))
                 return false;
             ECSGameEffectFactory.Create(new(bot, QuickCastECSGameEffect.DURATION, 1),
                 static (in ECSGameEffectInitParams i) => new QuickCastECSGameEffect(i));
             return true;
+        }
+
+        /// <summary>
+        /// QuickCast is armed, or could be armed now once the bot leaves melee attack mode (the player has to stop
+        /// attacking first, too). Lets a meleeing caster decide whether stopping its attack buys a cast.
+        /// </summary>
+        public static bool ArmedOrArmableOutOfMelee(GameBot bot, bool underPressure)
+        {
+            if (bot == null || bot is not { IsAlive: true } || !Honours(bot) || bot.CurrentSpellHandler != null)
+                return false;
+            return IsArmed(bot) ||
+                   Wanted(underPressure, bot.MaxMana > 0 ? bot.ManaPercent : 0, false, LockedOut(bot));
+        }
+
+        private static bool IsArmed(GameBot bot) => EffectListService.GetAbilityEffectOnTarget(bot, eEffect.QuickCast) != null;
+
+        private static bool LockedOut(GameBot bot)
+        {
+            Ability qc = bot.GetAbility(Abilities.Quickcast);
+            long lastChange = bot.TempProperties.GetProperty<long>(GamePlayer.QUICK_CAST_CHANGE_TICK);
+            return qc == null || bot.GetSkillDisabledDuration(SkillBase.GetAbility(Abilities.Quickcast)) > 0 ||
+                   bot.GetSkillDisabledDuration(qc) > 0 ||
+                   lastChange != 0 && bot.CurrentRegion.Time - lastChange < QuickCastAbilityHandlerDisable;
         }
 
         private const int QuickCastAbilityHandlerDisable = SkillHandler.QuickCastAbilityHandler.DISABLE_DURATION;

@@ -2682,10 +2682,16 @@ public static partial class AutonomousBotGroupCoordinator
             ? null
             : ChoosePuller(session, members);
         bool groupCombatActive = AutonomousGroupCombat.AnyHoldsGroup(members, leader, GameLoop.GameLoopTime);
+        int averageMemberLevel = (int)Math.Round(members.Average(member => member.Level));
+        DOL.GS.SmartAI.SmartPullBand smartBand = session.ObjectiveKind == eAutonomousObjectiveKind.RvR || session.Camp != null
+            ? null
+            : DOL.GS.SmartAI.SmartGroupPullPolicy.ForGroup(session.Group, averageMemberLevel, session.WipePenalty);
         string goal = session.ObjectiveKind == eAutonomousObjectiveKind.RvR
             ? "Assemble, then roam frontier keeps, relic routes, and enemy realm forces"
+            : session.Camp == null && smartBand != null
+            ? $"Assemble, then choose a shared target up to level {smartBand.HighestLevel(averageMemberLevel)} ({smartBand})"
             : session.Camp == null
-            ? $"Assemble, then choose a shared level {(int)Math.Round(members.Average(member => member.Level)) + session.PreferredLevelBonus} target"
+            ? $"Assemble, then choose a shared level {averageMemberLevel + session.PreferredLevelBonus} target"
             : $"Group grind {session.Camp.MonsterName} (L{session.Camp.TargetLevel}) in {session.Camp.ZoneName}";
         string status = session.Phase switch
         {

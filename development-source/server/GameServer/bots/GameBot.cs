@@ -1248,6 +1248,15 @@ namespace DOL.GS
 
         private int TraceDistance165() => TargetObject == null || TargetObject.CurrentRegion != CurrentRegion ? -1 : (int)GetDistanceTo(TargetObject);
 
+        /// <summary>
+        /// The player's self-interrupt after its own melee swing: 3 seconds (GameLiving), not the monster rule of the
+        /// weapon's swing time (GameNPC; a 4-5 s staff kept casters from casting long after they stopped swinging).
+        /// </summary>
+        public const int PlayerSelfInterruptOnMeleeMs = 3000;
+
+        public override int SelfInterruptDurationOnMeleeAttack =>
+            PlayerRules165.IsPlayerRulesBot(this) ? PlayerSelfInterruptOnMeleeMs : base.SelfInterruptDurationOnMeleeAttack;
+
         public override void StartInterruptTimer(int duration, AttackData.eAttackType attackType, GameLiving attacker)
         {
             if (IsCasting)

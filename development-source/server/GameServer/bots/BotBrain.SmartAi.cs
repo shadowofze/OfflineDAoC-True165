@@ -101,11 +101,26 @@ namespace DOL.AI.Brain
                 return true;
             if (!allowHeals)
                 AlreadyCheckedHeals = true;
-            Body.TargetObject = target;
-            if (Body.attackComponent?.AttackState == true)
+            bool underPressure = Body.IsBeingInterruptedByOther || SmartAiMeleeAttackersOnMe() > 0;
+            bool swinging = Body.attackComponent?.AttackState == true;
+            // Stopping the attack only pays when a cast can start: no hit is interrupting the bot, or QuickCast /
+            // Mastery of Concentration carries the cast through. Otherwise keep swinging (instants still go off below) -
+            // stopping every think and letting the legacy brain restart the attack left casters with neither swings nor
+            // casts (2026-11-05 group logs: 22 attack starts, 3 swings in 7 s). A bot held only by its own swing
+            // (self-interrupt) stops, so the 3 s runs out and it casts again.
+            if (swinging && Body.IsBeingInterruptedByOther && !CastsThroughInterrupt() &&
+                !DOL.GS.SmartAI.SmartQuickCast.ArmedOrArmableOutOfMelee(BotBody, underPressure))
+            {
+                if (Body.CanCastInstantHarmfulSpells && CheckSpells(eCheckSpellType.Offensive))
+                    return true;
+                return false;
+            }
+            if (Body.TargetObject != target)
+                Body.TargetObject = target;
+            if (swinging)
                 Body.StopAttack();
             // A list caster under attack quick-casts its next spell (SmartQuickCast: the player rules and lockout).
-            DOL.GS.SmartAI.SmartQuickCast.TryArm(BotBody, Body.IsBeingInterruptedByOther || SmartAiMeleeAttackersOnMe() > 0);
+            DOL.GS.SmartAI.SmartQuickCast.TryArm(BotBody, underPressure);
             if (CheckSpells(eCheckSpellType.Offensive))
                 return true;
             // Nothing could start: out of spell range, walk in as the legacy offense does (ApproachForOffensiveSpell
