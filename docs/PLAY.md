@@ -82,6 +82,8 @@ near Connla in Hibernia.
   gear, train its specs and pick its realm abilities, and it shares your group's XP.
 - Companions stop at your level, never loot, and are revived for free by any healer of your realm. A smith repairs
   their gear.
+- **SmartAI** (in testing, off by default) makes companions and gamebots play their class and specialization
+  properly. Turn it on with **Use SmartAI** in the launcher's Options tab. See [SMARTAI.md](SMARTAI.md).
 
 ### Realm war
 
