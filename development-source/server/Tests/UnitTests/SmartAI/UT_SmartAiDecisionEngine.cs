@@ -110,6 +110,15 @@ public class UT_SmartAiDecisionEngine
     [TestCase("Self-Cast Absorb Bubble", "8", SmartActionFamily.Support)]
     [TestCase("Secondary Spot-Heal / Cure", "8", SmartActionFamily.Triage)]
     [TestCase("Lowest Effective HP% Group Member (weighted by incoming attackers)", "9", SmartActionFamily.Triage)]
+    // Someone else in melee is not the bot's own melee (2026-11-05 group logs: list casters swung through these).
+    [TestCase("Single Root on Enemy Melee Attacker", "8", SmartActionFamily.OffenseSpells)]
+    [TestCase("Cold Snare on Melee Pursuer", "8", SmartActionFamily.OffenseSpells)]
+    [TestCase("AoE Root on Advancing Enemy Melee (RvR)", "7", SmartActionFamily.OffenseSpells)]
+    [TestCase("Single Root on Attacking Melee", "8", SmartActionFamily.OffenseSpells)]
+    [TestCase("Damage Add Buff on Melee Allies", "7", SmartActionFamily.Support)]
+    [TestCase("Shield Slam on Melee Pursuer", "8", SmartActionFamily.OffenseFull)]
+    [TestCase("Melee Staff Attack", "7", SmartActionFamily.OffenseFull)]
+    [TestCase("One-Handed Weapon Style Chain on Focus Target (at 85% HP)", "7", SmartActionFamily.OffenseFull)]
     public void Classify_MapsWording(string name, string section, SmartActionFamily family) =>
         Assert.That(SmartSpecProfile.Classify(name, section), Is.EqualTo(family));
 

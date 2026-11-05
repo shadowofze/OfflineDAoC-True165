@@ -582,12 +582,14 @@ namespace DOL.GS.Spells
 				{
 					interruptRemainingDuration = (interruptRemainingDuration + 999) / 1000; // whole seconds, rounded up ("/= 1000 + 1" divided by 1001: "wait 0 seconds")
 
-					if (playerCaster != null)
+					// Bots follow the player rule: QuickCast (only a SmartAI list caster's counts, IsQuickCasting) or
+					// Mastery of Concentration lets a cast start inside the interrupt window. Before, every bot was refused.
+					if (playerCaster != null || m_caster is GameBot)
 					{
 						if (!IsQuickCasting &&
 							!m_caster.effectListComponent.ContainsEffectForEffectType(eEffect.MasteryOfConcentration))
 						{
-							if (!quiet)
+							if (!quiet && playerCaster != null)
 								MessageToCaster($"You must wait {interruptRemainingDuration} seconds to cast a spell!", eChatType.CT_SpellResisted);
 
 							return false;

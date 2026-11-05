@@ -4443,7 +4443,7 @@ namespace DOL.AI.Brain
                         ? TemporaryCompanionBalance.HighestSpell(spellsToCast)
                         : spellsToCast[Util.Random(spellsToCast.Count - 1)]);
 
-                    if (spellToCast.Uninterruptible || !Body.IsBeingInterrupted)
+                    if (spellToCast.Uninterruptible || !Body.IsBeingInterrupted || CastsThroughInterrupt())
                         casted = CheckOffensiveSpells(spellToCast);
                     else if (shamanHybrid && ShamanBotCombatPolicy.HoldMeleeForCast(true,
                                  Body.IsBeingInterruptedByOther, Body.IsBeingSelfInterrupted))
@@ -4461,6 +4461,16 @@ namespace DOL.AI.Brain
 
             return casted || Body.IsCasting;
         }
+
+        /// <summary>
+        /// The player rule for starting a cast while interrupted (SpellHandler): an armed QuickCast that the spell code
+        /// honours for this bot (a SmartAI list caster, SmartQuickCast) or Mastery of Concentration.
+        /// </summary>
+        private bool CastsThroughInterrupt() =>
+            Body.effectListComponent != null &&
+            (Body.effectListComponent.ContainsEffectForEffectType(eEffect.MasteryOfConcentration) ||
+             DOL.GS.SmartAI.SmartQuickCast.Honours(Body) &&
+             EffectListService.GetAbilityEffectOnTarget(Body, eEffect.QuickCast) != null);
 
         private bool TryIssueNecromancerServantCommand(eCheckSpellType type)
         {

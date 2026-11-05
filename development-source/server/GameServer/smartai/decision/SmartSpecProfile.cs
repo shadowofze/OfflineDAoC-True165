@@ -284,6 +284,12 @@ namespace DOL.GS.SmartAI
 
         private static readonly Regex AbilityKey = new(@"AtlasOF_\w+", RegexOptions.Compiled);
 
+        /// <summary>Wording that names someone else in melee (lower case): "melee attacker / pursuer / train / forces /
+        /// allies", "on (attacking / advancing enemy / enemy) melee", "charging enemy melee".</summary>
+        private static readonly Regex OthersInMelee = new(
+            @"\bmelee\s+(attackers?|pursuers?|trains?|forces|zergs?|chasers?|allies)\b|\b(on|against|attacking|advancing|charging|enemy)\s+(enemy\s+)?melee\b",
+            RegexOptions.Compiled);
+
         private SmartSpecProfile(SmartSpecDefinition spec, List<SmartFamilyRule> rules, bool meleeBanned, string reason)
         {
             Spec = spec;
@@ -372,8 +378,13 @@ namespace DOL.GS.SmartAI
                     ? SmartActionFamily.Triage
                     : null;
             }
-            if (n.Contains("melee") || n.Contains("style") || n.Contains("weapon"))
+            // "Root on Melee Attacker", "Snare on Melee Pursuer", "Damage Add Buff on Melee Allies" name someone else in
+            // melee, not the bot's own melee: spell lines (2026-11-05 logs: Theurgist, Runemaster, Sorcerer, Wizard and
+            // Spiritmaster swung their staves through them). Shield Slam is a style.
+            string own = OthersInMelee.Replace(n, " ");
+            if (own.Contains("melee") || own.Contains("style") || own.Contains("weapon") || own.Contains("slam"))
                 return SmartActionFamily.OffenseFull;
+            n = own;
             if (n.Contains("heal") || n.Contains("cure") || n.Contains("triage") || n.Contains("resurrect") || n.Contains("rez"))
                 return SmartActionFamily.Triage;
             if (n.Contains("buff") || n.Contains("bubble") || n.Contains("absorb") || n.Contains("regen") || n.Contains("armor factor"))

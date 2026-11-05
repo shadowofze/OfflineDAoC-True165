@@ -571,7 +571,7 @@ namespace DOL.GS.SmartAI
                     }
                     _fight?.SeeEnemy(target, now);
                     string dist = target.CurrentRegionID == bot.CurrentRegionID ? $" @{(int)bot.GetDistanceTo(target)}" : string.Empty;
-                    string text = $"{bot.Name} {(ranged ? "shoots" : "melees")} {target.Name} {target.HealthPercent}%{dist}";
+                    string text = $"{bot.Name} {(ranged ? "starts shooting" : "starts melee on")} {target.Name} {target.HealthPercent}%{dist}";
                     if (wrong)
                         text = $"! {text} - {why}; pow {bot.ManaPercent}%; last think: {m?.LastThink ?? "none (legacy AI)"}";
                     Add(now, text, bot);
@@ -1000,7 +1000,9 @@ namespace DOL.GS.SmartAI
                 foreach (Member m in Members.Where(m => m.Living is GameBot))
                 {
                     if (m.WrongMelee > 0)
-                        flags.Add($"{m.Name} ({m.Class}) meleed {m.WrongMelee}x");
+                        // Attack starts, not swings: a bot that stops and restarts its attack every think shows many
+                        // starts and few swings.
+                        flags.Add($"{m.Name} ({m.Class}) started melee {m.WrongMelee}x ({m.Swings} swings)");
                     if (m.Casts == 0 && m.Landed == 0 && m.Melee == 0 && m.Ranged == 0 && m.Swings == 0 && m.Shots == 0 && !m.Died)
                         flags.Add($"{m.Name} did nothing (no cast, no attack)");
                     if (m.ReactionsMissed > 0)
