@@ -322,7 +322,7 @@ Hybrid physical-magical assassination. The Shadow Strike Nightshade ambushes fro
 - **Positioning**: Stealth flank / Infiltration.
 
 ### 5. Mode: PvP
-- **Spell & Strike**: Stealth opener -> Poison debuff -> Critical Strike chain -> Quick Cast magical DD finisher.
+- **Spell & Strike**: Stealth opener -> Poison debuff -> Critical Strike chain -> magical DD finisher.
 
 ### 6a. Mode: PvE Standard
 - **Hybrid DPS**: Position behind mobs to execute positional style chains; weave spells between swings.

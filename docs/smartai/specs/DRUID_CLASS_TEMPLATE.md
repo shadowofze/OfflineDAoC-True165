@@ -49,7 +49,7 @@ Ally survival is the supreme mandate. The Regrowth Druid maintains backline posi
 
 ### 5. Mode: PvP
 - **Kiting & Pillar Play**: Break enemy archer and caster lines of sight between cast cycles.
-- **Counter-Interrupt**: Use `QuickCast` + `HealBig` when pressured by enemy pets or fast melee attacks.
+- **Counter-Interrupt**: Use the fastest heal available when pressured by enemy pets or fast melee attacks (Druids have no Quick Cast).
 - **Pet Harass**: Command pet to attack enemy casters to disrupt their cast timers while the Druid stays back healing.
 
 ### 6a. Mode: PvE Standard
@@ -123,7 +123,7 @@ Ally survival is the supreme mandate. The Regrowth Druid maintains backline posi
 2. `Purge` (AtlasOF_Purge): Priority 95 (Self CC cleanse)
 3. `Mastery of Concentration` (AtlasOF_MasteryOfConcentration): Priority 90 (15 seconds of uninterruptible healing)
 4. `Armor of Faith` (AtlasOF_ArmorOfFaith): Priority 85 (Group physical absorb bubble)
-5. `Mystic Crystal Lore` (AtlasOF_MCL): Priority 80 (Restore mana when below 25%)
+4. `Mystic Crystal Lore` (AtlasOF_MCL): Priority 80 (Restore mana when below 25%)
 
 ### 12. Resource Management
 - **Conservative Mana Floor**: 30% (Reserve power for critical triage and resurrections)

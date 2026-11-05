@@ -184,7 +184,7 @@ Uncompromising ally survival through rapid heal triage. The Mending Healer prior
 
 ### 5. Mode: PvP
 - **Pillar Play & Kiting**: Break enemy caster lines of sight between cast cycles.
-- **Counter-Interrupt**: Use `Quick Cast` + Major Heal when pressured by enemy pets or fast melee attacks.
+- **Counter-Interrupt**: Use the fastest heal available when pressured by enemy pets or fast melee attacks (Healers have no Quick Cast).
 
 ### 6a. Mode: PvE Standard
 - **Aggro Management**: Hold major heals for 1.5 seconds on pull until the frontline tank lands initial taunt to prevent pulling healing aggro.

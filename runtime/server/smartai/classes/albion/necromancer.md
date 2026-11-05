@@ -16,7 +16,7 @@ default_personality: "Tactical"
   - `Death Servant`: Undead servant pet summoning (Greater Zombie, Skeletal Minion, Abomination), pet pulsing damage shield, pet taunts, pet combat buffs, servant mending/heals, and pet command suite (`/pet attack`, `/pet follow`, `/pet stay`, `/pet passive`, `/pet return`).
   - `Deathsight`: Baseline and spec Cold direct damage (DD), life-tap / lifedrain, long-range snare, strength/constitution transfer, and power transfer to allies.
   - `Painworking`: Stacking damage-over-time (DoT) spells, Point-Blank Area of Effect (PBAoE) decay/rot, magic resistance debuffs, and damage chants.
-- **Base Abilities**: Sprint, Quick Cast, Shade Form (caster transforms into an invulnerable shade while controlling the physical undead servant).
+- **Base Abilities**: Sprint, Shade Form (caster transforms into an invulnerable shade while controlling the physical undead servant).
 - **Physical Undead Servant**: The undead servant acts as the tangible physical avatar in the game world, executing spells, melee attacks, or tanking.
 
 ---
@@ -110,7 +110,6 @@ Methodical pull mechanics and unbreakable pet threat. The Death Servant Necroman
 1. Purge (AtlasOF_Purge): Priority 100 (Instant CC cleanse on self)
 2. Servant Heal / Mend: Priority 85 (Sustain servant when taking heavy damage)
 3. Self-Cast Base Buffs: Priority 80 (Keep active at all times)
-4. Quick Cast: Priority 75 (Emergency instant heal / cast)
 
 ### 9. Target Priorities
 1. Pulled Mob Pack (via Servant Body Pull): Priority 100
@@ -151,7 +150,7 @@ Methodical pull mechanics and unbreakable pet threat. The Death Servant Necroman
 - **Condition: Mob breaks off toward ally**: Select Break-off Add -> Call for Tank Peel.
 
 ### 16. Fallback Behavior
-- **Servant Dies Mid-Fight**: Move shade toward tanks, activate `Quick Cast` + Re-summon once aggro stabilizes.
+- **Servant Dies Mid-Fight**: Move shade toward tanks, re-summon once aggro stabilizes.
 - **Low Mana (< 15%)**: Activate `AtlasOF_MCL`, refrain from offensive DD, conserve power for damage shield upkeep.
 
 ### 17. Suggested Realm Ability Progression Order
@@ -247,7 +246,6 @@ Unrelenting attrition and self-sustain. The Deathsight Necromancer siphons life 
 1. Purge (AtlasOF_Purge): Priority 100 (Instant CC cleanse on self)
 2. Lifedrain on Target: Priority 90 (Recover lost hit points)
 3. Power Transfer to Healer: Priority 85 (When friendly Cleric mana < 25%)
-4. Quick Cast: Priority 75 (Emergency instant nuke / drain)
 
 ### 9. Target Priorities
 1. Main Assist's Called Target: Priority 100
@@ -384,7 +382,6 @@ Mass attrition and decay. The Painworking Necromancer blankets enemy clusters in
 1. Purge (AtlasOF_Purge): Priority 100 (Instant CC cleanse on self)
 2. Mastery of Concentration: Priority 95 (15 seconds uninterruptible PBAoE / DoT casting)
 3. Self-Cast Buffs: Priority 75
-4. Quick Cast: Priority 70
 
 ### 9. Target Priorities
 1. Clustered Mob Pack around Pet (at 85% HP): Priority 100 (For PBAoE Decay)

@@ -49,7 +49,7 @@ All actions prioritize ally survival over offensive action. The Rejuvenation Cle
 ### 5. Mode: PvP
 - **Kiting & Cover**: Use terrain (trees, pillars, corners) to break enemy ranged line-of-sight between cast cycles.
 - **Swing Baiting**: If pressured by melee, bait their weapon swing recovery before starting major cast-time heals.
-- **Counter-Interrupt**: Use `QuickCast` + `HealBig` when interrupted by enemy pet or fast-hitting attacker.
+- **Counter-Interrupt**: Use the fastest heal available when interrupted by an enemy pet or fast-hitting attacker (Clerics have no Quick Cast).
 
 ### 6a. Mode: PvE Standard
 - **Aggro Management**: Hold major heals for 1.5 seconds on pull until the main tank lands a taunt style (`StylesTaunt`) or offensive spell to prevent pulling initial healing aggro.
@@ -119,10 +119,9 @@ All actions prioritize ally survival over offensive action. The Rejuvenation Cle
 
 ### 11. Ability Usage Priorities
 1. `Purge` (AtlasOF_Purge): Priority 100 (Use immediately if stunned/mezzed while any ally is < 50% HP)
-2. `QuickCast`: Priority 95 (Use when interrupted and a group member is < 30% HP)
-3. `Mastery of Concentration` (AtlasOF_MasteryOfConcentration): Priority 90 (Use when 2+ melee attackers are interrupting and group is taking heavy damage)
-4. `Bunker of Faith` / `Armor of Faith` (AtlasOF_BunkerOfFaith): Priority 85 (Use during enemy burst spikes or warband pushes)
-5. `Mystic Crystal Lore` (AtlasOF_MCL): Priority 80 (Use when mana drops below 25%)
+2. `Mastery of Concentration` (AtlasOF_MasteryOfConcentration): Priority 90 (Use when 2+ melee attackers are interrupting and group is taking heavy damage)
+3. `Bunker of Faith` / `Armor of Faith` (AtlasOF_BunkerOfFaith): Priority 85 (Use during enemy burst spikes or warband pushes)
+4. `Mystic Crystal Lore` (AtlasOF_MCL): Priority 80 (Use when mana drops below 25%)
 
 ### 12. Resource Management
 - **Conservative Mana Floor**: 30% (Never exhaust mana on non-essential spells)

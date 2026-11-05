@@ -82,7 +82,7 @@ namespace DOL.GS.SkillHandler
                 player.Out.SendMessage(LanguageMgr.GetTranslation(player.Client.Account.Language, "Skill.Ability.CannotUseNoTarget"), eChatType.CT_System, eChatLoc.CL_SystemWindow);
                 return;
 			}
-			if (!(player.TargetObject is GamePlayer || player.TargetObject is GameKeepGuard))
+			if (!IsValidTarget(player.TargetObject))
 			{
                 player.Out.SendMessage(LanguageMgr.GetTranslation(player.Client.Account.Language, "Skill.Ability.Flurry.TargetNotPlayerOrGuards"), eChatType.CT_System, eChatLoc.CL_SystemWindow);
                 return;
@@ -119,13 +119,39 @@ namespace DOL.GS.SkillHandler
 			}
 			#endregion
 
-			GameLiving target = (GameLiving)player.TargetObject;
+			Strike(player, (GameLiving)player.TargetObject, ab);
+		}
+
+		/// <summary>
+		/// Flurry's targets: players and keep guards. In True 1.65 a gamebot or hired companion counts as a player
+		/// (PlayerRules165.IsPlayerLike), both as the target of a player's Flurry and of a bot's.
+		/// </summary>
+		public static bool IsValidTarget(GameObject target) =>
+			PlayerRules165.IsPlayerLike(target) || target is GameKeepGuard;
+
+		/// <summary>
+		/// The player prechecks for a bot (the handler's, without the chat messages): alive, not mezzed, stunned or
+		/// sitting, a valid target it may attack, in front and in view, within 135 units, not under Sputin's Legacy.
+		/// </summary>
+		public static bool CanUse(GameLiving user, GameLiving target)
+		{
+			if (user == null || target == null || !user.IsAlive || user.IsMezzed || user.IsStunned || user.IsSitting ||
+				!target.IsAlive || !IsValidTarget(target) || !GameServer.ServerRules.IsAllowedToAttack(user, target, true) ||
+				!user.IsObjectInFront(target, 180) || !user.TargetInView || !user.IsWithinRadius(target, 135))
+				return false;
+			return target is not GamePlayer targetPlayer || targetPlayer.EffectList.GetOfType<SputinsLegacyEffect>() == null;
+		}
+
+		/// <summary>The strike itself, shared by the player handler and bots (same damage, resists and reuse).</summary>
+		public static void Strike(GameLiving user, GameLiving target, Ability ab)
+		{
+			GamePlayer player = user as GamePlayer;
 			int damage = 0;
-			int specc = (player.CharacterClass is PlayerClass.ClassBlademaster) ?
-				player.GetModifiedSpecLevel(Specs.Celtic_Dual) : player.GetModifiedSpecLevel(Specs.Dual_Wield);
+			int specc = (user is GamePlayer p ? p.CharacterClass : (user as GameBot)?.CharacterClass) is PlayerClass.ClassBlademaster ?
+				user.GetModifiedSpecLevel(Specs.Celtic_Dual) : user.GetModifiedSpecLevel(Specs.Dual_Wield);
 
 			//damage = base HP / 100 * DWspec / 2.7 that would be the original calculation
-			if (target is GamePlayer)
+			if (PlayerRules165.IsPlayerLike(target))
 			{
 				damage = (int)(target.MaxHealth / 100 * specc / 4.5);  // prev 3.5 
 			}
@@ -149,26 +175,21 @@ namespace DOL.GS.SkillHandler
 			#endregion
 
 			//flurry is slash damage
-			target.TakeDamage(player, eDamageType.Slash, damage, 0);
-			/*
-			GameSpellEffect mez = SpellHandler.FindEffectOnTarget(target, "Mesmerize");
-            if (mez != null)
-                mez.Cancel(false);
-			*/
+			target.TakeDamage(user, eDamageType.Slash, damage, 0);
+
 			//sending spell effect
 			foreach (GamePlayer effPlayer in target.GetPlayersInRadius(WorldMgr.VISIBILITY_DISTANCE))
-				effPlayer.Out.SendSpellEffectAnimation(player, target, 7103, 0, false, 0x01);
+				effPlayer.Out.SendSpellEffectAnimation(user, target, 7103, 0, false, 0x01);
 
-            player.Out.SendMessage(LanguageMgr.GetTranslation(player.Client.Account.Language, "Skill.Ability.Flurry.YouHit", target.GetName(0, false), damage), eChatType.CT_YouHit, eChatLoc.CL_SystemWindow);
-                    
-            if (target is GamePlayer)
-                (target as GamePlayer).Out.SendMessage(LanguageMgr.GetTranslation((target as GamePlayer).Client, "Skill.Ability.Flurry.HitYou", player.Name, damage), eChatType.CT_Damaged, eChatLoc.CL_SystemWindow);
+			player?.Out.SendMessage(LanguageMgr.GetTranslation(player.Client.Account.Language, "Skill.Ability.Flurry.YouHit", target.GetName(0, false), damage), eChatType.CT_YouHit, eChatLoc.CL_SystemWindow);
 
-			player.LastAttackTickPvP = player.CurrentRegion.Time;
+			if (target is GamePlayer targetPlayer)
+				targetPlayer.Out.SendMessage(LanguageMgr.GetTranslation(targetPlayer.Client, "Skill.Ability.Flurry.HitYou", user.Name, damage), eChatType.CT_Damaged, eChatLoc.CL_SystemWindow);
+
+			user.LastAttackTickPvP = user.CurrentRegion.Time;
 			target.LastAttackedByEnemyTickPvP = target.CurrentRegion.Time;
 
-			player.DisableSkill(ab, REUSE_TIMER);
-
+			user.DisableSkill(ab, REUSE_TIMER);
 		}
 	}
 }

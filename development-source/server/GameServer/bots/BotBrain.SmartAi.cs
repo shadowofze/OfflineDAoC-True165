@@ -153,6 +153,37 @@ namespace DOL.AI.Brain
             return n;
         }
 
+        /// <summary>The legacy Guard / Protect / Intercept upkeep (once a second), for a SmartAI bot whatever action it took
+        /// this think; the legacy brain runs it only inside its full offense.</summary>
+        internal void SmartAiMaintainPeel() => MaintainTankPeel();
+
+        /// <summary>
+        /// Interrupts: an enemy in this bot's fight (its aggro list) that is casting harm, in range and fightable (not held
+        /// by crowd control, allowed by CanAggroTarget), nearest first; null when the bot has no instant harmful spell or
+        /// nobody is casting. The instant offensive spells come first in CheckSpells, so they land the interrupt.
+        /// </summary>
+        internal GameLiving SmartAiCastingEnemy(int range)
+        {
+            if (!Body.CanCastInstantHarmfulSpells || Body.IsCasting)
+                return null;
+            GameLiving best = null;
+            int bestDistance = int.MaxValue;
+            foreach (var entry in AggroList)
+            {
+                GameLiving enemy = entry.Key;
+                if (enemy is not { IsAlive: true, IsCasting: true } ||
+                    enemy.castingComponent?.SpellHandler?.Spell is not { IsHarmful: true } ||
+                    IsBreakablyControlled(enemy) || enemy.CurrentRegionID != Body.CurrentRegionID)
+                    continue;
+                int distance = (int)Body.GetDistanceTo(enemy);
+                if (distance > range || distance >= bestDistance || !CanAggroTarget(enemy))
+                    continue;
+                best = enemy;
+                bestDistance = distance;
+            }
+            return best;
+        }
+
         /// <summary>The whole legacy offense (target, pets, taunts, spells, bow and melee).</summary>
         internal void SmartAiFullOffense(bool allowHeals)
         {

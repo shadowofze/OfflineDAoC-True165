@@ -22,7 +22,7 @@ namespace DOL.GS.SkillHandler
 		/// <summary>
 		/// The ability reuse time in seconds
 		/// </summary>
-		protected const int REUSE_TIMER = 7 * 60;
+		public const int REUSE_TIMER = 7 * 60;
 
 		/// <summary>
 		/// The ability effect duration in seconds

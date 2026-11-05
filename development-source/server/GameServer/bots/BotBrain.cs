@@ -3274,6 +3274,10 @@ namespace DOL.AI.Brain
                     return;
                 }
 
+                // Engage (Shields 7): an archer shooting this bot gets faced and engaged, SmartAI on or off.
+                if (_brain.TryEngageArcher())
+                    return;
+
                 // SmartAI (launcher "Use SmartAI"): when it acts this think, the legacy combat below is skipped. Off, or
                 // for a class without a SmartAI spec, or after a SmartAI error, the legacy combat runs unchanged.
                 if (DOL.GS.SmartAI.SmartAiConfig.IsEnabled && DOL.GS.SmartAI.SmartAiBrainDriver.TryThinkCombat(_brain))
@@ -4136,8 +4140,10 @@ namespace DOL.AI.Brain
                         {
                             if (Body.TargetObject is GameLiving target)
                             {
+                                // SmartAI: not below 40% health, nor on a nearly dead monster (SmartAbilityPolicy).
                                 if (Body.IsWithinRadius(Body.TargetObject, Body.MeleeAttackRange) &&
-                                    GameServer.ServerRules.IsAllowedToAttack(Body, target, true))
+                                    GameServer.ServerRules.IsAllowedToAttack(Body, target, true) &&
+                                    DOL.GS.SmartAI.SmartAbilityPolicy.AllowsBerserk(BotBody, target))
                                 {
                                     var berserk = new BerserkECSGameEffect(
                                         new ECSGameEffectInitParams(Body, BerserkAbilityHandler.DURATION, 1));
@@ -4156,11 +4162,70 @@ namespace DOL.AI.Brain
                         {
                             if (Body.TargetObject is GameLiving target)
                             {
+                                // The player handler's numbers (DURATION is already in ms). The old code only
+                                // constructed the effect (never started, so Hero bots never got Stag) and locked
+                                // the ability for 41 hours (DURATION * 5000).
                                 if (Body.IsWithinRadius(Body.TargetObject, Body.MeleeAttackRange) &&
-                                    GameServer.ServerRules.IsAllowedToAttack(Body, target, true))
+                                    GameServer.ServerRules.IsAllowedToAttack(Body, target, true) &&
+                                    EffectListService.GetAbilityEffectOnTarget(Body, eEffect.Stag) == null &&
+                                    DOL.GS.SmartAI.SmartAbilityPolicy.AllowsCombatCooldown(BotBody, target))
                                 {
-                                    new StagECSGameEffect(new ECSGameEffectInitParams(Body, StagAbilityHandler.DURATION * 1000, 1), ab.Level);
-                                    Body.DisableSkill(ab, StagAbilityHandler.DURATION * 5000);
+                                    var stag = new StagECSGameEffect(new ECSGameEffectInitParams(Body, StagAbilityHandler.DURATION, 1), ab.Level);
+                                    if (stag.Start())
+                                        Body.DisableSkill(ab, StagAbilityHandler.REUSE_TIMER);
+                                }
+                            }
+                            break;
+                        }
+
+                        case Abilities.Triple_Wield:
+                        {
+                            // Blademaster: the player handler's rules (not while sitting, not already active), 30 s
+                            // effect, 7 minute reuse.
+                            if (Body.TargetObject is GameLiving target)
+                            {
+                                if (!Body.IsSitting &&
+                                    Body.IsWithinRadius(Body.TargetObject, Body.MeleeAttackRange) &&
+                                    GameServer.ServerRules.IsAllowedToAttack(Body, target, true) &&
+                                    EffectListService.GetAbilityEffectOnTarget(Body, eEffect.TripleWield) == null &&
+                                    DOL.GS.SmartAI.SmartAbilityPolicy.AllowsCombatCooldown(BotBody, target))
+                                {
+                                    var tripleWield = new TripleWieldECSGameEffect(
+                                        new ECSGameEffectInitParams(Body, TripleWieldAbilityHandler.DURATION * 1000, 1));
+                                    if (tripleWield.Start())
+                                        Body.DisableSkill(ab, TripleWieldAbilityHandler.REUSE_TIMER * 1000);
+                                }
+                            }
+                            break;
+                        }
+
+                        case Abilities.Flurry:
+                        {
+                            // Blademaster / Mercenary: the player handler's checks (a player-like target or a keep
+                            // guard, in front, in view, within 135) and its strike, damage and 2 minute reuse.
+                            if (Body.TargetObject is GameLiving target &&
+                                FlurryAbilityHandler.CanUse(Body, target) &&
+                                DOL.GS.SmartAI.SmartAbilityPolicy.AllowsCombatCooldown(BotBody, target))
+                                FlurryAbilityHandler.Strike(Body, target, ab);
+                            break;
+                        }
+
+                        case Abilities.DirtyTricks:
+                        {
+                            // Mercenary: the player handler's rules (not while sitting, not already active), 30 s
+                            // effect, 7 minute reuse; the effect makes the main hand's hits raise the target's fumbles.
+                            if (Body.TargetObject is GameLiving target)
+                            {
+                                if (!Body.IsSitting &&
+                                    Body.IsWithinRadius(Body.TargetObject, Body.MeleeAttackRange) &&
+                                    GameServer.ServerRules.IsAllowedToAttack(Body, target, true) &&
+                                    EffectListService.GetAbilityEffectOnTarget(Body, eEffect.DirtyTricks) == null &&
+                                    DOL.GS.SmartAI.SmartAbilityPolicy.AllowsCombatCooldown(BotBody, target))
+                                {
+                                    var dirtyTricks = new DirtyTricksECSGameEffect(
+                                        new ECSGameEffectInitParams(Body, DirtyTricksAbilityHandler.DURATION * 1000, 1));
+                                    if (dirtyTricks.Start())
+                                        Body.DisableSkill(ab, DirtyTricksAbilityHandler.REUSE_TIMER);
                                 }
                             }
                             break;

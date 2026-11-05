@@ -16,7 +16,7 @@ default_personality: "Aggressive"
   - `Scythe`: Heavy two-handed scythe style chains delivering slashing, crushing, and cold damage, featuring rear/side stuns, snares, bleeds, and high physical burst.
   - `Arboreal Path`: Nature's combat sorcery, featuring Arboreal Barkskin (massive self-AF buff), offensive spell procs (weapon lifetaps, cold damage procs), Area of Effect (AoE) Roots, single roots, and instant nature DoTs.
   - `Parry`: Passive two-handed weapon deflection.
-- **Base Abilities**: Sprint, Quick Cast.
+- **Base Abilities**: Sprint.
 - **Hibernia's Scythe-Wielding Reaper**: Channeling the raw power of the forest through a deadly two-handed scythe, the Valewalker clothes itself in impenetrable barkskin, siphoning life from foes with magical weapon procs while cleaving through enemy lines with sweeping harvesting strikes.
 
 ---

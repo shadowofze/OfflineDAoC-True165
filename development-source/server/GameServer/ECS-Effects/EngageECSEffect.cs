@@ -13,12 +13,13 @@ namespace DOL.GS
         {
             get
             {
-                GamePlayer player = Owner as GamePlayer;
+                // A bot can engage too (no client: the default language).
+                GameClient client = (Owner as GamePlayer)?.Client;
 
                 if (EngageTarget != null)
-                    return LanguageMgr.GetTranslation(player.Client, "Effects.EngageEffect.EngageName", EngageTarget.GetName(0, false));
+                    return LanguageMgr.GetTranslation(client, "Effects.EngageEffect.EngageName", EngageTarget.GetName(0, false));
 
-                return LanguageMgr.GetTranslation(player.Client, "Effects.EngageEffect.Name");
+                return LanguageMgr.GetTranslation(client, "Effects.EngageEffect.Name");
             }
         }
         public override bool HasPositiveEffect => true;

@@ -12,7 +12,7 @@ namespace DOL.GS
         }
 
         public override ushort Icon { get { return 478; } }
-        public override string Name { get { return LanguageMgr.GetTranslation(((GamePlayer)Owner).Client, "Skill.Ability.DirtyTricks.Name"); } }
+        public override string Name { get { return LanguageMgr.GetTranslation((Owner as GamePlayer)?.Client, "Skill.Ability.DirtyTricks.Name"); } }
         public override bool HasPositiveEffect { get { return true; } }
 
         public override void OnStartEffect()

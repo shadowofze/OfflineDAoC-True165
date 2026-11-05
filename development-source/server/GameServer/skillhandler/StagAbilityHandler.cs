@@ -40,7 +40,7 @@ namespace DOL.GS.SkillHandler
 		/// <summary>
 		/// The ability reuse time in milliseconds
 		/// </summary>
-		protected const int REUSE_TIMER = 60000 * 15; // clait: 15 minutes [og: 20]
+		public const int REUSE_TIMER = 60000 * 15; // clait: 15 minutes [og: 20]
 
 		/// <summary>
 		/// The ability effect duration in milliseconds

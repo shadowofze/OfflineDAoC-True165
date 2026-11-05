@@ -275,6 +275,9 @@ namespace DOL.GS.SmartAI
         /// <summary>Section 12's heal thresholds (SmartHealThresholds); empty: the legacy heal choice.</summary>
         public IReadOnlyList<SmartHealBand> HealBands { get; }
         public SmartGroupHealRule GroupHeal { get; }
+        /// <summary>The spec puts Guard / Protect on the healer (SmartAbilityPolicy).</summary>
+        public bool GuardsHealer { get; }
+        public bool ProtectsHealer { get; }
 
         private static readonly Regex AbilityKey = new(@"AtlasOF_\w+", RegexOptions.Compiled);
 
@@ -285,6 +288,16 @@ namespace DOL.GS.SmartAI
             (List<SmartHealBand> bands, SmartGroupHealRule group) = SmartHealThresholds.Read(spec.Section(SmartSpecSectionKeys.Resources));
             HealBands = bands;
             GroupHeal = group;
+            foreach (IReadOnlyList<SmartPriorityEntry> list in new[] { spec.OffensivePriorities, spec.DefensivePriorities, spec.TargetPriorities, spec.AbilityPriorities })
+            {
+                foreach (SmartPriorityEntry e in list)
+                {
+                    if (e.Priority <= 0)
+                        continue;
+                    GuardsHealer |= SmartAbilityPolicy.LineOnHealer("Guard", e.Name, e.Condition);
+                    ProtectsHealer |= SmartAbilityPolicy.LineOnHealer("Protect", e.Name, e.Condition);
+                }
+            }
             Abilities = spec.AbilityPriorities
                 .Select(e => (Entry: e, Key: AbilityKey.Match(e.Name)))
                 .Where(x => x.Key.Success && x.Entry.Priority > 0 && SmartRealmAbilities.IsSafe(x.Key.Value))

@@ -85,7 +85,8 @@ namespace DOL.GS.SmartAI
             SmartPersonality personality = SmartPersonalityRegistry.Resolve(bot, spec);
             SmartPersonalityProfile character = SmartPersonalityProfile.For(personality);
             GameLiving groupTarget = fresh ? GroupTarget(brain, bot, profile, character, snapshot) : null;
-            GameLiving target = groupTarget ?? brain.SmartAiNextAttackTarget();
+            // Interrupts first: an enemy of this fight casting harm, for a bot with an instant harmful spell.
+            GameLiving target = brain.SmartAiCastingEnemy(SmartAbilityPolicy.InterruptRange) ?? groupTarget ?? brain.SmartAiNextAttackTarget();
             SmartBotPerception perception = SmartBotPerception.Build(brain, bot, target) with
             {
                 GroupStrategy = fresh ? snapshot.Strategy : SmartGroupStrategy.StandardAssistTrain,
@@ -128,6 +129,8 @@ namespace DOL.GS.SmartAI
             int count = SmartCandidateGenerator.Generate(profile, perception, buffer);
             bool handled = SmartActionExecutor.Execute(brain, target, profile, perception, buffer[..count], out SmartDecision decision);
             SmartAiDiagnostics.Record(bot, decision);
+            // Guard / Protect / Intercept upkeep whatever the action (the legacy brain only ran it in its full offense).
+            brain.SmartAiMaintainPeel();
             return handled;
         }
 
@@ -159,6 +162,16 @@ namespace DOL.GS.SmartAI
                 ring.Last is { Action: "Legacy" } last && last.Note == reason)
                 return;
             SmartAiDiagnostics.Record(bot, new SmartDecision(spec, "Legacy", 0, reason, GameLoop.GameLoopTime));
+        }
+
+        /// <summary>A class ability the bot used outside the decision engine (Engage), in its decision ring for
+        /// /smartai debug; nothing is recorded while SmartAI is off.</summary>
+        public static void RecordAbility(GameBot bot, string action, string note)
+        {
+            if (!SmartAiConfig.IsEnabled || bot == null)
+                return;
+            string spec = SmartAiSpecRegistry.Active.Resolve(bot)?.Name ?? "(no spec)";
+            SmartAiDiagnostics.Record(bot, new SmartDecision(spec, action, 0, note, GameLoop.GameLoopTime));
         }
 
         /// <summary>Each bot's last SmartAI decision (from its decision ring).</summary>

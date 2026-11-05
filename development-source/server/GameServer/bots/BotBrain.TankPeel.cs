@@ -41,7 +41,10 @@ namespace DOL.AI.Brain
 
             if (protect && (healer ?? threatened) is GameLiving protectTarget)
                 Apply(eEffect.Protect, protectTarget);
-            if (guard && ShieldInUse(bot) && (threatened ?? healer) is GameLiving guardTarget)
+            // SmartAI: a spec that keeps Guard on the healer ("Guard on Primary Cleric: Priority 100") guards the healer
+            // first; otherwise the most threatened member, as before.
+            GameLiving guardFirst = DOL.GS.SmartAI.SmartAbilityPolicy.GuardsHealer(bot) ? healer ?? threatened : threatened ?? healer;
+            if (guard && ShieldInUse(bot) && guardFirst is GameLiving guardTarget)
                 Apply(eEffect.Guard, guardTarget);
             if (intercept && threatened != null && threatened.HealthPercent < InterceptHealthPercent &&
                 bot.IsWithinRadius(threatened, InterceptAbilityHandler.INTERCEPT_DISTANCE) &&

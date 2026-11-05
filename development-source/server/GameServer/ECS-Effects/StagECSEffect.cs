@@ -22,7 +22,7 @@ namespace DOL.GS
         protected int m_level;
 
         public override ushort Icon { get { return 480; } }
-        public override string Name { get { return LanguageMgr.GetTranslation(((GamePlayer)Owner).Client, "Effects.StagEffect.Name"); } }
+        public override string Name { get { return LanguageMgr.GetTranslation((Owner as GamePlayer)?.Client, "Effects.StagEffect.Name"); } }
         public override bool HasPositiveEffect { get { return true; } }
 
         public override void OnStartEffect()
@@ -36,6 +36,8 @@ namespace DOL.GS
 					OwnerPlayer.Model = 13;
 				else OwnerPlayer.Model = 4;
 			}
+			else if (Owner is GameBot bot)
+				bot.Model = (ushort)(bot.Race == (int)eRace.Lurikeen ? 13 : 4); // a Hero bot turns into the stag too
 
 
 			double m_amountPercent = (m_level + 0.5 + Util.RandomDouble()) / 10; //+-5% random
