@@ -65,7 +65,18 @@ namespace DOL.AI.Brain
         internal GameLiving SmartAiNextAttackTarget() => CalculateNextAttackTarget();
 
         /// <summary>Heals, cures and resurrections: the legacy triage.</summary>
-        internal bool SmartAiTriage() => CheckHeals();
+        internal bool SmartAiTriage()
+        {
+            // A Mentalist under attack quick-casts its heal when someone is hurt (SmartQuickCast.MentalistHealPercent).
+            if (BotBody?.CharacterClass?.ID == (int)eCharacterClass.Mentalist && !Body.IsCasting &&
+                MembersBelow(DOL.GS.SmartAI.SmartQuickCast.MentalistHealPercent) > 0)
+            {
+                if (Body.attackComponent?.AttackState == true)
+                    Body.StopAttack();
+                DOL.GS.SmartAI.SmartQuickCast.TryArm(BotBody, Body.IsBeingInterruptedByOther || SmartAiMeleeAttackersOnMe() > 0);
+            }
+            return CheckHeals();
+        }
 
         /// <summary>The legacy defensive and buff spells, without the triage that CheckSpells runs first.</summary>
         internal bool SmartAiSupport()
@@ -93,6 +104,8 @@ namespace DOL.AI.Brain
             Body.TargetObject = target;
             if (Body.attackComponent?.AttackState == true)
                 Body.StopAttack();
+            // A list caster under attack quick-casts its next spell (SmartQuickCast: the player rules and lockout).
+            DOL.GS.SmartAI.SmartQuickCast.TryArm(BotBody, Body.IsBeingInterruptedByOther || SmartAiMeleeAttackersOnMe() > 0);
             if (CheckSpells(eCheckSpellType.Offensive))
                 return true;
             // Nothing could start: out of spell range, walk in as the legacy offense does (ApproachForOffensiveSpell

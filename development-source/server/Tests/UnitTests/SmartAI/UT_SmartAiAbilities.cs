@@ -57,6 +57,28 @@ public class UT_SmartAiAbilities
             InCombat = combat, MembersBelow65 = below65, MembersBelow40 = below40,
         }), Is.EqualTo(wanted));
 
+    [TestCase(7, true)]    // Wizard
+    [TestCase(5, true)]    // Theurgist
+    [TestCase(42, true)]   // Mentalist
+    [TestCase(55, true)]   // Animist
+    [TestCase(29, true)]   // Runemaster
+    [TestCase(6, false)]   // Cleric
+    [TestCase(26, false)]  // Healer
+    [TestCase(47, false)]  // Druid
+    [TestCase(12, false)]  // Necromancer
+    [TestCase(39, false)]  // Bainshee (not 1.65)
+    [TestCase(63, false)]  // Sluaghbinder (not 1.65)
+    public void QuickCast_ListCastersOnly(int classId, bool listCaster) =>
+        Assert.That(SmartQuickCast.IsListCaster(classId), Is.EqualTo(listCaster));
+
+    [TestCase(true, 50, false, false, true)]
+    [TestCase(false, 50, false, false, false)]  // nothing on it
+    [TestCase(true, 19, false, false, false)]   // not enough power for a doubled cost
+    [TestCase(true, 50, true, false, false)]    // in melee attack mode (player rule)
+    [TestCase(true, 50, false, true, false)]    // the 30 s lockout
+    public void QuickCast_WhenPressured(bool pressure, int mana, bool melee, bool locked, bool wanted) =>
+        Assert.That(SmartQuickCast.Wanted(pressure, mana, melee, locked), Is.EqualTo(wanted));
+
     [Test]
     public void MocAndBof_AreSmartAiAbilities()
     {

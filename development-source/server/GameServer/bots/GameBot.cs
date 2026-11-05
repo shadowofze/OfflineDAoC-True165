@@ -3066,9 +3066,10 @@ namespace DOL.GS
             else if (IsTemporaryGroupHelper && !BotSongTwistPolicy.IsMobileSong(this, spell))
                 (Brain as BotBrain)?.MarkTemporaryCompanionRestActivity();
 
-            // Quickcast is explicitly disabled for all bot kinds. Clear a
-            // lingering externally applied effect without changing human casts.
-            EffectListService.GetAbilityEffectOnTarget(this, eEffect.QuickCast)?.End();
+            // Quickcast is disabled for bots, except a SmartAI list caster that
+            // armed it (SmartQuickCast). Clear a lingering effect otherwise.
+            if (!DOL.GS.SmartAI.SmartQuickCast.Honours(this))
+                EffectListService.GetAbilityEffectOnTarget(this, eEffect.QuickCast)?.End();
 
             if (IsRecoveryResting && !IsTemporaryGroupHelper &&
                 !BotSongTwistPolicy.IsMobileSong(this, spell))

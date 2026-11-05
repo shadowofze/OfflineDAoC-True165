@@ -61,7 +61,8 @@ namespace DOL.GS.Spells
 		private long _calculatedCastTime;
 		private long _puslingSpellLastEndOfCastMessage;
 
-		public bool IsQuickCasting => Caster is not GameBot && _quickcast != null;
+		// Bots: only a SmartAI list caster's QuickCast counts (SmartQuickCast); every other bot keeps it off.
+		public bool IsQuickCasting => SmartAI.SmartQuickCast.Honours(Caster) && _quickcast != null;
 		public long CastStartTick => _castStartTick;
 		public bool StartReuseTimer => m_startReuseTimer;
 
@@ -488,7 +489,7 @@ namespace DOL.GS.Spells
 			}
 
 			CancelFocusSpells();
-			_quickcast = m_caster is GameBot ? null :
+			_quickcast = !SmartAI.SmartQuickCast.Honours(m_caster) ? null :
 				EffectListService.GetAbilityEffectOnTarget(m_caster, eEffect.QuickCast) as QuickCastECSGameEffect;
 
 			if (IsQuickCasting)
@@ -1436,12 +1437,13 @@ namespace DOL.GS.Spells
 
 			//the quick cast is unallowed whenever you miss the spell
 			//set the time when casting to can not quickcast during a minimum time
-			if (playerCaster != null)
+			// The same 30 s lockout for a SmartAI list caster bot (IsQuickCasting is only true for one of those).
+			if (playerCaster != null || m_caster is GameBot)
 			{
 				if (IsQuickCasting && Spell.CastTime > 0)
 				{
 					m_caster.TempProperties.SetProperty(GamePlayer.QUICK_CAST_CHANGE_TICK, m_caster.CurrentRegion.Time);
-					playerCaster.DisableSkill(SkillBase.GetAbility(Abilities.Quickcast), QuickCastAbilityHandler.DISABLE_DURATION);
+					m_caster.DisableSkill(SkillBase.GetAbility(Abilities.Quickcast), QuickCastAbilityHandler.DISABLE_DURATION);
 					_quickcast.Cancel(false);
 				}
 			}

@@ -13,7 +13,7 @@ namespace DOL.GS
         public const int DURATION = 3000;
 
         public override ushort Icon => 0x0190;
-        public override string Name => LanguageMgr.GetTranslation(((GamePlayer) Owner).Client, "Effects.QuickCastEffect.Name");
+        public override string Name => LanguageMgr.GetTranslation((Owner as GamePlayer)?.Client, "Effects.QuickCastEffect.Name");
         public override bool HasPositiveEffect => true;
 
         public override long GetRemainingTimeForClient()
