@@ -49,10 +49,12 @@ namespace DOL.GS.SmartAI
         public enum Scope { Off, AllGroups, ChosenGroups }
 
         private static volatile Scope _scope = Scope.Off;
-        private static readonly ConcurrentDictionary<Group, GroupLog> Logs = new();
+        /// <summary>Keyed by the Group, or by the GameBot for a bot fighting alone.</summary>
+        private static readonly ConcurrentDictionary<object, GroupLog> Logs = new();
         private static readonly ConditionalWeakTable<Group, object> Chosen = new();
         private static long _nextTick;
         private static int _groupNumber;
+        private static int _soloNumber;
         private static int _written, _discarded;
         private static Task _writes = Task.CompletedTask;
         private static readonly object WriteSync = new();
@@ -64,12 +66,27 @@ namespace DOL.GS.SmartAI
         public static int FightsDiscarded => Volatile.Read(ref _discarded);
         public static int GroupsTracked => Logs.Count;
         public static string Directory => Path.Combine(SmartAiSessionLog.Directory, "smart_ai_groups");
+        /// <summary>Fights of bots fighting alone (owner 2026-11-05), recorded with "all".</summary>
+        public static string SoloDirectory => Path.Combine(SmartAiSessionLog.Directory, "smart_ai_solo");
 
         // ---- switching
 
+        /// <summary>Every group with a bot in it, and every bot fighting alone.</summary>
         public static void RecordAll()
         {
             _scope = Scope.AllGroups;
+        }
+
+        /// <summary>/smartai debugfights: on when off, off when on. True when recording is now on.</summary>
+        public static bool Toggle()
+        {
+            if (_scope != Scope.Off)
+            {
+                Stop();
+                return false;
+            }
+            RecordAll();
+            return true;
         }
 
         /// <summary>Adds one group (the caller's) to the recorded groups; other groups stop being recorded unless
@@ -81,7 +98,7 @@ namespace DOL.GS.SmartAI
             Chosen.AddOrUpdate(group, null);
             if (_scope == Scope.Off)
                 _scope = Scope.ChosenGroups;
-            Logs.GetOrAdd(group, g => new GroupLog(g, Interlocked.Increment(ref _groupNumber)));
+            Logs.GetOrAdd(group, _ => new GroupLog(new Party(group), Interlocked.Increment(ref _groupNumber)));
         }
 
         /// <summary>Stops recording; fights in progress are dropped (they are not complete).</summary>
@@ -97,6 +114,8 @@ namespace DOL.GS.SmartAI
 
         public static string FileOf(Group group) =>
             group != null && Logs.TryGetValue(group, out GroupLog log) ? log.FilePath : null;
+
+        public static int SolosTracked => Logs.Values.Count(l => l.Party.IsSolo);
 
         // ---- hooks (any thread)
 
@@ -202,7 +221,13 @@ namespace DOL.GS.SmartAI
         {
             Group group = member?.Group;
             if (group == null)
-                return null;
+            {
+                // A bot fighting alone: recorded with "all" (smart_ai_solo), never a player.
+                if (_scope != Scope.AllGroups || member is not GameBot solo)
+                    return null;
+                return Logs.TryGetValue(solo, out GroupLog own) ? own
+                    : Logs.GetOrAdd(solo, _ => new GroupLog(new Party(solo), Interlocked.Increment(ref _soloNumber)));
+            }
             if (Logs.TryGetValue(group, out GroupLog log))
                 return log;
             if (_scope == Scope.ChosenGroups && !Chosen.TryGetValue(group, out _))
@@ -210,7 +235,7 @@ namespace DOL.GS.SmartAI
             // every group with a bot in it; a players-only group is not recorded
             if (!group.GetMembersInTheGroup().Any(m => m is GameBot))
                 return null;
-            return Logs.GetOrAdd(group, g => new GroupLog(g, Interlocked.Increment(ref _groupNumber)));
+            return Logs.GetOrAdd(group, _ => new GroupLog(new Party(group), Interlocked.Increment(ref _groupNumber)));
         }
 
         // ---- the pre-pass (single thread, NpcService)
@@ -223,11 +248,11 @@ namespace DOL.GS.SmartAI
             if (now < _nextTick)
                 return;
             _nextTick = now + TickMs;
-            foreach (KeyValuePair<Group, GroupLog> pair in Logs)
+            foreach (KeyValuePair<object, GroupLog> pair in Logs)
             {
                 try
                 {
-                    if (pair.Key.MemberCount == 0)
+                    if (pair.Value.Party.MemberCount == 0)
                     {
                         if (pair.Value.DropFight())
                             Interlocked.Increment(ref _discarded);
@@ -259,7 +284,7 @@ namespace DOL.GS.SmartAI
                 {
                     try
                     {
-                        System.IO.Directory.CreateDirectory(Directory);
+                        System.IO.Directory.CreateDirectory(Path.GetDirectoryName(path)!);
                         if (header != null && !File.Exists(path))
                             File.AppendAllText(path, header, Encoding.UTF8);
                         File.AppendAllText(path, text, Encoding.UTF8);
@@ -297,7 +322,9 @@ namespace DOL.GS.SmartAI
             why = null;
             if (BotSpellPower.IsOffensiveCaster(bot))
                 why = "list caster";
-            else if (SmartAiConfig.IsEnabled && SmartAiSpecRegistry.Active.Resolve(bot) is { } spec && SmartSpecProfile.For(spec).MeleeBanned)
+            // The ban is a group rule (SmartActionExecutor): a bot alone may defend itself.
+            else if (bot.Group?.MemberCount > 1 && SmartAiConfig.IsEnabled && SmartAiSpecRegistry.Active.Resolve(bot) is { } spec &&
+                     SmartSpecProfile.For(spec).MeleeBanned)
                 why = "spec bans melee";
             return why != null;
         }
@@ -318,11 +345,51 @@ namespace DOL.GS.SmartAI
 
         // ---------------------------------------------------------------------------------------------------------
 
-        /// <summary>One group: the fight in progress (or none), the quiet time since the last one, its file.</summary>
+        /// <summary>
+        /// Who a log follows: a group, or one bot fighting on its own (/smartai debugfights records both). Offers the
+        /// three things the log reads from a group. A solo party ends when its bot is gone or joins a group.
+        /// </summary>
+        internal sealed class Party
+        {
+            private readonly WeakReference<Group> _group;
+            private readonly WeakReference<GameBot> _solo;
+
+            public Party(Group group) => _group = new WeakReference<Group>(group);
+            public Party(GameBot solo) => _solo = new WeakReference<GameBot>(solo);
+
+            public bool IsSolo => _solo != null;
+
+            /// <summary>The group itself (null for a solo bot or a group that is gone).</summary>
+            public Group Group => _group != null && _group.TryGetTarget(out Group g) ? g : null;
+
+            public bool TryGet(out Party party)
+            {
+                party = this;
+                return _group != null ? _group.TryGetTarget(out _) : _solo.TryGetTarget(out _);
+            }
+
+            public List<GameLiving> GetMembersInTheGroup()
+            {
+                if (_group != null)
+                    return _group.TryGetTarget(out Group g) ? g.GetMembersInTheGroup() : new List<GameLiving>();
+                return _solo.TryGetTarget(out GameBot b) && b.Group == null ? new List<GameLiving> { b } : new List<GameLiving>();
+            }
+
+            public int MemberCount => _group != null
+                ? (_group.TryGetTarget(out Group g) ? g.MemberCount : 0)
+                : (_solo.TryGetTarget(out GameBot b) && b.Group == null && b.ObjectState == GameObject.eObjectState.Active ? 1 : 0);
+
+            public GameLiving LivingLeader => _group != null
+                ? (_group.TryGetTarget(out Group g) ? g.LivingLeader : null)
+                : (_solo.TryGetTarget(out GameBot b) ? b : null);
+        }
+
+        /// <summary>One group (or solo bot): the fight in progress (or none), the quiet time since the last one, its file.</summary>
         private sealed class GroupLog
         {
             private readonly object _sync = new();
-            private readonly WeakReference<Group> _group;
+            private readonly Party _group;
+            public Party Party => _group;
             public readonly int Number;
             public readonly string FilePath;
             private bool _headerWritten;
@@ -339,12 +406,14 @@ namespace DOL.GS.SmartAI
             private int _quietCasts;
             private readonly Dictionary<string, long> _quietActivity = new();
 
-            public GroupLog(Group group, int number)
+            public GroupLog(Party group, int number)
             {
-                _group = new WeakReference<Group>(group);
+                _group = group;
                 Number = number;
                 string leader = SafeName(group.LivingLeader?.Name);
-                FilePath = Path.Combine(Directory, $"{SessionStamp}_g{number:00}_{leader}.log");
+                FilePath = group.IsSolo
+                    ? Path.Combine(SoloDirectory, $"{SessionStamp}_s{number:000}_{leader}.log")
+                    : Path.Combine(Directory, $"{SessionStamp}_g{number:00}_{leader}.log");
             }
 
             public string TakeFileHeader()
@@ -354,7 +423,13 @@ namespace DOL.GS.SmartAI
                     if (_headerWritten)
                         return null;
                     _headerWritten = true;
-                    Group g = _group.TryGetTarget(out Group x) ? x : null;
+                    if (_group.IsSolo)
+                        return $"SmartAI solo combat log: {_group.LivingLeader?.Name ?? "?"} fighting alone. Server started " +
+                               $"{SessionStamp}. SmartAI {(SmartAiConfig.IsEnabled ? "on" : "off")}.{Environment.NewLine}" +
+                               "Only complete fights are written (from the first blow until the bot is out of combat)." +
+                               Environment.NewLine + "Times are seconds from the start of the fight. ! marks something worth a look." +
+                               Environment.NewLine;
+                    Party g = _group;
                     return $"SmartAI group combat log: group {Number}, led by {g?.LivingLeader?.Name ?? "?"}. Server started " +
                            $"{SessionStamp}. SmartAI {(SmartAiConfig.IsEnabled ? "on" : "off")}.{Environment.NewLine}" +
                            "Only complete fights are written (from the first blow until the whole group is out of combat)." +
@@ -591,7 +666,7 @@ namespace DOL.GS.SmartAI
             /// <summary>Returns the text of a fight that just ended, or null.</summary>
             public string Update(long now)
             {
-                if (!_group.TryGetTarget(out Group group))
+                if (!_group.TryGet(out Party group))
                     return null;
                 List<GameLiving> members = group.GetMembersInTheGroup();
                 long lastBlow = 0;
@@ -646,7 +721,7 @@ namespace DOL.GS.SmartAI
                 }
             }
 
-            private void StartFight(Group group, List<GameLiving> members, long now)
+            private void StartFight(Party group, List<GameLiving> members, long now)
             {
                 // the first blow: the earliest recent blow of any member
                 long start = now;
@@ -672,7 +747,7 @@ namespace DOL.GS.SmartAI
                 _earlyKeys.Clear();
             }
 
-            private void Quiet(Group group, List<GameLiving> members, long now)
+            private void Quiet(Party group, List<GameLiving> members, long now)
             {
                 if (_lastEnd == 0)
                     return;
@@ -806,7 +881,7 @@ namespace DOL.GS.SmartAI
             }
 
             /// <summary>Each tick: members' health and power, deaths, sitting, enemies and their deaths, the group view.</summary>
-            public void Observe(Group group, List<GameLiving> members, long now)
+            public void Observe(Party group, List<GameLiving> members, long now)
             {
                 _zone ??= group.LivingLeader?.CurrentZone?.Description;
                 foreach (GameLiving l in members)
@@ -873,7 +948,8 @@ namespace DOL.GS.SmartAI
                         Add(now, $"{e.Name} dies");
                     }
 
-                if (SmartGroupTacticalState.TryGet(group, out SmartGroupTacticalState state) && state.Current is { Version: > 0 } s &&
+                if (group.Group is { } realGroup && SmartGroupTacticalState.TryGet(realGroup, out SmartGroupTacticalState state) &&
+                    state.Current is { Version: > 0 } s &&
                     s.IsFresh(now))
                 {
                     string view = $"target {s.PrimaryTarget?.Name ?? "none"}, assist {s.MainAssist?.Name ?? "none"}, {s.Strategy}" +
@@ -901,7 +977,7 @@ namespace DOL.GS.SmartAI
                 return false;
             }
 
-            public string Render(Group group, List<GameLiving> members, long now, int number, string note)
+            public string Render(Party group, List<GameLiving> members, long now, int number, string note)
             {
                 long end = Math.Max(LastBlow, Start);
                 foreach (Member m in Members)

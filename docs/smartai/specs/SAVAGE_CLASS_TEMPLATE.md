@@ -1,4 +1,4 @@
-﻿---
+---
 schema_version: 1
 class_name: "Savage"
 class_id: 32
@@ -29,6 +29,7 @@ default_personality: "Aggressive"
 ```yaml
 match_specs:
   primary_line: "Hand_To_Hand"
+  fallback: true   # young Savages train a one-handed weapon and Savagery first; owner 2026-11-05 run 4
   min_point_ratio: 0.50
   spec_type_aliases: ["DualWield"]
 ```

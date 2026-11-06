@@ -27,9 +27,41 @@ namespace DOL.GS.SmartAI
         public readonly record struct Threat(int Level, int AggroRange, int Distance);
 
         private sealed record Published(Dictionary<string, Threat[]> Threats, Dictionary<string, SmartWorldConfig.ZoneGenerated> Zones,
-            Dictionary<string, (ushort Region, int X, int Y)> Spots);
+            Dictionary<string, (ushort Region, int X, int Y)> Spots, Dictionary<(ushort, int, int), int[]> Hazards);
 
-        private static Published _published = new(new(), new(StringComparer.OrdinalIgnoreCase), new(StringComparer.OrdinalIgnoreCase));
+        private static Published _published = new(new(), new(StringComparer.OrdinalIgnoreCase), new(StringComparer.OrdinalIgnoreCase), new());
+
+        /// <summary>The route planner's cell (SmartRoutePlanner.CellSize).</summary>
+        public const int HazardCell = SmartRoutePlanner.CellSize;
+
+        /// <summary>How many aggressive outdoor monsters of at least <paramref name="minLevel"/> spawn in a route
+        /// planner cell.</summary>
+        public static int HardAggressiveIn(ushort region, int cellX, int cellY, int minLevel)
+        {
+            if (!Volatile.Read(ref _published).Hazards.TryGetValue((region, cellX, cellY), out int[] levels))
+                return 0;
+            int n = 0;
+            foreach (int level in levels)
+                if (level >= minLevel)
+                    n++;
+            return n;
+        }
+
+        /// <summary>Pure: the levels of the aggressive outdoor monsters per route planner cell.</summary>
+        public static Dictionary<(ushort, int, int), int[]> BuildHazards(IReadOnlyList<Monster> monsters)
+        {
+            var cells = new Dictionary<(ushort, int, int), List<int>>();
+            foreach (Monster m in monsters)
+            {
+                if (!m.Aggressive || m.AggroRange <= 0 || m.Dungeon)
+                    continue;
+                var key = (m.Region, (int)Math.Floor(m.X / (double)HazardCell), (int)Math.Floor(m.Y / (double)HazardCell));
+                if (!cells.TryGetValue(key, out List<int> list))
+                    cells[key] = list = new List<int>();
+                list.Add(m.Level);
+            }
+            return cells.ToDictionary(p => p.Key, p => p.Value.ToArray());
+        }
 
         private const int Cell = 2048;
         private const int MaxThreatsPerCamp = 16;
@@ -59,7 +91,7 @@ namespace DOL.GS.SmartAI
             var spots = new Dictionary<string, (ushort, int, int)>(StringComparer.OrdinalIgnoreCase);
             foreach (CampSite c in camps)
                 spots[c.Id] = (c.Region, c.X, c.Y);
-            Volatile.Write(ref _published, new Published(threats, zones, spots));
+            Volatile.Write(ref _published, new Published(threats, zones, spots, BuildHazards(monsters)));
             if (writeFile)
                 SmartWorldConfig.WriteGenerated(zones);
         }

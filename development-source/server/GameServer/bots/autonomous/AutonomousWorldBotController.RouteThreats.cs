@@ -29,6 +29,13 @@ namespace DOL.GS
         private long _routeThreatHoldSince;
         public const long RouteThreatHoldLimitMilliseconds = 75_000;
 
+        // SmartAI lone members (GuardLoneMemberTravel).
+        public const int LoneScanMilliseconds = 1_000;
+        public const int LoneMaxDetours = 4;
+        public const long LoneHoldMilliseconds = 30_000;
+        private GameNPC _loneHoldBlocker;
+        private long _loneHoldSince;
+
         /// <summary>
         /// Open-world route threat awareness (see AutonomousRouteThreatPolicy). Called right before
         /// a travelling bot issues its walk order. True consumes this travel turn (a pull started,
@@ -54,8 +61,11 @@ namespace DOL.GS
             // Keep looking while walking a detour: the way to the sidestep is scanned too, and a
             // new monster there is fought or makes the bot give up (no detour inside a detour).
             bool detouring = _routeRecoveryWaypoint.HasValue;
-            Vector3 scanTarget = _routeRecoveryWaypoint ?? destination;
-            _nextRouteThreatScanTick = now + AutonomousRouteThreatPolicy.ScanMilliseconds + bot.ObjectID % 500;
+            Vector3 scanTarget = _routeRecoveryWaypoint ?? SmartRouteTarget(bot, destination, plan: false);
+            // A lone SmartAI member looks every second: it has nobody to pull for it (owner 2026-11-05: "attempt at all
+            // costs to stay out of aggro range").
+            _nextRouteThreatScanTick = now + (loneMember ? LoneScanMilliseconds : AutonomousRouteThreatPolicy.ScanMilliseconds) +
+                                       bot.ObjectID % 500;
 
             IPathfindingMgr nav = PathfindingProvider.Instance;
             Zone zone = bot.CurrentZone;
@@ -77,9 +87,12 @@ namespace DOL.GS
             bool ranged = BotSpellPower.IsOffensiveCaster(bot) ||
                           characterClass is eCharacterClass.Scout or eCharacterClass.Hunter or eCharacterClass.Ranger;
             int margin = ranged ? AutonomousRouteThreatPolicy.RangedMargin : AutonomousRouteThreatPolicy.MeleeMargin;
-            // SmartAI: a group leader in formation leaves room for the members walking beside it.
+            // SmartAI: a group leader in formation leaves room for the members walking beside it; a lone member keeps
+            // the full aggro margin of smartai-world.json.
             if (grouped && !loneMember && DOL.GS.SmartAI.SmartAiConfig.IsEnabled)
                 margin += DOL.GS.SmartAI.SmartWorldConfig.Current.FormationClearance;
+            if (loneMember)
+                margin = Math.Max(margin, DOL.GS.SmartAI.SmartWorldConfig.Current.AggroMargin);
 
             GameNPC[] threats = bot.GetNPCsInRadius((ushort)AutonomousRouteThreatPolicy.ScanRadius)
                 .Where(npc => IsExperienceMonster(npc) && npc.IsAlive && !npc.InCombat &&
@@ -128,10 +141,35 @@ namespace DOL.GS
                                now - _lastRouteThreatRetargetTick >= AutonomousRouteThreatPolicy.RetargetCooldownMilliseconds;
             RouteThreatAction action = AutonomousRouteThreatPolicy.Decide(con, grouped, pack, bossLike,
                 detour.HasValue, detours, mayRetarget, lowLevelSolo: !grouped && bot.Level < 5);
-            // A lone member goes around anything the policy would act on; with no way around it walks on (and
-            // defends itself) - it is not the puller and its camp belongs to the party.
-            if (loneMember && action != RouteThreatAction.Ignore)
-                action = detour.HasValue && detours < 2 ? RouteThreatAction.Detour : RouteThreatAction.Ignore;
+            // A lone member never pulls (it is not the puller; the camp belongs to the party). It goes around anything
+            // the policy would act on (up to four times per monster); with no way around it waits out of reach for the
+            // monster to wander off (LoneHoldMilliseconds), and only then walks on, defending itself if it must.
+            // SmartAI: a solo bot too weak to set off safely (SoloTooWeakToTravel) never opens a fight on its road either.
+            bool weakSolo = !grouped && DOL.GS.SmartAI.SmartAiConfig.IsEnabled &&
+                            SoloTooWeakToTravel(bot.HealthPercent, bot.ManaPercent, bot.EndurancePercent, UsesPowerToFight(bot), false);
+            if ((loneMember || weakSolo) && action != RouteThreatAction.Ignore)
+            {
+                if (detour.HasValue && detours < LoneMaxDetours)
+                    action = RouteThreatAction.Detour;
+                else
+                {
+                    if (_loneHoldBlocker != blocker)
+                    {
+                        _loneHoldBlocker = blocker;
+                        _loneHoldSince = now;
+                    }
+                    if (now - _loneHoldSince < LoneHoldMilliseconds)
+                    {
+                        bot.StopMovingOnPath();
+                        bot.StopMoving();
+                        _nextRouteThreatScanTick = now + LoneScanMilliseconds;
+                        SetStatus(bot, $"Waiting for {blocker.Name} to move", GoalText(),
+                            $"Alone on the way back; no way around {blocker.Name}'s aggro, so waiting out of its reach");
+                        return true;
+                    }
+                    action = RouteThreatAction.Ignore;
+                }
+            }
             if (action == RouteThreatAction.Ignore)
                 return false;
 

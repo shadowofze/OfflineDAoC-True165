@@ -124,6 +124,15 @@ namespace DOL.GS.SmartAI
                 return false;
             }
 
+            // A caster alone in the open: root (or stun) the monster coming at it and back off to nuke range (SmartKite).
+            if (target != null && SmartKite.Think(brain, bot, target, out string kiteNote))
+            {
+                var kite = new SmartDecision(spec.Name, "Kite", 0, kiteNote, now);
+                SmartAiDiagnostics.Record(bot, kite);
+                SmartGroupCombatLog.Think(bot, kite, perception, target, default);
+                return true;
+            }
+
             Span<SmartActionCandidate> buffer = stackalloc SmartActionCandidate[SmartCandidateGenerator.FamilyCount];
             int count = SmartCandidateGenerator.Generate(profile, perception, buffer);
             bool handled = SmartActionExecutor.Execute(brain, target, profile, perception, buffer[..count], out SmartDecision decision);

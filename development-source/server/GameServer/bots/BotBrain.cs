@@ -3471,8 +3471,10 @@ namespace DOL.AI.Brain
                 // Otherwise each new swing refreshes SelfInterruptTime forever.
                 // Actual incoming interruption still goes through native rules.
                 // A caster with no power for any attack spell keeps swinging.
+                // Not while a monster in melee keeps it from casting anyway (CasterHeldInMelee: stopping then only reset
+                // the swing timer every think).
                 if (rangedCaster && !Body.IsBeingInterruptedByOther && Body.attackComponent.AttackState &&
-                    !OutOfPowerForOffense())
+                    !OutOfPowerForOffense() && !CasterHeldInMelee())
                     Body.StopAttack();
 
                 if (!UsesDefensiveOnlyPet)
@@ -3827,7 +3829,11 @@ namespace DOL.AI.Brain
         /// line, e.g. a level 4 lifedrain on a level 50 Bonedancer, hits for 1). When
         /// the real spells cost more power than the bot has, it melees instead.
         /// </summary>
-        public static bool IsOutclassedDamageSpell(Spell spell, IEnumerable<Spell> known, int casterLevel)
+        /// <param name="ownTimers">Optional: true when the two spells keep separate recast timers on separate lines
+        /// (a Wizard's, Eldritch's or Runemaster's baseline bolt beside its specialization bolt). Then the lower one is
+        /// not a lower rank of the higher: it is cast while the other recharges (owner 2026-11-05).</param>
+        public static bool IsOutclassedDamageSpell(Spell spell, IEnumerable<Spell> known, int casterLevel,
+            Func<Spell, Spell, bool> ownTimers = null)
         {
             if (spell == null || !spell.IsHarmful || !BotCasterPriority.IsDamage(spell))
                 return false;
@@ -3840,14 +3846,24 @@ namespace DOL.AI.Brain
                 best = Math.Max(best, other.Level);
                 if (other.Level > spell.Level && other.SpellType == spell.SpellType &&
                     other.Target == spell.Target && (other.Radius > 0) == (spell.Radius > 0) &&
-                    (other.CastTime <= 0) == (spell.CastTime <= 0) && other.IsPBAoE == spell.IsPBAoE)
+                    (other.CastTime <= 0) == (spell.CastTime <= 0) && other.IsPBAoE == spell.IsPBAoE &&
+                    ownTimers?.Invoke(spell, other) != true)
                     return true;
             }
             return best - spell.Level >= 5 && spell.Level * 2 < best;
         }
 
         private bool IsOutclassedDamageSpell(Spell spell) =>
-            Body?.Spells != null && IsOutclassedDamageSpell(spell, Body.Spells, Body.Level);
+            Body?.Spells != null && IsOutclassedDamageSpell(spell, Body.Spells, Body.Level, SeparateRecastLines);
+
+        /// <summary>Two recast-limited spells learned from different lines (baseline and specialization).</summary>
+        private bool SeparateRecastLines(Spell a, Spell b)
+        {
+            if (a.RecastDelay <= 0 || b.RecastDelay <= 0 || BotBody == null)
+                return false;
+            SpellLine la = BotBody.LearnedLineOf(a), lb = BotBody.LearnedLineOf(b);
+            return la != null && lb != null && !string.Equals(la.KeyName, lb.KeyName, StringComparison.OrdinalIgnoreCase);
+        }
 
         /// <summary>
         /// A caster (pet classes included) with no power for any attack spell walks
@@ -4442,8 +4458,17 @@ namespace DOL.AI.Brain
                     Spell spellToCast = areaChoice ?? (shamanHybrid
                         ? spellsToCast.OrderBy(ShamanBotCombatPolicy.RotationPriority)
                             .ThenByDescending(spell => spell.Level).First()
+                        // Bolts: the strongest ready one; a baseline bolt fires while the spec bolt recharges.
+                        : spellsToCast.TrueForAll(spell => spell.SpellType == eSpellType.Bolt)
+                        ? spellsToCast.OrderByDescending(spell => spell.Level).First()
                         : BotBody.IsEndgameCompanion
                         ? TemporaryCompanionBalance.HighestSpell(spellsToCast)
+                        // SmartAI: a caster casts its strongest ready nuke, not a random one (owner 2026-11-05: "my best
+                        // repeatable damage spells").
+                        : BotSpellPower.IsOffensiveCaster(BotBody) && DOL.GS.SmartAI.SmartStyleSelector.Drives(BotBody) &&
+                          spellsToCast.Exists(BotCasterPriority.IsDamage)
+                        ? spellsToCast.Where(BotCasterPriority.IsDamage).OrderByDescending(spell => spell.Damage)
+                            .ThenByDescending(spell => spell.Level).First()
                         : spellsToCast[Util.Random(spellsToCast.Count - 1)]);
 
                     if (spellToCast.Uninterruptible || !Body.IsBeingInterrupted || CastsThroughInterrupt())

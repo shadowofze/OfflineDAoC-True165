@@ -796,7 +796,7 @@ NORMAL PLAYER COMMANDS
     /smartai spec - which SmartAI specialization the bot fights as, and why
     /smartai group - the group's main assist, target, strategy and wounded
     /smartai debug [n] - the bot's last n SmartAI decisions (up to 32)
-    /smartai debuggroup [on|mine|off|status] - writes every bot group's completed fights to runtime/logs/smart_ai_groups (one file per group; mine: only your group)
+    /smartai debugfights [mine|status] - turns fight recording on (or off when it is on): every bot group's completed fights to runtime/logs/smart_ai_groups (one file per group), every bot fighting alone to runtime/logs/smart_ai_solo (mine: only your group)
     /smartai reload [force] - re-reads the class files in runtime/server/smartai/classes
   Every /smartai command and its answer are written to runtime/logs/smartai-session-<server start>.log.
   The tools besides personality need the server property smart_ai_player_tools (on by default).

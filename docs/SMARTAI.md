@@ -21,8 +21,9 @@ With it off, every bot plays exactly as before. SmartAI also protects your game:
 
 ## What changes
 
-**Every class.** Each of the 39 classes has a strategy file that describes its specializations. A bot plays the
-specialization it has trained most. A companion's specialization comes only from the points you train. You can
+**Every class.** Each of the 39 classes, and each of the 15 base classes a character starts as (Fighter, Acolyte,
+Viking, Seer, Guardian, Naturalist and the others, levels 1 to 5), has a strategy file that describes its
+specializations. A bot plays the specialization it has trained most. A companion's specialization comes only from the points you train. You can
 edit these files to change how a class plays: see [SMARTAI-CLASS-FILES.md](SMARTAI-CLASS-FILES.md).
 
 **Healers**
@@ -47,6 +48,11 @@ edit these files to change how a class plays: see [SMARTAI-CLASS-FILES.md](SMART
   Flurry, the Mercenary's Dirty Tricks and Flurry.
 - They don't waste a long cooldown on a monster that is nearly dead.
 - Stealthers open from stealth, and melee bots use side and back styles when they are in position.
+- **Flanking.** In a group, a melee bot with a back or side style it can use steps round to that side of the
+  monster and fights from there. It does this only when the monster stands still and is attacking someone else (the
+  tank). Alone, against a moving monster or against players, it fights as before. It doesn't circle: a bot already
+  in the arc stays put, and one that can't get there in 6 seconds gives up on that monster for 15. The attack's
+  own follow moves it there, so nothing else sends it back and forth.
 
 **Casters**
 
@@ -109,10 +115,53 @@ With SmartAI on, autonomous gamebot groups choose their camps and travel more ca
   hard monster's aggro range is picked much less often.
 - **Learning.** Groups remember their kills and deaths per camp, and where members died on the road. Deadly
   camps and areas are picked less, safe ones more. Old results fade (half of their weight a week by default).
+- **Stalled camps.** A group that stands at its camp for two minutes, everyone ready, with nothing pulled (a
+  monster in the water that the puller can't reach, for example) remembers the camp as stalled and moves on. A
+  stalled camp is picked at half the rate, or a quarter after several stalls. Set `CampStallSeconds` in
+  `smartai-world.json` (0 turns this off).
 - **Travel.** A new group meets at the town nearest its leader and walks to the camp together, instead of each
   member walking alone to a town near the camp. A member walking alone (to the meeting point, back after a death,
   or far behind the leader) goes around aggressive monsters on its route. The leader keeps extra room for the
   members beside it.
+- **Routes.** A walk of 3,000 units or more within a zone is planned on a map of 1,024-unit squares. Each square is
+  weighted by the deaths bots learned there and by the aggressive monsters that spawn there and are hard for the
+  walker (2 or more levels above it, a little more at higher levels). When the straight way crosses danger, the bot
+  walks a way around it, as a few waypoints. The way is dropped when it is more than about twice as long, or not at
+  least half as dangerous. The look-ahead still goes around single monsters on each leg. Bots alone and group
+  members walking alone both teach the map where they die, weighted by their level: deaths of bots 5 or more levels
+  below a walker count a fifth for it.
+- **Crowding.** A group skips a camp when two or more other groups already camp within 3,000 units of it.
+- **Setting up camp.** Outdoors, the group stands at a spot within 1,500 units of the spawns that no aggressive
+  monster's aggro reaches, and the puller pulls each monster back to it.
+- **Members alone stay out of aggro.** They look ahead every second, go around monsters up to four times each, and
+  wait up to 30 seconds for a monster to move when there is no way around.
+- **Dungeons.** When a member dies in a dungeon and at least half the party is together, the survivors fight their
+  way back to the entrance they came in by and meet the returning member there.
+- **Casting while hit.** A bot no longer tries a spell it can't start while it is being hit (a player gets "You must
+  wait N seconds"), unless the spell is instant or QuickCast or Mastery of Concentration carries it. It uses an
+  instant spell or its weapon instead. This applies to every bot, with SmartAI on or off.
+- **A caster with a monster on it keeps swinging.** A monster's hits keep interrupting the caster, so no spell with a
+  cast time can start (QuickCast or Mastery of Concentration aside). It used to stop and restart its swing every
+  moment while waiting for a cast that couldn't start.
+- **Bots alone:**
+  - A bot alone that is low (under 60% health, or a caster or healer under 40% power) rests before it walks anywhere,
+    and doesn't pull monsters on its road meanwhile.
+  - After releasing, it starts again from its bind instead of walking back to where it died.
+  - **Kiting.** A caster alone in the open world nukes a monster as it comes. When the monster is a cast time away,
+    the caster roots it, or stuns it if it has no root (or the monster is immune). A rooted monster: the caster backs
+    off along an escape way it planned when the fight began, clear of other aggressive monsters, to its best nuke's
+    range, then turns and nukes. The root breaks on damage, as it does for a player, and the cycle repeats. A
+    stunned monster: the caster stays and nukes while the stun lasts. It casts its strongest ready nuke. It never
+    kites in a dungeon, in a group or against players. The server log sums it up every 10 minutes (`SMARTAI_KITE`).
+  - **Theurgist ice pets.** An ice pet melees once its target is in reach, and stays where it was called. So a
+    Theurgist alone calls an ice pet, steps about 400 units (sideways first, clear of other aggressive monsters),
+    calls the next, and so on. The monster can then only reach one pet at a time, and the others keep casting. It
+    still roots and backs off like other casters when it can.
+  - Each class and spec learns how often it dies alone. One that dies too often (15 or more deaths per 100 kills)
+    picks monsters one con lower when alone; at 40 or more, two lower. The bots of that spec log
+    `SMARTAI_SOLO_CEILING` when this applies.
+- **Fighting alone.** A spec that bans melee (Bards, pure casters) still lets a bot alone defend itself with its
+  weapon.
 - **Binding.** At the meeting town each member binds at the town's bind stone, as a player would, and a group
   member who releases goes back to that bind.
 - **After a death.** A bot raised beside aggressive monsters first walks out of their aggro. When one member dies
@@ -136,11 +185,12 @@ Target a companion or bot and type:
 | `/smartai spec` | which specialization the bot fights as, and why |
 | `/smartai group` | the group's main assist, target, strategy and wounded |
 | `/smartai debug` | the bot's last SmartAI decisions (`/smartai debug 32` for more) |
-| `/smartai debuggroup` | records every bot group's finished fights, one file per group (see below) |
+| `/smartai debugfights` | turns fight recording on, or off when it is on (see below) |
 
-**Recording how groups fight.** `/smartai debuggroup` records every group that has a bot in it (`/smartai debuggroup
-mine` records only your group, or your target's). Each group gets its own file in
-`runtime/logs/smart_ai_groups`. A fight is written only once it is over: the whole group, pets included, has been
+**Recording how bots fight.** `/smartai debugfights` turns recording on: every group that has a bot in it gets its
+own file in `runtime/logs/smart_ai_groups`, and every bot fighting alone gets one in `runtime/logs/smart_ai_solo`.
+Type it again to turn recording off. `/smartai debugfights mine` records only your group, or your target's. A fight
+is written only once it is over: the whole group, pets included, has been
 out of combat for a few seconds, and no mesmerized or rooted enemy is still near. A fight cut short (the group
 breaks up, you turn recording off, the server stops) is dropped rather than written in part. Each fight has:
 
@@ -156,8 +206,7 @@ breaks up, you turn recording off, the server stops) is dropped rather than writ
 - a summary per bot, and flags such as a caster meleeing (marked `!`, with its last decision) or a bot that did
   nothing.
 
-`/smartai debuggroup status` shows what is recorded; `/smartai debuggroup off` stops. Recording stays on until you
-turn it off or the server stops.
+`/smartai debugfights status` shows what is recorded. Recording stays on until you turn it off or the server stops.
 
 Every `/smartai` command and its answer are saved to `runtime/logs/smartai-session-<server start time>.log`. If a bot does
 something odd, run `/smartai debug` on it right away, then send that log file with a short description of what

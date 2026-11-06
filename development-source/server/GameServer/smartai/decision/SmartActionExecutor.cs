@@ -63,7 +63,9 @@ namespace DOL.GS.SmartAI
                 return true;
             }
 
-            if (profile.MeleeBanned)
+            // A spec's melee ban is a group rule: a bot fighting alone defends itself as a player would (owner
+            // 2026-11-05: a soloing Bard only cast its nuke, never swung, and died). The legacy brain then fights.
+            if (profile.MeleeBanned && brain.Body.Group?.MemberCount > 1)
             {
                 // Nothing to cast and no melee allowed: hold instead of the legacy swing. Keep the triage this think
                 // already ran from running again in a later legacy path.
@@ -71,6 +73,15 @@ namespace DOL.GS.SmartAI
                 if (brain.Body.attackComponent?.AttackState == true)
                     brain.Body.StopAttack();
                 decision = new SmartDecision(profile.Spec.Name, "Hold", 0, $"melee banned ({profile.MeleeBanReason})", GameLoop.GameLoopTime);
+                return true;
+            }
+
+            // A list caster with power and nothing on it waits for its next spell instead of the legacy melee.
+            if (candidates.Length > 0 && brain.SmartAiCasterWaitsForSpell(target))
+            {
+                brain.AlreadyCheckedHeals = true;
+                decision = new SmartDecision(profile.Spec.Name, "Wait", 0, "caster: no spell ready, waiting at range",
+                    GameLoop.GameLoopTime);
                 return true;
             }
 

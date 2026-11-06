@@ -107,6 +107,8 @@ public static partial class AutonomousBotGroupCoordinator
         public bool RecoveringBetweenPulls { get; set; }
         public ushort DungeonArrivalRegion { get; set; }
         public Vector3 DungeonInteriorStagingPoint { get; set; }
+        /// <summary>SmartAI: the dungeon entry the party came in by, kept through a regroup (the staging point is cleared).</summary>
+        public (ushort Region, Vector3 Point) SmartDungeonEntry { get; set; }
         public int DungeonExteriorEdge { get; set; }
         public ushort DungeonExteriorRegion { get; set; }
         public Dictionary<long, Vector3> DungeonExteriorSlots { get; } = new();
@@ -297,6 +299,29 @@ public static partial class AutonomousBotGroupCoordinator
 
     public static bool ShouldContinueFormationSearch(eAutonomousObjectiveKind objectiveKind, int candidateRealmSlots) =>
         objectiveKind == eAutonomousObjectiveKind.RvR || candidateRealmSlots >= 2;
+
+    /// <summary>
+    /// How many other PvE parties have a camp within <paramref name="radius"/> of a spot (SmartAI crowding, owner
+    /// 2026-11-05: four groups fought in the water by Mag Mell).
+    /// </summary>
+    public static int OtherPartiesCampingNear(Group own, ushort region, float x, float y, float radius)
+    {
+        int count = 0;
+        float r2 = radius * radius;
+        lock (Sync)
+        {
+            foreach ((Group group, Session session) in Sessions)
+            {
+                if (group == own || session.ObjectiveKind != eAutonomousObjectiveKind.GroupPve || session.Camp is not { } camp ||
+                    camp.RegionId != region)
+                    continue;
+                float dx = camp.X - x, dy = camp.Y - y;
+                if (dx * dx + dy * dy <= r2)
+                    count++;
+            }
+        }
+        return count;
+    }
 
     public static void PublishCamp(GameBot bot, SharedCamp camp)
     {
@@ -1957,6 +1982,8 @@ public static partial class AutonomousBotGroupCoordinator
                 : Math.Min(2, session.WipePenalty + 1);
             session.PreferredLevelBonus = RollPreferredLevelBonus(members.Length) - session.WipePenalty;
             session.Camp = null;
+            session.SmartDungeonEntry = session.DungeonArrivalRegion != 0 && session.DungeonInteriorStagingPoint != default
+                ? (session.DungeonArrivalRegion, session.DungeonInteriorStagingPoint) : default;
             session.DungeonArrivalRegion = 0;
             session.DungeonInteriorStagingPoint = default;
             session.DungeonArrivalHoldUntilTick = 0;
@@ -2685,14 +2712,16 @@ public static partial class AutonomousBotGroupCoordinator
     /// </summary>
     private static bool TryChooseSmartLocalRegroup(Session session, GameBot[] members, GameBot anchor)
     {
-        if (!DOL.GS.SmartAI.SmartAiConfig.IsEnabled || anchor?.CurrentRegion == null || members.Length < 2 ||
-            anchor.CurrentZone?.IsDungeon == true || anchor.CurrentRegion.IsDungeon)
+        if (!DOL.GS.SmartAI.SmartAiConfig.IsEnabled || anchor?.CurrentRegion == null || members.Length < 2)
             return false;
+        bool inDungeon = anchor.CurrentZone?.IsDungeon == true || anchor.CurrentRegion.IsDungeon;
         // A fight spreads the party; survivors within 2,000 units of each other count as together.
         int together = members.Count(m => m.IsAlive && m.CurrentRegionID == anchor.CurrentRegionID &&
             m.GetDistanceTo(anchor) <= 2_000);
         if (together * 2 < members.Length)
             return false;
+        if (inDungeon)
+            return TryChooseSmartDungeonEntryRegroup(session, members, anchor, together);
         try
         {
             Vector3 here = new(anchor.X, anchor.Y, anchor.Z);
@@ -2730,6 +2759,36 @@ public static partial class AutonomousBotGroupCoordinator
             DOL.GS.SmartAI.SmartAiFallback.ReportFailure("local regroup", e);
             return false;
         }
+    }
+
+    /// <summary>
+    /// SmartAI (owner 2026-11-05: "if the group is in a dungeon then the group should fight its way back to the
+    /// entrance to get the party member who's running back"): the survivors regroup at the point just inside the
+    /// entrance they came in by. Their walk there is ordinary dungeon travel, which clears blockers in the corridors;
+    /// the released member arrives from outside and joins them at the door. Without a known entry, the town regroup.
+    /// </summary>
+    private static bool TryChooseSmartDungeonEntryRegroup(Session session, GameBot[] members, GameBot anchor, int together)
+    {
+        (ushort region, Vector3 entry) = session.SmartDungeonEntry;
+        if (region == 0 || region != anchor.CurrentRegionID || entry == default)
+            return false;
+        Vector3 previous = session.Rendezvous;
+        string previousName = session.RendezvousName;
+        ushort previousRegion = session.RendezvousRegion;
+        session.Rendezvous = entry;
+        session.RendezvousName = $"the entrance of {anchor.CurrentZone?.Description ?? anchor.CurrentRegion.Description}";
+        session.RendezvousRegion = region;
+        if (TryBuildRendezvousSlots(session, members))
+        {
+            Log.Info($"SMARTAI_GROUP_DUNGEON_ENTRY_REGROUP group={session.Id} alive={together}/{members.Length} " +
+                     $"at={region}:{(int)entry.X},{(int)entry.Y},{(int)entry.Z}");
+            return true;
+        }
+        session.Rendezvous = previous;
+        session.RendezvousName = previousName;
+        session.RendezvousRegion = previousRegion;
+        TryBuildRendezvousSlots(session, members);
+        return false;
     }
 
     private static bool IsSafeArea(GameObject obj) => obj?.CurrentZone?.GetAreasOfSpot(obj)?

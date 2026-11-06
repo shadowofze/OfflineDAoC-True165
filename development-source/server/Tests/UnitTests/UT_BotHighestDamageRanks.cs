@@ -63,5 +63,21 @@ namespace DOL.UnitTests
             Spell[] known = { first, second };
             Assert.That(BotBrain.IsOutclassedDamageSpell(first, known, 4), Is.False, "less than 5 levels apart");
         }
+
+        [Test]
+        public void ABaselineBoltWithItsOwnTimerIsNotALowerRankOfTheSpecBolt()
+        {
+            // Owner 2026-11-05: Wizards, Eldritch and Runemasters cast their baseline bolt beside their spec bolt.
+            Spell specBolt = Make("Bolt", 30);
+            Spell baselineBolt = Make("Bolt", 20);
+            Spell[] known = { specBolt, baselineBolt };
+            Assert.Multiple(() =>
+            {
+                Assert.That(BotBrain.IsOutclassedDamageSpell(baselineBolt, known, 30), Is.True,
+                    "same line (or unknown lines): a lower rank");
+                Assert.That(BotBrain.IsOutclassedDamageSpell(baselineBolt, known, 30, (a, b) => true), Is.False,
+                    "separate lines and timers: cast while the spec bolt recharges");
+            });
+        }
     }
 }

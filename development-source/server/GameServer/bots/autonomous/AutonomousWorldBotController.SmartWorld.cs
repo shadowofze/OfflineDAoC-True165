@@ -62,10 +62,17 @@ namespace DOL.GS
                     candidates.Add(new(camp.Id, camp.ZoneName, camp.RegionId, d.X, d.Y, camp.AverageMobLevel, camp.LiveMobCount));
                     byId[camp.Id] = camp;
                 }
-                SmartCampChooser.Choice choice = SmartCampChooser.Choose(candidates, planningLevel, band, Random.Shared);
+                // Crowding: leave out camps where other parties already camp close by (owner 2026-11-05).
+                SmartWorldConfig.Settings settings = SmartWorldConfig.Current;
+                Group own = _groupDirective?.Leader?.Group;
+                IReadOnlyList<SmartCampChooser.Candidate> pool = SmartCampChooser.Uncrowded(candidates,
+                    c => AutonomousBotGroupCoordinator.OtherPartiesCampingNear(own, c.Region, c.X, c.Y, settings.GroupCrowdRadius),
+                    settings.MaxOtherGroupsNearCamp, out int crowded);
+                SmartCampChooser.Choice choice = SmartCampChooser.Choose(pool, planningLevel, band, Random.Shared);
                 if (choice == null || !byId.TryGetValue(choice.Camp.Id, out AutonomousBotDecisionEngine.Camp chosen))
                     return null;
-                why = $"SmartAI camp: {chosen.MonsterName} L{chosen.AverageMobLevel} in {chosen.ZoneName}; {choice.Why}; {band}";
+                why = $"SmartAI camp: {chosen.MonsterName} L{chosen.AverageMobLevel} in {chosen.ZoneName}; {choice.Why}" +
+                      (crowded > 0 ? $"; {crowded} camp(s) skipped for other parties nearby" : string.Empty) + $"; {band}";
                 Log.Info($"SMARTAI_GROUP_CAMP group={_groupDirective?.GroupId} camp=\"{chosen.Id}\" {why}");
                 return chosen;
             }
@@ -80,25 +87,96 @@ namespace DOL.GS
         private static bool LearnsFrom(GameBot bot) =>
             SmartAiConfig.IsEnabled && bot?.IsAutonomousWorldBot == true && bot.Group?.MemberCount > 1;
 
+        /// <summary>The camp a grouped bot is working: its own record (only the planning leader has one), else the
+        /// party's shared camp. Run 3 (2026-11-05) filed 39 of 42 camp deaths without a camp because members had none.</summary>
+        private static string CampOf(GameBot bot)
+        {
+            string own = bot.PersistentRecord?.CurrentCampId;
+            if (!string.IsNullOrWhiteSpace(own))
+                return own;
+            return (bot.Brain as BotBrain)?.AutonomousController?._groupDirective?.Camp?.Id;
+        }
+
         public static void SmartLearnKill(GameBot bot)
         {
+            if (LearnsSolo(bot))
+            {
+                try { SmartWorldLearning.RecordSolo(SoloSpecKey(bot), died: false); }
+                catch (Exception e) { SmartAiFallback.ReportFailure("learning (solo kill)", e); }
+                return;
+            }
             if (!LearnsFrom(bot))
                 return;
-            try { SmartWorldLearning.RecordKill(bot.PersistentRecord?.CurrentCampId); }
+            try { SmartWorldLearning.RecordKill(CampOf(bot)); }
             catch (Exception e) { SmartAiFallback.ReportFailure("learning (kill)", e); }
         }
 
+        /// <summary>A SmartAI world bot fighting alone: its kills and deaths teach its spec's solo con ceiling.</summary>
+        private static bool LearnsSolo(GameBot bot) =>
+            SmartAiConfig.IsEnabled && bot?.IsAutonomousWorldBot == true && !(bot.Group?.MemberCount > 1) && !bot.IsPlayerLedGroup &&
+            !AutonomousObjectiveAssignments.Is(bot, eAutonomousObjectiveKind.RvR);
+
+        /// <summary>"Bard / Regrowth Bard": the class and the SmartAI spec it plays (the class alone without one).</summary>
+        public static string SoloSpecKey(GameBot bot)
+        {
+            string spec = SmartAiSpecRegistry.Active.Resolve(bot)?.Name;
+            return string.IsNullOrEmpty(spec) ? bot.ClassName : $"{bot.ClassName} / {spec}";
+        }
+
+        /// <summary>
+        /// SmartAI: the solo con ceiling, lowered for a spec that dies too often alone (SmartWorldLearning.SoloConSteps),
+        /// never below green.
+        /// </summary>
+        private ConColor SmartSoloConCeiling(GameBot bot, ConColor ceiling)
+        {
+            if (!LearnsSolo(bot))
+                return ceiling;
+            try
+            {
+                string key = SoloSpecKey(bot);
+                int steps = SmartWorldLearning.SoloConStepsFor(key, out double kills, out double deaths);
+                if (steps <= 0)
+                    return ceiling;
+                ConColor lowered = (ConColor)Math.Max((int)ConColor.GREEN, (int)ceiling - steps);
+                if (lowered != ceiling && GameLoop.GameLoopTime >= _nextSoloCeilingLog)
+                {
+                    _nextSoloCeilingLog = GameLoop.GameLoopTime + 10 * 60_000;
+                    Log.Info($"SMARTAI_SOLO_CEILING bot={bot.Name} spec=\"{key}\" kills={kills:0.#} deaths={deaths:0.#} " +
+                             $"ceiling={ceiling.ToString().ToLowerInvariant()}->{lowered.ToString().ToLowerInvariant()}");
+                }
+                return lowered;
+            }
+            catch (Exception e)
+            {
+                SmartAiFallback.ReportFailure("solo con ceiling", e);
+                return ceiling;
+            }
+        }
+
+        private long _nextSoloCeilingLog;
+
         public static void SmartLearnDeath(GameBot bot)
         {
-            if (!LearnsFrom(bot))
+            // Solo bots teach the areas only (where travelling is deadly, for the route planner): run 4 (2026-11-05) had
+            // 1,604 of its 1,885 deaths in solo bots. Their camps stay out of the group camp statistics.
+            bool solo = SmartAiConfig.IsEnabled && bot?.IsAutonomousWorldBot == true && !(bot.Group?.MemberCount > 1);
+            if (!LearnsFrom(bot) && !solo)
                 return;
             try
             {
-                string campId = bot.PersistentRecord?.CurrentCampId;
+                string campId = CampOf(bot);
                 bool atCamp = !string.IsNullOrWhiteSpace(campId) &&
                               SmartWorldKnowledge.TryGetSpot(campId, out var spot) && spot.Region == bot.CurrentRegionID &&
                               Vector2.Distance(new(spot.X, spot.Y), new(bot.X, bot.Y)) <= SmartWorldLearning.AtCampRadius;
-                SmartWorldLearning.RecordDeath(campId, atCamp, bot.CurrentRegionID, bot.X, bot.Y);
+                if (solo)
+                {
+                    if (!atCamp && bot.CurrentRegion?.IsDungeon != true)
+                        SmartWorldLearning.RecordDeath(null, false, bot.CurrentRegionID, bot.X, bot.Y, victimLevel: bot.Level);
+                    if (LearnsSolo(bot))
+                        SmartWorldLearning.RecordSolo(SoloSpecKey(bot), died: true);
+                    return;
+                }
+                SmartWorldLearning.RecordDeath(campId, atCamp, bot.CurrentRegionID, bot.X, bot.Y, victimLevel: bot.Level);
             }
             catch (Exception e) { SmartAiFallback.ReportFailure("learning (death)", e); }
         }
@@ -152,6 +230,277 @@ namespace DOL.GS
 
         private Vector3? _loneDetour;
         private long _loneDetourUntil;
+
+        // ---- the camp's setup spot
+
+        public const int SetupSpotArrivalRadius = 150;
+
+        /// <summary>
+        /// SmartAI (owner 2026-11-05: "groups need to pick a safe spot to setup camp at and have the puller pull back
+        /// to that camp so they don't keep getting attacked by respawns"): the nearest reachable spot within 1,500 units
+        /// of the spawns that no aggressive monster's aggro reaches (AutonomousSmartSafeSpot - the camp's own
+        /// monsters included when they are aggressive). The party walks to it and stands there; every PvE party of
+        /// three or more already pulls from range back to itself (AutonomousDefensivePull). Outdoors only; the camp is
+        /// unchanged when the spawn point is already safe or no spot is found.
+        /// </summary>
+        private CampDestination SmartCampSetupSpot(CampDestination camp, int groupLevel)
+        {
+            if (!SmartAiConfig.IsEnabled || camp == null || camp.IsDungeon || camp.SetupSpot)
+                return camp;
+            try
+            {
+                Region region = WorldMgr.GetRegion(camp.RegionId);
+                if (region == null || region.IsDungeon)
+                    return camp;
+                Vector3 anchor = new(camp.X, camp.Y, camp.Z);
+                if (!AutonomousSmartSafeSpot.TryFind(region, anchor, anchor, groupLevel, out Vector3 spot, out bool safe, out int threats))
+                {
+                    Log.Info($"SMARTAI_CAMP_SETUP camp=\"{camp.Id}\" spot=spawns reason={(safe ? "already-safe" : "no-safe-spot")} threats={threats}");
+                    return camp;
+                }
+                Log.Info($"SMARTAI_CAMP_SETUP camp=\"{camp.Id}\" spot={(int)spot.X},{(int)spot.Y} moved={(int)Vector3.Distance(anchor, spot)} threats={threats}");
+                return camp with
+                {
+                    X = (int)Math.Round(spot.X), Y = (int)Math.Round(spot.Y), Z = (int)Math.Round(spot.Z), SetupSpot = true,
+                };
+            }
+            catch (Exception e)
+            {
+                SmartAiFallback.ReportFailure("camp setup spot", e);
+                return camp;
+            }
+        }
+
+        // ---- route planning (SmartRoutePlanner)
+
+        private List<Vector3> _smartRoute;
+        private int _smartRouteNext;
+        private Vector3 _smartRouteDestination;
+        private ushort _smartRouteRegion;
+        private long _smartRouteLegSince;
+        private Vector3? _smartRouteTriedDestination;
+        private long _smartRouteTriedTick;
+        /// <summary>Walks shorter than this are not planned.</summary>
+        public const int SmartRouteMinDistance = 3_000;
+        /// <summary>A destination this close to the planned one keeps the plan (a formation slot moves with its leader).</summary>
+        public const int SmartRouteSameDestination = 1_500;
+        public const int SmartRouteWaypointReach = 300;
+        public const long SmartRouteRetryMilliseconds = 15_000;
+        /// <summary>A leg not finished in this time drops the plan (the bot then walks straight, guarded as before).</summary>
+        public const long SmartRouteLegMilliseconds = 90_000;
+        /// <summary>Each hard aggressive spawn in a cell adds this much danger; each learned death there adds 1.</summary>
+        public const double SmartRouteSpawnDanger = 0.5;
+
+        /// <summary>Pure: the lowest level of a monster that counts as a hard one for a traveller (orange and up for
+        /// low levels; improvised for higher levels, where con steps are wider).</summary>
+        public static int SmartRouteHardLevel(int travellerLevel) => travellerLevel + 2 + travellerLevel / 10;
+
+        private bool SmartRoutesApply(GameBot bot) =>
+            SmartAiConfig.IsEnabled && bot?.IsAutonomousWorldBot == true && !bot.IsPlayerLedGroup && !bot.IsOnStableMasterRoute &&
+            bot.CurrentZone is { IsDungeon: false } && bot.CurrentRegion is { IsDungeon: false } &&
+            !AutonomousObjectiveAssignments.Is(bot, eAutonomousObjectiveKind.RvR) && AutonomousRealmRaid.GetView(bot.Group) == null;
+
+        /// <summary>
+        /// SmartAI (owner 2026-11-05, "Setup Routes"): where a bot walking to <paramref name="destination"/> should head
+        /// now: the next waypoint of a planned way around learned deaths and hard aggressive spawns, or the destination
+        /// itself. With <paramref name="plan"/>, a long walk (3,000+ units, same zone) to a new destination is planned.
+        /// </summary>
+        private Vector3 SmartRouteTarget(GameBot bot, Vector3 destination, bool plan)
+        {
+            if (!SmartRoutesApply(bot))
+            {
+                _smartRoute = null;
+                return destination;
+            }
+            try
+            {
+                long now = GameLoop.GameLoopTime;
+                Vector2 here = new(bot.X, bot.Y), to = new(destination.X, destination.Y);
+                if (_smartRoute != null && _smartRouteRegion == bot.CurrentRegionID &&
+                    Vector2.Distance(new(_smartRouteDestination.X, _smartRouteDestination.Y), to) <= SmartRouteSameDestination)
+                {
+                    while (_smartRouteNext < _smartRoute.Count &&
+                           Vector2.Distance(here, new(_smartRoute[_smartRouteNext].X, _smartRoute[_smartRouteNext].Y)) <= SmartRouteWaypointReach)
+                    {
+                        _smartRouteNext++;
+                        _smartRouteLegSince = now;
+                    }
+                    if (_smartRouteNext >= _smartRoute.Count)
+                    {
+                        _smartRoute = null;
+                        return destination;
+                    }
+                    if (now - _smartRouteLegSince > SmartRouteLegMilliseconds && !bot.InCombat)
+                    {
+                        Log.Info($"SMARTAI_ROUTE_DROPPED bot={bot.Name} leg={_smartRouteNext + 1}/{_smartRoute.Count} reason=slow-leg");
+                        _smartRoute = null;
+                        return destination;
+                    }
+                    return _smartRoute[_smartRouteNext];
+                }
+                // Another destination: a short hop (a detour, a formation step) leaves the plan alone; a long walk
+                // elsewhere replaces it.
+                if (!plan || Vector2.Distance(here, to) < SmartRouteMinDistance)
+                    return destination;
+                _smartRoute = null;
+                if (_smartRouteTriedDestination is Vector3 tried &&
+                    Vector2.Distance(new(tried.X, tried.Y), to) <= SmartRouteSameDestination &&
+                    now - _smartRouteTriedTick < SmartRouteRetryMilliseconds)
+                    return destination;
+                _smartRouteTriedDestination = destination;
+                _smartRouteTriedTick = now;
+                List<Vector3> route = PlanSmartRoute(bot, destination, out string why);
+                if (route == null)
+                    return destination;
+                _smartRoute = route;
+                _smartRouteNext = 0;
+                _smartRouteDestination = destination;
+                _smartRouteRegion = bot.CurrentRegionID;
+                _smartRouteLegSince = now;
+                Log.Info($"SMARTAI_ROUTE bot={bot.Name} level={bot.Level} group={(_groupDirective?.IsDynamic == true ? _groupDirective.GroupId : "solo")} " +
+                         $"zone=\"{bot.CurrentZone?.Description}\" from={bot.X},{bot.Y} to={(int)destination.X},{(int)destination.Y} " +
+                         $"waypoints={route.Count} {why}");
+                return route[0];
+            }
+            catch (Exception e)
+            {
+                SmartAiFallback.ReportFailure("route planning", e);
+                _smartRoute = null;
+                return destination;
+            }
+        }
+
+        /// <summary>The plan in world points on the navmesh, every leg walkable; null when there is none worth taking.</summary>
+        private static List<Vector3> PlanSmartRoute(GameBot bot, Vector3 destination, out string why)
+        {
+            why = null;
+            Zone zone = bot.CurrentZone;
+            Region region = bot.CurrentRegion;
+            if (zone == null || region == null || region.GetZone((int)destination.X, (int)destination.Y) != zone)
+                return null;
+            IPathfindingMgr nav = PathfindingProvider.Instance;
+            if (!nav.IsAvailable || !nav.HasNavmesh(zone))
+                return null;
+            ushort regionId = bot.CurrentRegionID;
+            int level = bot.Level;
+            int hard = SmartRouteHardLevel(level);
+            DateTime utc = DateTime.UtcNow;
+            int half = SmartRoutePlanner.CellSize / 2;
+            double Danger(int cx, int cy) =>
+                SmartRouteSpawnDanger * SmartWorldKnowledge.HardAggressiveIn(regionId, cx, cy, hard) +
+                SmartWorldLearning.AreaDanger(regionId, cx * SmartRoutePlanner.CellSize + half, cy * SmartRoutePlanner.CellSize + half, level, utc);
+            var bounds = new SmartRoutePlanner.Bounds(zone.XOffset, zone.YOffset, zone.XOffset + zone.Width, zone.YOffset + zone.Height);
+            SmartRoutePlanner.Plan plan = SmartRoutePlanner.Find(bot.X, bot.Y, (int)destination.X, (int)destination.Y, bounds, Danger);
+            if (plan == null)
+                return null;
+            if (!AutonomousNavigationSurface.TryFloor(nav, zone, new(bot.X, bot.Y, bot.Z), out Vector3 previous))
+                return null;
+            var points = new List<Vector3>(plan.Waypoints.Count);
+            float z = bot.Z;
+            foreach ((int x, int y) in plan.Waypoints)
+            {
+                Vector3? floor = nav.GetClosestPoint(zone, new Vector3(x, y, z), 384, 384, 2_000, nav.DefaultFilters);
+                if (floor is not Vector3 point || region.GetZone((int)point.X, (int)point.Y) != zone ||
+                    !AutonomousZoneItinerary.HasCompleteCorridor(nav, zone, previous, point))
+                    return null;
+                points.Add(point);
+                previous = point;
+                z = point.Z;
+            }
+            Vector3 end = AutonomousNavigationSurface.TryFloor(nav, zone, destination, out Vector3 endFloor) ? endFloor : destination;
+            if (!AutonomousZoneItinerary.HasCompleteCorridor(nav, zone, previous, end))
+                return null;
+            why = $"danger {plan.StraightDanger:0.#}->{plan.PlannedDanger:0.#} length {plan.StraightLength:0}->{plan.PlannedLength:0}";
+            return points;
+        }
+
+        // ---- camp stalls
+
+        private long _smartReadySinceTick;
+        /// <summary>The leader counts as at its camp within this distance of the camp spot.</summary>
+        public const int StallCampReach = 2_500;
+
+        /// <summary>
+        /// Pure: whether a party that has stood ready at its camp since <paramref name="readySince"/> has stalled.
+        /// </summary>
+        public static bool IsCampStall(long readySince, long now, int stallSeconds) =>
+            stallSeconds > 0 && readySince > 0 && now - readySince >= stallSeconds * 1000L;
+
+        /// <summary>
+        /// SmartAI (owner 2026-11-05, "Hibernia is slacking"): the leader of a grinding party that stands at its camp
+        /// with every member alive, out of combat and ready (the 90/80/80 pull threshold) for CampStallSeconds, with
+        /// nothing pulled, records a stall for the camp and leaves it for another. In run 4 nine parties (eight
+        /// Hibernian, most at Lough Derg water beetles) stood like that until the 15-minute stuck watchdog sent a
+        /// member to its capital. True when the camp was left.
+        /// </summary>
+        private bool SmartCampStalled(GameBot bot)
+        {
+            if (!SmartAiConfig.IsEnabled || _groupDirective is not { IsDynamic: true } directive || directive.Leader != bot ||
+                directive.ObjectiveKind != eAutonomousObjectiveKind.GroupPve || directive.Phase != "Grinding" ||
+                directive.Camp is not { } camp || bot.Group == null)
+            {
+                _smartReadySinceTick = 0;
+                return false;
+            }
+            try
+            {
+                long now = GameLoop.GameLoopTime;
+                bool ready = bot.CurrentRegionID == camp.RegionId && Distance(bot.X, bot.Y, camp.X, camp.Y) <= StallCampReach;
+                if (ready)
+                {
+                    foreach (GameLiving member in bot.Group.GetMembersInTheGroup())
+                    {
+                        if (member == null || !member.IsAlive || member.InCombat || member.IsAttacking ||
+                            member is GameBot { IsReturningAfterRelease: true } ||
+                            !AutonomousGroupRecoveryState.ResourcesReady(member.HealthPercent, member.ManaPercent,
+                                member.EndurancePercent, member.MaxMana > 0))
+                        {
+                            ready = false;
+                            break;
+                        }
+                    }
+                }
+                if (!ready)
+                {
+                    _smartReadySinceTick = 0;
+                    return false;
+                }
+                if (_smartReadySinceTick == 0)
+                    _smartReadySinceTick = now;
+                int stallSeconds = SmartWorldConfig.Current.CampStallSeconds;
+                if (!IsCampStall(_smartReadySinceTick, now, stallSeconds))
+                    return false;
+                _smartReadySinceTick = 0;
+                Log.Warn($"SMARTAI_CAMP_STALL group={directive.GroupId} camp=\"{camp.Id}\" target=\"{camp.MonsterName}\" " +
+                         $"zone=\"{camp.ZoneName}\" seconds={stallSeconds} at={bot.X},{bot.Y},{bot.Z}");
+                SmartWorldLearning.RecordStall(camp.Id);
+                string reason = $"SmartAI: the party stood ready at the camp for {stallSeconds}s and nothing was pulled";
+                if (_camp != null && string.Equals(_camp.Id, camp.Id, StringComparison.OrdinalIgnoreCase))
+                    AbandonCamp(bot, reason);
+                else
+                    AutonomousBotGroupCoordinator.RejectUnreachableCamp(bot, camp.Id, reason);
+                return true;
+            }
+            catch (Exception e)
+            {
+                SmartAiFallback.ReportFailure("camp stall", e);
+                return false;
+            }
+        }
+
+        /// <summary>The party's ranged pull gave a target up as unreachable: SmartAI learning marks the camp.</summary>
+        private void SmartLearnPullRelease(GameBot bot)
+        {
+            if (!AutonomousDefensivePull.TakeNewRelease(bot?.Group) || !LearnsFrom(bot))
+                return;
+            try
+            {
+                string campId = CampOf(bot);
+                Log.Info($"SMARTAI_CAMP_PULL_RELEASED bot={bot.Name} camp=\"{campId}\"");
+                SmartWorldLearning.RecordStall(campId);
+            }
+            catch (Exception e) { SmartAiFallback.ReportFailure("learning (pull release)", e); }
+        }
 
         // ---- binding at the meet-up town
 
@@ -275,6 +624,61 @@ namespace DOL.GS
             {
                 SmartAiFallback.ReportFailure("revive retreat", e);
             }
+        }
+
+        // ---- solo bots rest before they travel
+
+        private bool _smartTravelResting;
+
+        /// <summary>
+        /// Pure: a solo bot too weak to set off: below 60% health, or a power user below 40% power. Once it has sat
+        /// down it rests on to the pull threshold (90% health, 80% power and endurance), as a group does.
+        /// </summary>
+        public static bool SoloTooWeakToTravel(int health, int power, int endurance, bool usesPower, bool resting) =>
+            resting ? !AutonomousGroupRecoveryState.ResourcesReady(health, power, endurance, usesPower)
+                    : health < 60 || usesPower && power < 40;
+
+        private static bool UsesPowerToFight(GameBot bot) =>
+            bot.MaxMana > 0 && (BotSpellPower.IsOffensiveCaster(bot) ||
+                                bot.CharacterClass != null && BotPartyRoles.IsHealingClass((eCharacterClass)bot.CharacterClass.ID));
+
+        /// <summary>
+        /// SmartAI (2026-11-05 run 5): a solo bot below that sits down before walking anywhere. Released bots come back
+        /// with a third of their health and power, and walked straight to a healer or a vendor: 35 of 35 solo casters who
+        /// started a fight on the way to a healer died, and 21 of 21 on the way to a vendor. Not while something stops it
+        /// resting (a fight, a cast, aggro), nor during the step out of harm's way after a resurrection. True while it
+        /// rests (the walk waits).
+        /// </summary>
+        private bool SmartRestBeforeTravel(GameBot bot)
+        {
+            if (!SmartAiConfig.IsEnabled || bot?.IsAutonomousWorldBot != true || bot.Group != null || bot.IsPlayerLedGroup ||
+                _reviveRetreat != null || bot.InCombat || bot.IsOnStableMasterRoute || !bot.IsAlive)
+            {
+                _smartTravelResting = false;
+                return false;
+            }
+            bool usesPower = UsesPowerToFight(bot);
+            if (!SoloTooWeakToTravel(bot.HealthPercent, bot.ManaPercent, bot.EndurancePercent, usesPower, _smartTravelResting))
+            {
+                if (_smartTravelResting)
+                {
+                    _smartTravelResting = false;
+                    bot.WakeRecoveryRest();
+                }
+                return false;
+            }
+            if (BotRestRecovery.BlocksRest(bot))
+                return false;
+            bot.StopMovingOnPath();
+            bot.StopMoving();
+            if (!_smartTravelResting)
+                Log.Info($"SMARTAI_REST_BEFORE_TRAVEL bot={bot.Name} level={bot.Level} class=\"{bot.ClassName}\" hp={bot.HealthPercent}% " +
+                         $"power={bot.ManaPercent}% goal=\"{bot.PersistentRecord?.CurrentGoal}\"");
+            _smartTravelResting = true;
+            bot.BeginRecoveryRest();
+            SetStatus(bot, "Resting before travelling", GoalText(),
+                $"Recovering before the walk: HP {bot.HealthPercent}% • power {bot.ManaPercent}% • endurance {bot.EndurancePercent}%");
+            return true;
         }
 
         /// <summary>Walks a raised bot to its safe spot; true while it is on the way. A fight ends the retreat.</summary>

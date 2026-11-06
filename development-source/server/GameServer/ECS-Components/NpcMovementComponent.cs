@@ -979,10 +979,17 @@ namespace DOL.GS
                 }
             }
 
+            // SmartAI: a melee bot flanks for its positional styles; the spot is this follow's own destination, so the
+            // follow stays the one thing moving it (SmartFlank: two movement owners were a rubberbanding cause).
+            Vector3 flankSlot = default;
+            bool flank = !formation && SmartAI.SmartFlank.TryGetSlot(Owner, FollowTarget, MinFollowDistance, out flankSlot);
+            if (flank)
+                targetPos = flankSlot;
+
             Vector3 relative = targetPos - _ownerPosition;
             float distanceSquared = relative.LengthSquared();
 
-            if (distanceSquared > MaxFollowDistance * MaxFollowDistance)
+            if (!flank && distanceSquared > MaxFollowDistance * MaxFollowDistance)
             {
                 StopFollowing();
                 return 0;
@@ -990,7 +997,8 @@ namespace DOL.GS
 
             // The way position is updated ensures that we never move past the destination, so we need to take potential small inaccuracies into account.
             // A formation follower of a standing leader settles within a few units of its slot instead of jittering onto it.
-            int arrived = formation && !leaderWalking ? AutonomousGroupFormationFollow.ArrivedTolerance : MinFollowDistance + 1;
+            int arrived = formation && !leaderWalking ? AutonomousGroupFormationFollow.ArrivedTolerance :
+                flank ? SmartAI.SmartFlank.ArrivedTolerance : MinFollowDistance + 1;
             if (distanceSquared <= arrived * arrived)
             {
                 TurnTo(FollowTarget);
@@ -1003,7 +1011,7 @@ namespace DOL.GS
             }
 
             float distance = MathF.Sqrt(distanceSquared);
-            float scale = MinFollowDistance / distance;
+            float scale = flank ? 0 : MinFollowDistance / distance;
 
             Vector3 destination = targetPos - relative * scale;
             destination.Z = targetPos.Z; // May move the NPC closer than intended, but improves movement overall.
@@ -1014,6 +1022,9 @@ namespace DOL.GS
             // leader walks (it keeps its full speed; slowing on approach made it fall back and stop and go).
             if (Owner.IsAttacking && distance > Owner.MeleeAttackRange || formation && leaderWalking)
                 speed = MaxSpeed;
+            // A flanking step is short: an even pace to the spot (the stick-distance smoothing would stop it short).
+            else if (flank)
+                speed = (short) Math.Clamp(distance * 2.5f, 60, MaxSpeed);
             else
                 speed = (short) Math.Min(MaxSpeed, (distance - MinFollowDistance) * 2.5);
 

@@ -1,4 +1,4 @@
-﻿---
+---
 schema_version: 1
 class_name: "Warrior"
 class_id: 22
@@ -29,6 +29,7 @@ default_personality: "Defensive"
 ```yaml
 match_specs:
   primary_line: "Shields"
+  fallback: true   # an Axe or Hammer Warrior matches no line here; owner 2026-11-05 run 4
   min_point_ratio: 0.50
   spec_type_aliases: []
 ```

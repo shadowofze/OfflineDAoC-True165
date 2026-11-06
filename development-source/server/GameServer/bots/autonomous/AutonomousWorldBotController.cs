@@ -172,6 +172,8 @@ namespace DOL.GS
         private GameNPC _serviceNpc;
         private GameNPC _readyAtService;
         private long _readyAtServiceSinceTick;
+        /// <summary>A vendor that took no sale in this long, with the bot standing at it, is given up (30 minutes).</summary>
+        public const long StaleVendorMilliseconds = 120_000;
         private int[] _campLevelScratch = new int[16];
         private readonly AutonomousServiceReachability.ApproachFailures _serviceApproachFailures = new();
         private eWorldServiceKind? _serviceKind;
@@ -201,7 +203,8 @@ namespace DOL.GS
             bool IsDungeon,
             bool IsFrontier,
             ConColor? FallbackMaximumCon = null,
-            int TargetLevel = 0);
+            int TargetLevel = 0,
+            bool SetupSpot = false);
 
         private sealed record CampCatalogCell(
             string Id,
@@ -775,11 +778,14 @@ namespace DOL.GS
                         !SavageBotCombatPolicy.MustMeleePull((eCharacterClass)bot.CharacterClass.ID) &&
                         AutonomousDefensivePull.TryBegin(bot, nearbyGoal))
                     {
+                        if (SmartCampStalled(bot))
+                            return true;
                         SetStatus(bot, $"Ranged pulling {nearbyGoal.Name}", GoalText(),
                             "Holding outside the spawn pack; drawing the assigned target back to the party",
                             nearbyGoal.Name, _camp.ZoneName);
                         return true;
                     }
+                    SmartLearnPullRelease(bot);
                 }
                 bool physicallyAtDungeonCampPoint = certifiedDarknessFallsCamp ||
                     campDistance <= 120 && Math.Abs(bot.Z - _camp.Z) <= 100;
@@ -791,7 +797,9 @@ namespace DOL.GS
                 // authored monster coordinate may be farther away or above
                 // that floor; never replace the ordered chain with a generic
                 // direct PathTo merely because raw spawn distance is large.
-                if (!certifiedDarknessFallsCamp && (campDistance > CampArrivalRadius || dungeonApproach))
+                // A SmartAI setup spot is where the party stands: arrive on it, not merely near the spawns.
+                int arrivalRadius = _camp.SetupSpot && _groupDirective?.Leader == bot ? SetupSpotArrivalRadius : CampArrivalRadius;
+                if (!certifiedDarknessFallsCamp && (campDistance > arrivalRadius || dungeonApproach))
                 {
                     _emptyCampSinceTick = 0;
                     _patrolDestination = null;
@@ -1169,6 +1177,23 @@ namespace DOL.GS
                          $"blocked=\"{(bot.Brain as BotBrain)?.MerchantServiceBlock(staleShop) ?? "nothing - no purchase"}\" " +
                          $"budget={ShoppingBudget(bot)} planPrice={ShoppingPlanFor(bot)?.Price}");
                 SkipShoppingAt(bot, staleShop);
+                _readyAtService = null;
+                _serviceNpc = null;
+                _nextServiceSearchTick = 0;
+                return true;
+            }
+            // The same for selling loot (2026-11-05 run 5: 44 of 74 fifteen-minute stuck recoveries stood "Ready to use"
+            // a vendor - Brik, Gale, Krip, Sleria - that never took a sale): after two minutes with nothing sold, this
+            // bot skips that vendor for 30 minutes (AutonomousServiceReachability, as for an unreachable one) and picks
+            // another.
+            else if (needed == eWorldServiceKind.Vendor && _serviceNpc is GameMerchant staleVendor &&
+                     GameLoop.GameLoopTime - Math.Max(_readyAtServiceSinceTick, (bot.Brain as BotBrain)?.LastMerchantActionTick ?? 0) > StaleVendorMilliseconds)
+            {
+                bool shared = AutonomousServiceReachability.ReportFailure(AutonomousServiceReachability.Key(staleVendor),
+                    bot.DatabaseID, GameLoop.GameLoopTime);
+                Log.Info($"AUTONOMOUS_VENDOR_ABANDONED bot={bot.Name} id={bot.DatabaseID} merchant=\"{staleVendor.Name}\" " +
+                         $"region={staleVendor.CurrentRegionID} at={staleVendor.X},{staleVendor.Y} " +
+                         $"blocked=\"{(bot.Brain as BotBrain)?.MerchantServiceBlock(staleVendor) ?? "nothing sold"}\" skippedByAll={shared}");
                 _readyAtService = null;
                 _serviceNpc = null;
                 _nextServiceSearchTick = 0;
@@ -1659,6 +1684,8 @@ namespace DOL.GS
                 return HandleGroupRendezvous(bot, _groupDirective);
             if (_groupDirective.Leader != bot)
                 return FollowDynamicGroupLeader(bot, _groupDirective);
+            if (SmartCampStalled(bot))
+                return true;
             bot.StopMovingOnPath();
             bot.StopMoving();
             SetStatus(bot, "Holding group formation", _groupDirective.SharedGoal,
@@ -2869,11 +2896,14 @@ namespace DOL.GS
                 if (!SavageBotCombatPolicy.MustMeleePull((eCharacterClass)bot.CharacterClass.ID) &&
                     AutonomousDefensivePull.TryBegin(bot, target))
                 {
+                    if (SmartCampStalled(bot))
+                        return true;
                     SetStatus(bot, $"Ranged pulling {target.Name}", GoalText(),
                         "Party holds formation; the ranged puller brings the target back before everyone engages",
                         target.Name, _camp.ZoneName);
                     return true;
                 }
+                SmartLearnPullRelease(bot);
                 if (bot.Group == null && SoloRangedPull165.TryBegin(bot, target))
                 {
                     _lastEngagedCon = ConLevels.GetConColor(bot.GetConLevel(target));
@@ -3354,6 +3384,9 @@ namespace DOL.GS
                 ? DOL.GS.SmartAI.SmartGroupPullPolicy.ForGroup(bot.Group, planningLevel, _groupDirective.WipePenalty)
                 : null;
             ConColor maximumTargetCon = MaximumTargetCon(groupSize);
+            // SmartAI: a spec that dies too often alone fights a lower con alone (learned, SmartSoloConCeiling).
+            if (groupSize == 1)
+                maximumTargetCon = SmartSoloConCeiling(bot, maximumTargetCon);
             ConColor naturalMaximumTargetCon = NaturalMaximumTargetCon(groupSize);
             // Normal groups start at yellow-or-better, but every death retry is
             // allowed to step down through green. Grey creatures are rejected
@@ -3620,6 +3653,10 @@ namespace DOL.GS
             // for this camp only; never silently reject it as an empty camp.
             _camp = sharedGroup ? selected with { TargetLevel = chosen.AverageMobLevel }
                 : usedDeathFallback ? selected with { FallbackMaximumCon = chosen.TypicalCon } : selected;
+            // SmartAI: the party sets up beside the spawns, outside every aggressive monster's aggro, and the puller
+            // brings the monsters to it (the ranged group pull already does).
+            if (sharedGroup)
+                _camp = SmartCampSetupSpot(_camp, planningLevel);
             BeginCampDiagnostics(bot);
             _lastFailedCampId = string.Empty;
             _lastFailedTargetName = string.Empty;
@@ -4392,6 +4429,12 @@ namespace DOL.GS
             bool preciseArrival = false, bool retargetWhileMoving = false,
             [System.Runtime.CompilerServices.CallerMemberName] string caller = "")
         {
+            // SmartAI: a weak solo bot rests before it sets off.
+            if (SmartRestBeforeTravel(bot))
+                return true;
+            // SmartAI: a long walk follows its planned way around danger, one waypoint at a time.
+            if (!preciseArrival)
+                destination = SmartRouteTarget(bot, destination, plan: true);
             // A route order replaces the party formation follow (it resumes on the next follow turn).
             AutonomousGroupFormationFollow.Release(bot);
             TryRepairNavigationFloor(bot);

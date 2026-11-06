@@ -1256,6 +1256,12 @@ namespace DOL.GS
         /// </summary>
         public const int PlayerSelfInterruptOnMeleeMs = 3000;
 
+        /// <summary>Pure: the spell handler's interrupt rule (a cast in the interrupt window is refused unless it is
+        /// instant or uninterruptible, or QuickCast or Mastery of Concentration carries it).</summary>
+        public static bool InterruptBlocksCast(bool instant, bool uninterruptible, long interruptRemainingMs, bool quickCast,
+            bool masteryOfConcentration) =>
+            !instant && !uninterruptible && interruptRemainingMs > 0 && !quickCast && !masteryOfConcentration;
+
         public override int SelfInterruptDurationOnMeleeAttack =>
             PlayerRules165.IsPlayerRulesBot(this) ? PlayerSelfInterruptOnMeleeMs : base.SelfInterruptDurationOnMeleeAttack;
 
@@ -1397,6 +1403,11 @@ namespace DOL.GS
             return false;
         }
 
+        /// <summary>Pure: a released solo autonomous bot under SmartAI starts again from its bind instead of walking back
+        /// to where it died.</summary>
+        public static bool SoloSmartRestartsFromBind(bool autonomous, bool grouped, bool playerLed, bool smartAi) =>
+            autonomous && !grouped && !playerLed && smartAi;
+
         private void ReleaseToNearestBindAndReturn(bool returnToParty = true)
         {
             if (IsTemporaryGroupHelper)
@@ -1477,6 +1488,13 @@ namespace DOL.GS
             Mana = Math.Max(0, MaxMana / 3);
             Endurance = Math.Max(0, MaxEndurance / 3);
             AfterRevive165(released: true);
+            // SmartAI: a solo bot has no party to return to, and walking back to where it died led it into the same
+            // killers again (run 5, 2026-11-05: one level 5 Mentalist died 31 times to the lunantishee pack north of Mag
+            // Mell, each walk aimed at its last death spot inside the pack). It starts again from its bind instead: the
+            // controller picks a camp, and the route planner steers around the deaths it learned.
+            if (returnToParty && SoloSmartRestartsFromBind(IsAutonomousWorldBot, Group != null, IsPlayerLedGroup,
+                    DOL.GS.SmartAI.SmartAiConfig.IsEnabled))
+                returnToParty = false;
             IsReturningAfterRelease = returnToParty;
             if (returnToParty) AutonomousRealmRaid.RejoinAfterRelease(this);
             _nextReturnRoleplayTick = GameLoop.GameLoopTime + Util.Random(45_000, 90_000);
@@ -1488,7 +1506,8 @@ namespace DOL.GS
 
             if (PersistentRecord != null)
             {
-                PersistentRecord.Activity = returnToParty ? "Released and returning on foot" : "Released after party disbanded";
+                PersistentRecord.Activity = returnToParty ? "Released and returning on foot"
+                    : Group == null && IsAutonomousWorldBot ? "Released at its bind; choosing a new camp" : "Released after party disbanded";
                 if (returnToParty)
                     PersistentRecord.CurrentGoal = $"Return to the party near {_deathLocation.X}, {_deathLocation.Y}";
                 PersistentRecord.TravelDestination = CurrentZone?.Description ?? string.Empty;
@@ -2355,6 +2374,10 @@ namespace DOL.GS
         // Combat still uses its existing dispatch line (no damage/spec behavior
         // changes). Power alone resolves the learned line for staff focus. The
         // cache is rebuilt with the spell list, not searched on every AI turn.
+        /// <summary>The spell line this bot learned a spell from (null when unknown).</summary>
+        internal SpellLine LearnedLineOf(Spell spell) =>
+            spell != null && _powerSpellLines != null && _powerSpellLines.TryGetValue(spell.ID, out SpellLine line) ? line : null;
+
         internal SpellLine ResolvePowerSpellLine(Spell spell, SpellLine supplied)
         {
             if (supplied != null && supplied.KeyName != GlobalSpellsLines.Mob_Spells)
@@ -3125,6 +3148,19 @@ namespace DOL.GS
                 StandFromCombatSeat();
             else if (_seatedForClients)
                 SetSeatedForClients(false);
+            // The player's interrupt rule, checked before queuing (2026-11-05 run 4): the spell handler refuses a cast in
+            // the interrupt window ("You must wait N seconds") without QuickCast or Mastery of Concentration, but the
+            // request was queued first and reported as cast, and starting it stopped the bot's melee. A solo Druid hit by
+            // an orchard nipper "cast" 35 times in 16 seconds, never swung, and died at full power. Refused here, the
+            // brain goes on to an instant spell or its weapon, as a player would.
+            if (InterruptBlocksCast(spell.IsInstantCast, spell.Uninterruptible, InterruptRemainingDuration,
+                    DOL.GS.SmartAI.SmartQuickCast.Honours(this) && EffectListService.GetAbilityEffectOnTarget(this, eEffect.QuickCast) != null,
+                    effectListComponent.ContainsEffectForEffectType(eEffect.MasteryOfConcentration)))
+            {
+                DOL.GS.SmartAI.SmartGroupCombatLog.Cast(this, spell, TargetObject, false);
+                LogCompanionCast165(spell, "interrupted");
+                return false;
+            }
             bool started = base.CastSpell(spell, line, spellCastingAbilityHandler, checkLos);
             DOL.GS.SmartAI.SmartGroupCombatLog.Cast(this, spell, TargetObject, started);
             if (spell.IsHarmful || spell.IsHealing)

@@ -79,7 +79,8 @@ namespace DOL.GS.SmartAI
                 Incapacitated = bot.IsStunned || bot.IsMezzed,
                 HasTarget = hasTarget,
                 TargetHealthPercent = hasTarget ? target.HealthPercent : 0,
-                TargetControlled = hasTarget && BotBrain.IsBreakablyControlled(target),
+                // Nobody breaks a groupmate's mez or root; a bot alone breaks its own on purpose (SmartKite).
+                TargetControlled = hasTarget && BotBrain.IsBreakablyControlled(target) && !SmartKite.SoloMayBreakHold(bot),
                 MeleeAttackersOnSelf = brain.SmartAiMeleeAttackersOnMe(),
                 BeingInterrupted = bot.IsBeingInterruptedByOther,
                 IsCaster = bot.MaxMana > 0,

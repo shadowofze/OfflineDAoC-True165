@@ -26,6 +26,34 @@ namespace DOL.GS
             public bool Shot, Active;
             public GameLiving UnreachableTarget;
             public int UnreachableTries;
+            public GameLiving ReleasedTarget;
+            public long ReleasedUntil;
+            public bool NewRelease;
+        }
+
+        /// <summary>
+        /// How long a released target stays released (2026-11-05 fix): the release used to last a single call, because
+        /// the 30-second retry timer set by the failed attempt held the party again on the next check. A Lough Derg
+        /// puller then tried one water beetle 58 times in 30 minutes, and Hibernian parties at water camps froze until
+        /// the 15-minute stuck watchdog (147 times over 4-5 November).
+        /// </summary>
+        public const int ReleaseMilliseconds = 3 * 60_000;
+
+        /// <summary>Pure: whether a released target is still released (the party pulls it the ordinary way).</summary>
+        public static bool IsReleased(object releasedTarget, long releasedUntil, object target, long now) =>
+            releasedTarget != null && ReferenceEquals(releasedTarget, target) && now < releasedUntil;
+
+        /// <summary>True once after a target was released for this party (SmartAI learning reads it).</summary>
+        public static bool TakeNewRelease(Group group)
+        {
+            if (group == null || !States.TryGetValue(group, out State state))
+                return false;
+            lock (state)
+            {
+                bool fresh = state.NewRelease;
+                state.NewRelease = false;
+                return fresh;
+            }
         }
 
         // A target the puller found no firing point for this many times in a row (a bog, a ledge) stops holding the
@@ -144,7 +172,10 @@ namespace DOL.GS
             State state = States.GetOrCreateValue(shooter.Group);
             lock (state)
             {
-                if (state.Active || GameLoop.GameLoopTime < state.RetryAfter) return true;
+                if (state.Active) return true;
+                if (!flyingHandoff && IsReleased(state.ReleasedTarget, state.ReleasedUntil, target, GameLoop.GameLoopTime))
+                    return false;
+                if (GameLoop.GameLoopTime < state.RetryAfter) return true;
                 GameBot[] members = shooter.Group.GetMembersInTheGroup().OfType<GameBot>().ToArray();
                 if (members.Length < (flyingHandoff ? 2 : MinimumPullParty) ||
                     target?.IsAlive != true || shooter.CurrentRegion != target.CurrentRegion)
@@ -180,7 +211,17 @@ namespace DOL.GS
                     state.UnreachableTarget = target;
                     LoggerManager.Create(typeof(AutonomousDefensivePull)).Info(
                         $"AUTONOMOUS_DEFENSIVE_PULL_UNREACHABLE bot={shooter.Name} target={target.Name} region={shooter.CurrentRegionID} x={shooter.X} y={shooter.Y} z={shooter.Z} tries={state.UnreachableTries}");
-                    return state.UnreachableTries < UnreachableTriesBeforeRelease;
+                    if (state.UnreachableTries < UnreachableTriesBeforeRelease)
+                        return true;
+                    // Released: the party closes in the ordinary way (the melee pull watch retries once, then picks
+                    // another spawn), and keeps doing so for this target instead of holding again.
+                    state.ReleasedTarget = target;
+                    state.ReleasedUntil = GameLoop.GameLoopTime + ReleaseMilliseconds;
+                    state.NewRelease = true;
+                    state.RetryAfter = 0;
+                    state.UnreachableTries = 0;
+                    state.UnreachableTarget = null;
+                    return false;
                 }
                 state.Members = members;
                 state.Shooter = shooter;

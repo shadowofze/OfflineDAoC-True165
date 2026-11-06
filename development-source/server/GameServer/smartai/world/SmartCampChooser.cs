@@ -67,6 +67,32 @@ namespace DOL.GS.SmartAI
             return generated == null || generated.Typical <= bandHighLevel + typicalAboveBand;
         }
 
+        /// <summary>
+        /// Pure: the camps with fewer than <paramref name="maxOthers"/> other parties camping nearby; when every camp
+        /// is that crowded, the least crowded ones.
+        /// </summary>
+        public static IReadOnlyList<Candidate> Uncrowded(IReadOnlyList<Candidate> candidates, Func<Candidate, int> othersNear,
+            int maxOthers, out int dropped)
+        {
+            dropped = 0;
+            if (candidates == null || candidates.Count == 0 || maxOthers <= 0)
+                return candidates;
+            int[] counts = candidates.Select(othersNear).ToArray();
+            var quiet = new List<Candidate>();
+            for (int i = 0; i < candidates.Count; i++)
+                if (counts[i] < maxOthers)
+                    quiet.Add(candidates[i]);
+            if (quiet.Count == 0)
+            {
+                int least = counts.Min();
+                for (int i = 0; i < candidates.Count; i++)
+                    if (counts[i] == least)
+                        quiet.Add(candidates[i]);
+            }
+            dropped = candidates.Count - quiet.Count;
+            return quiet;
+        }
+
         /// <summary>Pure: the weights, given the per-camp safety and learned factors.</summary>
         public static double Weight(int liveMobs, int level, int lowestLevel, double safety, double learned) =>
             Math.Min(12, Math.Max(1, liveMobs)) * (1 + 0.25 * Math.Max(0, level - lowestLevel)) * safety * learned;

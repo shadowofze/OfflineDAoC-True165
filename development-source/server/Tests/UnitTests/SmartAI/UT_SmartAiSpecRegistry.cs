@@ -240,6 +240,49 @@ public class UT_SmartAiSpecRegistry
         Assert.That(SmartAiSpecRegistry.ResolveSpec(null, Levels(40, 1), null), Is.Null);
     }
 
+    [Test]
+    public void Resolve_AFallbackSpecPlaysWhenNothingDecides()
+    {
+        // Owner 2026-11-05: base-class bots (levels 1-5) often have no deciding line; a spec marked fallback plays then.
+        SmartClassDefinition withFallback = ParseAndValidate(ClericText(rejuvYaml:
+            "match_specs:\n  primary_line: \"Rejuvenation\"\n  min_point_ratio: 0.50\n  fallback: true\n")).Class;
+        Assert.Multiple(() =>
+        {
+            Assert.That(SmartAiSpecRegistry.ResolveSpec(withFallback, Levels(1, 1), null, out string how)?.Name,
+                Is.EqualTo("Rejuvenation Cleric"), "nothing trained past 1");
+            Assert.That(how, Does.Contain("fallback"));
+            Assert.That(SmartAiSpecRegistry.ResolveSpec(withFallback, Levels(3, 3), null)?.Name, Is.EqualTo("Rejuvenation Cleric"), "a tie");
+            Assert.That(SmartAiSpecRegistry.ResolveSpec(withFallback, Levels(2, 4), null)?.Name, Is.EqualTo("Smite Cleric"),
+                "trained points still decide first");
+            Assert.That(SmartAiSpecRegistry.ResolveSpec(withFallback, Levels(1, 1), "SmiteCleric")?.Name, Is.EqualTo("Smite Cleric"),
+                "and a rolled spec type before the fallback");
+        });
+        var (_, issues) = ParseAndValidate(ClericText(rejuvYaml:
+            "match_specs:\n  primary_line: \"Rejuvenation\"\n  min_point_ratio: 0.50\n  fallback: maybe\n"));
+        Assert.That(Errors(issues), Has.Some.Contains("fallback"));
+    }
+
+    [Test]
+    public void ShippedBaseClassFiles_LoadAndPlayAtLevelOne()
+    {
+        string dir = RepoFile("runtime", "server", "smartai", "classes");
+        if (dir == null || !Directory.Exists(dir))
+            Assert.Ignore("runtime/server/smartai/classes is not beside this build");
+        SmartAiSpecRegistry registry = SmartAiSpecRegistry.Build(dir, TestGameData.Instance, out SmartAiSpecRegistry.LoadReport report);
+        Assert.That(report.Errors, Is.Zero, report.Summary);
+        int[] baseClasses = { 14, 15, 16, 17, 18, 20, 35, 36, 37, 38, 51, 52, 53, 54, 57 };
+        Assert.Multiple(() =>
+        {
+            foreach (int id in baseClasses)
+            {
+                Assert.That(registry.Classes.ContainsKey(id), Is.True, $"class {id} has a file");
+                if (registry.Classes.TryGetValue(id, out SmartClassDefinition c))
+                    Assert.That(SmartAiSpecRegistry.ResolveSpec(c, _ => 1, null), Is.Not.Null, $"class {id} plays a spec untrained");
+            }
+            Assert.That(registry.Classes.Count, Is.EqualTo(54), "39 full classes and 15 base classes");
+        });
+    }
+
     /// <summary>The bug of 2026-11-04: a companion trained Enhancement 10 (Isolde) or untrained came out as Smite from
     /// its random rolled spec type. A companion's spec is its training only.</summary>
     [Test]

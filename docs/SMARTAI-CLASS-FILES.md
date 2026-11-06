@@ -25,7 +25,8 @@ runtime\server\smartai\classes\hibernia\druid.md
 ...
 ```
 
-There is one file for each of the 39 classes, in a folder for its realm. These are the files the server reads.
+There is one file for each of the 39 classes and each of the 15 base classes (`fighter.md`, `albionrogue.md`,
+`viking.md`, `guardian.md`...), in a folder for its realm. These are the files the server reads.
 
 - Open them in any text editor (Notepad, Notepad++, VS Code). Save them as **UTF-8**.
 - **Make a copy before you edit**, for example `cleric.md.bak`, so you can go back. A backup ending in `.md` is
@@ -46,7 +47,7 @@ SmartAI must be on: tick **Use SmartAI** in the launcher's Options tab before yo
 
 1. **Edit** the class file and save it. The server can be running.
 2. In the game, type **`/smartai reload`**. The server reads every class file again and answers with a summary such
-   as `39 class(es), 116 spec(s) from 39 file(s); 0 error(s), 2 warning(s)`, followed by the first problems it found.
+   as `54 class(es), 148 spec(s) from 54 file(s); 0 error(s), 2 warning(s)`, followed by the first problems it found.
    - With **errors**, it keeps the files it was using, so nothing breaks mid-game. Fix the errors and reload.
    - `/smartai reload force` loads every file without errors. A class whose file has errors then uses the normal bot
      AI until you fix it.
@@ -144,6 +145,7 @@ match_specs:
   secondary_line: "Shields"         # optional: tells apart specs that share a primary_line
   secondary_min_level: 36           # optional: the secondary line's level range
   secondary_max_level: 50           # optional
+  fallback: true                    # optional: play this spec when nothing below decides
 ```
 
 **How the engine picks:**
@@ -158,7 +160,9 @@ match_specs:
    - then, the one with no `secondary_line` (the "pure" spec).
 4. If the winner is below its ratio: a **gamebot** whose rolled spec type is in a `spec_type_aliases` list plays that
    specialization; otherwise the bot plays its most-trained line anyway.
-5. If nothing is trained past level 1, or two lines tie, the bot uses the normal bot AI.
+5. If nothing is trained past level 1, or two lines tie, the bot plays the first specialization marked
+   `fallback: true`. With none, it uses the normal bot AI. The base-class files mark their first specialization this
+   way, because a level 1-5 bot often has two lines at the same level.
 
 **Hired companions** play only what their player trained. Their rolled spec type is never used.
 
@@ -496,7 +500,7 @@ situation in the table above still has to apply.
 3. Rewrite the sections. Keep every section number.
 4. Reload. On a bot trained that way, check with `/smartai spec` that it is matched "by trained points".
 
-**Start a class file from scratch.** All 39 classes already have one, so copy the existing file and change it. If
+**Start a class file from scratch.** All 39 classes and the 15 base classes already have one, so copy the existing file and change it. If
 you do write a new one, copy the front matter of the old file (the `class_id` must be right) and remove the old
 file. Two files for one class is an error.
 

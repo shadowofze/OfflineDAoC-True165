@@ -108,8 +108,7 @@ namespace DOL.AI.Brain
             // stopping every think and letting the legacy brain restart the attack left casters with neither swings nor
             // casts (2026-11-05 group logs: 22 attack starts, 3 swings in 7 s). A bot held only by its own swing
             // (self-interrupt) stops, so the 3 s runs out and it casts again.
-            if (swinging && Body.IsBeingInterruptedByOther && !CastsThroughInterrupt() &&
-                !DOL.GS.SmartAI.SmartQuickCast.ArmedOrArmableOutOfMelee(BotBody, underPressure))
+            if (swinging && CasterHeldInMelee())
             {
                 if (Body.CanCastInstantHarmfulSpells && CheckSpells(eCheckSpellType.Offensive))
                     return true;
@@ -213,13 +212,32 @@ namespace DOL.AI.Brain
         }
 
         /// <summary>Enemies of this bot's fight in melee reach that are swinging at it (Mastery of Concentration).</summary>
+        /// <summary>
+        /// A caster that cannot start a spell now because of who is hitting it: a hit interrupts its target for the
+        /// attacker's whole swing interval (AttackComponent), so with a monster in melee on it, or a hit still running,
+        /// no non-instant spell starts unless QuickCast or Mastery of Concentration carries it - the player's rule.
+        /// Such a caster keeps its staff swinging: stopping it to "consider a spell" gained no cast and reset the swing
+        /// timer every think (2026-11-05 run 5: a solo Mentalist at 85-90% power started its attack 23 times in 11 s,
+        /// swung 3 times and died; solo casters died with 40%+ power in 87-100% of their deaths).
+        /// </summary>
+        /// <summary>SmartKite: casts this offensive spell on the current target, by the usual rules.</summary>
+        internal bool SmartAiCastOffensive(Spell spell) => CheckOffensiveSpells(spell);
+
+        /// <summary>SmartKite: casts this spell (a Theurgist's pet) at the current target, by the usual rules.</summary>
+        internal bool SmartAiCastSpell(Spell spell) => spell != null && Body.CastSpell(spell, m_mobSpellLine);
+
+        internal bool CasterHeldInMelee() =>
+            (Body.IsBeingInterruptedByOther || SmartAiMeleeAttackersOnMe() > 0) && !CastsThroughInterrupt() &&
+            !DOL.GS.SmartAI.SmartQuickCast.ArmedOrArmableOutOfMelee(BotBody, true);
+
         internal int SmartAiMeleeAttackersOnMe()
         {
             int n = 0;
             foreach (var entry in AggroList)
             {
                 GameLiving enemy = entry.Key;
-                if (enemy is { IsAlive: true } && enemy.TargetObject == Body &&
+                // A stunned or mesmerized monster swings at nobody (SmartKite: the caster nukes through its stun).
+                if (enemy is { IsAlive: true, IsStunned: false, IsMezzed: false } && enemy.TargetObject == Body &&
                     enemy.ActiveWeaponSlot != eActiveWeaponSlot.Distance && enemy.attackComponent?.AttackState == true &&
                     enemy.CurrentRegionID == Body.CurrentRegionID && Body.IsWithinRadius(enemy, Body.MeleeAttackRange + 50))
                     n++;
@@ -235,6 +253,26 @@ namespace DOL.AI.Brain
                 if (entry.Key is { IsAlive: true } enemy && enemy.TargetObject == Body && enemy.CurrentRegionID == Body.CurrentRegionID)
                     n++;
             return n;
+        }
+
+        /// <summary>
+        /// A list caster with power, nothing on it and simply no spell ready (debuffs and damage over time still
+        /// running, bolts recharging, its pet just summoned) waits at range for its next spell instead of the legacy
+        /// brain walking it into melee (run 3, 2026-11-05: 271 of 450 caster melee starts were at 40%+ power, in reach,
+        /// with "no candidate acted"). It keeps its pet on the target. False - the legacy brain fights as before - when
+        /// a monster is hitting it (it defends itself) or it has no power for any attack spell.
+        /// </summary>
+        internal bool SmartAiCasterWaitsForSpell(GameLiving target)
+        {
+            if (BotBody == null || !BotSpellPower.IsOffensiveCaster(BotBody) ||
+                Body.IsBeingInterruptedByOther || SmartAiMeleeAttackersOnMe() > 0 ||
+                OutOfPowerForOffense() || NoAttackSpellYet())
+                return false;
+            if (Body.attackComponent?.AttackState == true)
+                Body.StopAttack();
+            if (target is { IsAlive: true })
+                CommandPetAttack(target);
+            return true;
         }
 
         /// <summary>The whole legacy offense (target, pets, taunts, spells, bow and melee).</summary>

@@ -1,4 +1,4 @@
-﻿---
+---
 schema_version: 1
 class_name: "Hunter"
 class_id: 25
@@ -29,6 +29,7 @@ default_personality: "Tactical"
 ```yaml
 match_specs:
   primary_line: "Spear"
+  fallback: true   # a Hunter with tied lines (48 bot-fights in run 5, 2026-11-05) plays this
   min_point_ratio: 0.50
   spec_type_aliases: ["SpearHunter", "TwoHanded"]
 ```

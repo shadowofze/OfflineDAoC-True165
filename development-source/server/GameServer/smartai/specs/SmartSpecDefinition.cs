@@ -77,6 +77,10 @@ namespace DOL.GS.SmartAI
         public int SecondaryHigh => SecondaryMaxLevel > 0 ? SecondaryMaxLevel : int.MaxValue;
         public string WeaponType { get; init; } = string.Empty;
         public IReadOnlyList<string> SpecTypeAliases { get; init; } = [];
+        /// <summary>Optional (`fallback: true`): the spec a bot plays when its trained points don't decide (nothing
+        /// trained past 1, or a tie). Made for the base classes (owner 2026-11-05), whose level 1-5 bots often have two
+        /// lines at the same level. The first such spec in the file wins.</summary>
+        public bool Fallback { get; init; }
         public int Line { get; init; }
     }
 

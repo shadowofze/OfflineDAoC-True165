@@ -22,7 +22,7 @@ namespace DOL.GS.SmartAI
         "/smartai spec - the SmartAI specialization of your target bot",
         "/smartai group - the SmartAI tactical view of your target bot's group (or yours)",
         "/smartai debug [n] - your target bot's last n SmartAI decisions (up to 32)",
-        "/smartai debuggroup [on|mine|off|status] - record every bot group's completed fights to runtime/logs/smart_ai_groups (mine: only your or your target's group)",
+        "/smartai debugfights [mine|status] - turn fight recording on (or off when on): every bot group's completed fights to runtime/logs/smart_ai_groups, bots fighting alone to runtime/logs/smart_ai_solo (mine: only your or your target's group)",
         "Every /smartai command and its answer go to runtime/logs/smartai-session-<server start>.log")]
     public sealed class SmartAiCommandHandler : AbstractCommandHandler, ICommandHandler
     {
@@ -65,8 +65,8 @@ namespace DOL.GS.SmartAI
                 case "debug":
                     Debug(client, args.Length > 2 && int.TryParse(args[2], out int n) ? n : 10);
                     break;
-                case "debuggroup":
-                    DebugGroup(client, args.Length > 2 ? args[2].ToLowerInvariant() : "on");
+                case "debugfights":
+                    DebugFights(client, args.Length > 2 ? args[2].ToLowerInvariant() : "toggle");
                     break;
                 default:
                     DisplaySyntax(client);
@@ -192,15 +192,18 @@ namespace DOL.GS.SmartAI
                             (d.Note.Length > 0 ? $" - {d.Note}" : string.Empty));
         }
 
-        private static void DebugGroup(GameClient client, string mode)
+        private static void DebugFights(GameClient client, string mode)
         {
             switch (mode)
             {
-                case "on":
-                case "all":
-                    SmartGroupCombatLog.RecordAll();
-                    Say(client, "Recording every group with a bot in it. Each group gets a file in " +
-                                $"{SmartGroupCombatLog.Directory}; a fight is written once the whole group is out of combat.");
+                case "toggle":
+                    if (SmartGroupCombatLog.Toggle())
+                        Say(client, "Fight recording ON: every group with a bot in it gets a file in " +
+                                    $"{SmartGroupCombatLog.Directory}, every bot fighting alone one in {SmartGroupCombatLog.SoloDirectory}. " +
+                                    "A fight is written once everyone in it is out of combat. Type /smartai debugfights again to stop.");
+                    else
+                        Say(client, $"Fight recording OFF. Fights written this session: {SmartGroupCombatLog.FightsWritten}; " +
+                                    $"unfinished fights dropped: {SmartGroupCombatLog.FightsDiscarded}.");
                     break;
                 case "mine":
                 {
@@ -216,18 +219,14 @@ namespace DOL.GS.SmartAI
                                 $" to {SmartGroupCombatLog.FileOf(group)}. A fight is written once the whole group is out of combat.");
                     break;
                 }
-                case "off":
-                    SmartGroupCombatLog.Stop();
-                    Say(client, $"Group recording off. Fights written this session: {SmartGroupCombatLog.FightsWritten}; " +
-                                $"unfinished fights dropped: {SmartGroupCombatLog.FightsDiscarded}.");
-                    break;
                 case "status":
-                    Say(client, $"Group recording: {SmartGroupCombatLog.CurrentScope switch { SmartGroupCombatLog.Scope.AllGroups => "every group with a bot", SmartGroupCombatLog.Scope.ChosenGroups => "chosen groups", _ => "off" }}; " +
-                                $"{SmartGroupCombatLog.GroupsTracked} group(s) followed; fights written {SmartGroupCombatLog.FightsWritten}, " +
-                                $"unfinished fights dropped {SmartGroupCombatLog.FightsDiscarded}. Folder: {SmartGroupCombatLog.Directory}");
+                    Say(client, $"Fight recording: {SmartGroupCombatLog.CurrentScope switch { SmartGroupCombatLog.Scope.AllGroups => "every group with a bot and every bot alone", SmartGroupCombatLog.Scope.ChosenGroups => "chosen groups", _ => "off" }}; " +
+                                $"{SmartGroupCombatLog.GroupsTracked - SmartGroupCombatLog.SolosTracked} group(s) and {SmartGroupCombatLog.SolosTracked} solo bot(s) followed; " +
+                                $"fights written {SmartGroupCombatLog.FightsWritten}, unfinished fights dropped {SmartGroupCombatLog.FightsDiscarded}. " +
+                                $"Folders: {SmartGroupCombatLog.Directory}, {SmartGroupCombatLog.SoloDirectory}");
                     break;
                 default:
-                    Say(client, "Usage: /smartai debuggroup [on|mine|off|status]");
+                    Say(client, "Usage: /smartai debugfights (turns recording on, or off when it is on) | /smartai debugfights mine | /smartai debugfights status");
                     break;
             }
         }

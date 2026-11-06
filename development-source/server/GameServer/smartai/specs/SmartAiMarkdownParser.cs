@@ -208,6 +208,7 @@ namespace DOL.GS.SmartAI
             string primary = string.Empty, secondary = string.Empty, weapon = string.Empty;
             int secondaryMin = 0, secondaryMax = 0;
             double ratio = double.NaN;
+            bool fallback = false;
             var aliases = new List<string>();
             bool sawRoot = false;
             List<string> openList = null;
@@ -261,6 +262,10 @@ namespace DOL.GS.SmartAI
                     case "weapon_type":
                         weapon = Unquote(value);
                         break;
+                    case "fallback":
+                        if (!bool.TryParse(Unquote(value), out fallback))
+                            error(line, $"'{specName}': fallback '{value}' must be true or false");
+                        break;
                     case "spec_type_aliases":
                         if (value.Length == 0)
                             openList = aliases;
@@ -283,6 +288,7 @@ namespace DOL.GS.SmartAI
                 MinPointRatio = ratio,
                 WeaponType = weapon,
                 SpecTypeAliases = aliases,
+                Fallback = fallback,
                 Line = fenceLine,
             };
         }

@@ -198,6 +198,21 @@ public class UT_SmartAiWorld
     }
 
     [Test]
+    public void CampsWithTwoOtherPartiesNearbyAreLeftOut()
+    {
+        var a = new SmartCampChooser.Candidate("a", "Mag Mell", 200, 0, 0, 5, 6);
+        var b = new SmartCampChooser.Candidate("b", "Mag Mell", 200, 9000, 0, 5, 6);
+        var c = new SmartCampChooser.Candidate("c", "Mag Mell", 200, 20000, 0, 5, 6);
+        var others = new Dictionary<string, int> { ["a"] = 3, ["b"] = 1, ["c"] = 0 };
+        var quiet = SmartCampChooser.Uncrowded(new[] { a, b, c }, x => others[x.Id], 2, out int dropped);
+        Assert.That(quiet, Is.EquivalentTo(new[] { b, c }));
+        Assert.That(dropped, Is.EqualTo(1));
+        // All crowded: the least crowded stay.
+        others = new Dictionary<string, int> { ["a"] = 4, ["b"] = 2, ["c"] = 3 };
+        Assert.That(SmartCampChooser.Uncrowded(new[] { a, b, c }, x => others[x.Id], 2, out _), Is.EquivalentTo(new[] { b }));
+    }
+
+    [Test]
     public void TheChooserPrefersTheSafeCamp()
     {
         // Two camps alike but one sits inside a purple monster's aggro.
@@ -218,5 +233,178 @@ public class UT_SmartAiWorld
                 safe++;
         Assert.That(safe, Is.GreaterThan(160), "about 87% of draws (1 / (1 + 0.15))");
         SmartWorldKnowledge.Rebuild(new Monster[0], new CampSite[0], 2500, writeFile: false);
+    }
+    [Test]
+    public void AStalledCampLosesMostOfItsWeightAndTheStallsArePersisted()
+    {
+        // Owner 2026-11-05: Hibernian parties froze at Lough Derg water beetle camps.
+        Assert.Multiple(() =>
+        {
+            Assert.That(SmartWorldLearning.CampFactor(0, 0, 0, 0), Is.EqualTo(1.0).Within(1e-9));
+            Assert.That(SmartWorldLearning.CampFactor(0, 0, 0, 1), Is.EqualTo(0.5).Within(1e-9));
+            Assert.That(SmartWorldLearning.CampFactor(0, 0, 0, 10), Is.EqualTo(0.25).Within(1e-9), "floor");
+        });
+        DateTime now = new(2026, 11, 5, 12, 0, 0, DateTimeKind.Utc);
+        SmartWorldLearning.RecordStall("capnbry:200:6:4:water beetle", now);
+        double factor = SmartWorldLearning.FactorFor("capnbry:200:6:4:water beetle", 200, 0, 0, out string why, now);
+        Assert.That(factor, Is.EqualTo(0.5).Within(1e-6));
+        Assert.That(why, Does.Contain("1 stalls"));
+        SmartWorldLearning.Save();
+        SmartWorldLearning.Load();
+        Assert.That(SmartWorldLearning.FactorFor("capnbry:200:6:4:water beetle", 200, 0, 0, out _, now), Is.EqualTo(0.5).Within(1e-6));
+    }
+
+    [Test]
+    public void ACampStallNeedsTheWholeWaitAndCanBeTurnedOff()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(AutonomousWorldBotController.IsCampStall(1_000, 120_999, 120), Is.False);
+            Assert.That(AutonomousWorldBotController.IsCampStall(1_000, 121_000, 120), Is.True);
+            Assert.That(AutonomousWorldBotController.IsCampStall(0, 500_000, 120), Is.False, "not ready yet");
+            Assert.That(AutonomousWorldBotController.IsCampStall(1_000, 500_000, 0), Is.False, "0 turns it off");
+        });
+    }
+
+    [Test]
+    public void AReleasedUnreachablePullStaysReleased()
+    {
+        // The release used to last one call: the 30 s retry timer held the party again (58 tries in 30 minutes).
+        object beetle = new(), other = new();
+        Assert.Multiple(() =>
+        {
+            Assert.That(AutonomousDefensivePull.IsReleased(beetle, 180_000, beetle, 1_000), Is.True);
+            Assert.That(AutonomousDefensivePull.IsReleased(beetle, 180_000, beetle, 180_000), Is.False, "expired");
+            Assert.That(AutonomousDefensivePull.IsReleased(beetle, 180_000, other, 1_000), Is.False, "another target");
+            Assert.That(AutonomousDefensivePull.IsReleased(null, 180_000, beetle, 1_000), Is.False);
+        });
+    }
+    // ---- route planning (owner 2026-11-05: "Setup Routes")
+
+    private static readonly SmartRoutePlanner.Bounds Zone = new(0, 0, 65536, 65536);
+
+    [Test]
+    public void ASafeStraightWayIsNotPlanned()
+    {
+        Assert.That(SmartRoutePlanner.Find(1000, 30000, 30000, 30000, Zone, (_, _) => 0), Is.Null);
+    }
+
+    [Test]
+    public void AWallOfDangerAcrossTheWayIsWalkedAround()
+    {
+        // Danger in column x = 14, rows 25..32 (cells): the straight way along y = 30000 (row 29) crosses it.
+        double Danger(int cx, int cy) => cx == 14 && cy >= 25 && cy <= 32 ? 3 : 0;
+        SmartRoutePlanner.Plan plan = SmartRoutePlanner.Find(1000, 30000, 30000, 30000, Zone, Danger);
+        Assert.That(plan, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(plan.StraightDanger, Is.EqualTo(3).Within(1e-9));
+            Assert.That(plan.PlannedDanger, Is.EqualTo(0).Within(1e-9), "the way around crosses no danger");
+            Assert.That(plan.Waypoints, Is.Not.Empty);
+            Assert.That(plan.Waypoints.Count, Is.LessThanOrEqualTo(4), "pulled taut to a few waypoints");
+            Assert.That(plan.PlannedLength, Is.LessThan(plan.StraightLength * SmartRoutePlanner.MaxLengthRatio));
+        });
+    }
+
+    [Test]
+    public void AHugeDetourIsNotTaken()
+    {
+        // Danger across the whole zone height except the top row: the only way around is far longer.
+        double Danger(int cx, int cy) => cx == 14 && cy >= 1 ? 3 : 0;
+        Assert.That(SmartRoutePlanner.Find(1000, 30000, 30000, 30000, Zone, Danger), Is.Null);
+    }
+
+    [Test]
+    public void HardSpawnsAndLearnedAreasAreIndexed()
+    {
+        SmartWorldKnowledge.Rebuild(new[]
+        {
+            new Monster("lunantishee", 200, "Lough Derg", false, 341_100, 520_020, 5300, 9, 500, true),
+            new Monster("blackthorn", 200, "Lough Derg", false, 341_200, 520_000, 5300, 8, 400, true),
+            new Monster("water beetle", 200, "Lough Derg", false, 341_300, 520_050, 5300, 9, 0, false),
+        }, new CampSite[0], 2500, writeFile: false);
+        int cx = SmartRoutePlanner.CellOf(341_100), cy = SmartRoutePlanner.CellOf(520_020);
+        Assert.Multiple(() =>
+        {
+            Assert.That(SmartWorldKnowledge.HardAggressiveIn(200, cx, cy, AutonomousWorldBotController.SmartRouteHardLevel(4)), Is.EqualTo(2),
+                "both aggressive ones are hard for a level 4 (6+); the passive beetle is not counted");
+            Assert.That(SmartWorldKnowledge.HardAggressiveIn(200, cx, cy, AutonomousWorldBotController.SmartRouteHardLevel(8)), Is.EqualTo(0), "10+ for a level 8");
+        });
+        SmartWorldKnowledge.Rebuild(new Monster[0], new CampSite[0], 2500, writeFile: false);
+
+        DateTime now = new(2026, 11, 5, 12, 0, 0, DateTimeKind.Utc);
+        SmartWorldLearning.RecordDeath(null, false, 1, 556_000, 575_000, now, victimLevel: 7);
+        SmartWorldLearning.RecordDeath(null, false, 1, 556_100, 575_100, now, victimLevel: 7);
+        Assert.Multiple(() =>
+        {
+            Assert.That(SmartWorldLearning.AreaDanger(1, 556_050, 575_050, 7, now), Is.EqualTo(2).Within(1e-9));
+            Assert.That(SmartWorldLearning.AreaDanger(1, 556_050, 575_050, 30, now), Is.EqualTo(0.4).Within(1e-9),
+                "a level 30 counts level 7 deaths at a fifth");
+            Assert.That(SmartWorldLearning.DeathsFor(2, 0, 30), Is.EqualTo(2), "no levels kept: counted fully");
+        });
+    }
+
+    [Test]
+    public void ACastInTheInterruptWindowIsRefusedBeforeItIsQueued()
+    {
+        // The player rule from SpellHandler: instant, uninterruptible, QuickCast or Mastery of Concentration may cast.
+        Assert.Multiple(() =>
+        {
+            Assert.That(GameBot.InterruptBlocksCast(false, false, 1200, false, false), Is.True);
+            Assert.That(GameBot.InterruptBlocksCast(true, false, 1200, false, false), Is.False, "instant");
+            Assert.That(GameBot.InterruptBlocksCast(false, true, 1200, false, false), Is.False, "uninterruptible");
+            Assert.That(GameBot.InterruptBlocksCast(false, false, 1200, true, false), Is.False, "QuickCast");
+            Assert.That(GameBot.InterruptBlocksCast(false, false, 1200, false, true), Is.False, "Mastery of Concentration");
+            Assert.That(GameBot.InterruptBlocksCast(false, false, 0, false, false), Is.False, "not interrupted");
+        });
+    }
+    [Test]
+    public void ASoloBotStartsAgainFromItsBindInsteadOfWalkingBackToItsKillers()
+    {
+        // Run 5 (2026-11-05): a level 5 Mentalist walked back to its last death spot 31 times and died there each time.
+        Assert.Multiple(() =>
+        {
+            Assert.That(GameBot.SoloSmartRestartsFromBind(true, false, false, true), Is.True);
+            Assert.That(GameBot.SoloSmartRestartsFromBind(true, true, false, true), Is.False, "a group member returns to its party");
+            Assert.That(GameBot.SoloSmartRestartsFromBind(true, false, true, true), Is.False, "a player's companion");
+            Assert.That(GameBot.SoloSmartRestartsFromBind(true, false, false, false), Is.False, "SmartAI off: unchanged");
+            Assert.That(GameBot.SoloSmartRestartsFromBind(false, false, false, true), Is.False, "not a world bot");
+        });
+    }
+    [Test]
+    public void ASpecThatDiesTooOftenAloneFightsALowerConAlone()
+    {
+        // Run 5 (2026-11-05): Regrowth Bards died in 21% of their solo fights, Nurture Druids in 9%.
+        Assert.Multiple(() =>
+        {
+            Assert.That(SmartWorldLearning.SoloConSteps(10, 5), Is.EqualTo(0), "too little evidence yet");
+            Assert.That(SmartWorldLearning.SoloConSteps(90, 8), Is.EqualTo(0), "9 deaths per 100 kills: as before");
+            Assert.That(SmartWorldLearning.SoloConSteps(80, 20), Is.EqualTo(1), "25 per 100: one con lower");
+            Assert.That(SmartWorldLearning.SoloConSteps(30, 15), Is.EqualTo(2), "50 per 100: two lower");
+        });
+        DateTime now = new(2026, 11, 5, 12, 0, 0, DateTimeKind.Utc);
+        for (int i = 0; i < 16; i++)
+            SmartWorldLearning.RecordSolo("Bard / Regrowth Bard", died: false, now);
+        for (int i = 0; i < 6; i++)
+            SmartWorldLearning.RecordSolo("Bard / Regrowth Bard", died: true, now);
+        Assert.That(SmartWorldLearning.SoloConStepsFor("Bard / Regrowth Bard", out double kills, out double deaths, now), Is.EqualTo(1));
+        Assert.That((kills, deaths), Is.EqualTo((16.0, 6.0)));
+        SmartWorldLearning.Save();
+        SmartWorldLearning.Load();
+        Assert.That(SmartWorldLearning.SoloConStepsFor("Bard / Regrowth Bard", out _, out _, now), Is.EqualTo(1), "kept on disk");
+    }
+
+    [Test]
+    public void AWeakSoloBotRestsBeforeItTravels()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(AutonomousWorldBotController.SoloTooWeakToTravel(33, 33, 33, true, false), Is.True, "just released");
+            Assert.That(AutonomousWorldBotController.SoloTooWeakToTravel(70, 30, 100, true, false), Is.True, "a caster low on power");
+            Assert.That(AutonomousWorldBotController.SoloTooWeakToTravel(70, 30, 100, false, false), Is.False, "power doesn't matter to a fighter");
+            Assert.That(AutonomousWorldBotController.SoloTooWeakToTravel(70, 70, 100, true, false), Is.False, "fit enough to set off");
+            Assert.That(AutonomousWorldBotController.SoloTooWeakToTravel(85, 85, 100, true, true), Is.True, "once sitting, rests to 90/80/80");
+            Assert.That(AutonomousWorldBotController.SoloTooWeakToTravel(92, 85, 90, true, true), Is.False);
+        });
     }
 }

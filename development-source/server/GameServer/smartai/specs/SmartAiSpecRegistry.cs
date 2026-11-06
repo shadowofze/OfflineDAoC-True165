@@ -210,6 +210,13 @@ namespace DOL.GS.SmartAI
                 return best;
             }
             how = total == 0 ? "no primary line trained past 1" : "a tie between the most-trained lines";
+            // 5. A spec marked fallback (the base classes, whose young bots often have no deciding line).
+            SmartSpecDefinition fallback = definition.Specs.FirstOrDefault(s => s.Match?.Fallback == true);
+            if (fallback != null)
+            {
+                how += $"; the fallback spec {fallback.Name}";
+                return fallback;
+            }
             return null;
         }
 

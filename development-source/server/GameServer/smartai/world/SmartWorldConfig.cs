@@ -37,6 +37,14 @@ namespace DOL.GS.SmartAI
             /// <summary>A zone is left out when its typical monster is more than this many levels above what the group
             /// may pull (the group would walk among higher monsters to reach its few fitting camps).</summary>
             public int ZoneTypicalAboveBand { get; set; } = 2;
+            /// <summary>Crowding: other parties' camps within this radius of a camp count against it (units).</summary>
+            public int GroupCrowdRadius { get; set; } = 3000;
+            /// <summary>A camp with this many other parties' camps within GroupCrowdRadius is left out (while any
+            /// camp with fewer is left).</summary>
+            public int MaxOtherGroupsNearCamp { get; set; } = 2;
+            /// <summary>A party standing at its camp this long, every member alive and ready, with nothing pulled, has
+            /// stalled: it learns that and moves to another camp (seconds; 0 turns the check off).</summary>
+            public int CampStallSeconds { get; set; } = 120;
         }
 
         public sealed class ZoneOverride
