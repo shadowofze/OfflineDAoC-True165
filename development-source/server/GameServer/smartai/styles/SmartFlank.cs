@@ -39,7 +39,7 @@ namespace DOL.GS.SmartAI
         public const int ArrivedTolerance = 12;
         public const long GiveUpMilliseconds = 6_000;
         public const long RetryMilliseconds = 15_000;
-        private const long WantCacheMilliseconds = 1_000;
+        public const long WantCacheMilliseconds = 1_000;
 
         private sealed class State
         {
@@ -50,8 +50,17 @@ namespace DOL.GS.SmartAI
             public bool HasSlot;
             public Position Want;
             public bool Drives;
-            public long WantTick = long.MinValue;
+            public long WantTick;
+            public bool HasWant;
         }
+
+        /// <summary>
+        /// Pure: the cached spec and wanted position must be worked out again. Run 6 (2026-11-05): the cache started at
+        /// long.MinValue and <c>now - long.MinValue</c> overflowed to a negative number, so it was never worked out,
+        /// Drives stayed false and every check counted NoSpec (flanking never ran).
+        /// </summary>
+        public static bool WantStale(bool hasWant, long wantTick, long now) =>
+            !hasWant || now < wantTick || now - wantTick > WantCacheMilliseconds;
 
         private static readonly ConditionalWeakTable<GameNPC, State> States = new();
 
@@ -127,9 +136,10 @@ namespace DOL.GS.SmartAI
                 }
                 if (now < s.BlockedUntil)
                     return false;
-                if (now - s.WantTick > WantCacheMilliseconds)
+                if (WantStale(s.HasWant, s.WantTick, now))
                 {
                     s.WantTick = now;
+                    s.HasWant = true;
                     s.Drives = SmartStyleSelector.Drives(bot);
                     s.Want = s.Drives ? WantedPosition(bot) : Position.None;
                 }

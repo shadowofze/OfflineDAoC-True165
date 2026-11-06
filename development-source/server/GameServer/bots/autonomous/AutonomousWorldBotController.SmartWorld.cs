@@ -181,6 +181,87 @@ namespace DOL.GS
             catch (Exception e) { SmartAiFallback.ReportFailure("learning (death)", e); }
         }
 
+        // ---- solo death loops (SmartDeathLoop; run 6, 2026-11-05)
+
+        private readonly List<SmartDeathLoop.Death> _smartSoloDeaths = new();
+        private readonly List<SmartDeathLoop.Area> _smartLoopAreas = new();
+
+        /// <summary>A solo SmartAI bot's death: three in one area within 30 minutes make it a loop area for an hour.</summary>
+        private void SmartObserveSoloDeath(GameBot bot, string goalAtDeath, string killer)
+        {
+            if (!LearnsSolo(bot) || bot.LastDeathSpot is not { Region: > 0 } spot)
+                return;
+            try
+            {
+                long now = GameLoop.GameLoopTime;
+                if (SmartDeathLoop.RecordDeath(_smartSoloDeaths, new(spot.Region, spot.X, spot.Y, now)) is not { } area)
+                    return;
+                SmartDeathLoop.Remember(_smartLoopAreas, area, now);
+                Log.Info($"SMARTAI_SOLO_LOOP bot={bot.Name} level={bot.Level} class=\"{bot.ClassName}\" area={area.Region}:{area.X},{area.Y} " +
+                         $"deaths={SmartDeathLoop.LoopDeaths}+ in {SmartDeathLoop.LoopWindowMilliseconds / 60_000} min killer=\"{killer}\" " +
+                         $"goal=\"{goalAtDeath}\" avoid_min={SmartDeathLoop.AvoidMilliseconds / 60_000}");
+            }
+            catch (Exception e) { SmartAiFallback.ReportFailure("solo death loop", e); }
+        }
+
+        /// <summary>
+        /// A solo SmartAI bot takes no camp in its own region whose straight way passes one of its loop areas (all of
+        /// them when every camp does).
+        /// </summary>
+        private AutonomousBotDecisionEngine.Camp[] SmartAvoidLoopAreas(GameBot bot, AutonomousBotDecisionEngine.Camp[] camps,
+            Dictionary<string, CampDestination> destinations)
+        {
+            if (!LearnsSolo(bot) || _smartLoopAreas.Count == 0 || camps.Length <= 1)
+                return camps;
+            try
+            {
+                long now = GameLoop.GameLoopTime;
+                AutonomousBotDecisionEngine.Camp[] clear = camps.Where(camp =>
+                    !destinations.TryGetValue(camp.Id, out CampDestination d) || d.RegionId != bot.CurrentRegionID ||
+                    SmartDeathLoop.Crossed(_smartLoopAreas, d.RegionId, bot.X, bot.Y, d.X, d.Y, now) == null).ToArray();
+                if (clear.Length == 0 || clear.Length == camps.Length)
+                    return camps;
+                Log.Info($"SMARTAI_SOLO_LOOP_CAMPS bot={bot.Name} skipped={camps.Length - clear.Length} kept={clear.Length}");
+                return clear;
+            }
+            catch (Exception e)
+            {
+                SmartAiFallback.ReportFailure("solo death loop (camps)", e);
+                return camps;
+            }
+        }
+
+        /// <summary>
+        /// SmartAI: a walk to a merchant or other service follows a planned way around danger too (run 6: those walks
+        /// were never planned). False when a solo bot's straight way passes one of its loop areas and no planned way goes
+        /// around it: the bot then skips the trip. <paramref name="leg"/> is where to walk now (a waypoint or the point).
+        /// </summary>
+        private bool SmartServiceLeg(GameBot bot, Vector3 point, string service, out Vector3 leg)
+        {
+            leg = point;
+            if (!SmartRoutesApply(bot))
+                return true;
+            try
+            {
+                leg = SmartRouteTarget(bot, point, plan: true);
+                if (_smartRoute != null || !LearnsSolo(bot))
+                    return true;
+                long now = GameLoop.GameLoopTime;
+                if (SmartDeathLoop.Crossed(_smartLoopAreas, bot.CurrentRegionID, bot.X, bot.Y, (int)point.X, (int)point.Y, now) is not { } area)
+                    return true;
+                Log.Info($"SMARTAI_SOLO_LOOP_SKIP bot={bot.Name} service=\"{service}\" area={area.Region}:{area.X},{area.Y} " +
+                         $"from={bot.X},{bot.Y} to={(int)point.X},{(int)point.Y}");
+                leg = point;
+                return false;
+            }
+            catch (Exception e)
+            {
+                SmartAiFallback.ReportFailure("service route", e);
+                leg = point;
+                return true;
+            }
+        }
+
         /// <summary>
         /// A SmartAI group member walking on its own (to the meeting point, back after a death, or far behind its
         /// leader) looks ahead for aggressive monsters and goes around them; it never pulls (only the party's puller
@@ -349,9 +430,16 @@ namespace DOL.GS
                     return destination;
                 _smartRouteTriedDestination = destination;
                 _smartRouteTriedTick = now;
-                List<Vector3> route = PlanSmartRoute(bot, destination, out string why);
+                List<Vector3> route = PlanSmartRoute(bot, destination, out string why, out string declined, out double straightDanger);
                 if (route == null)
+                {
+                    CountRouteNone(declined, now);
+                    if (straightDanger >= SmartRoutePlanner.MinStraightDanger)
+                        Log.Info($"SMARTAI_ROUTE_NONE bot={bot.Name} level={bot.Level} reason={declined} danger={straightDanger:0.#} " +
+                                 $"zone=\"{bot.CurrentZone?.Description}\" from={bot.X},{bot.Y} to={(int)destination.X},{(int)destination.Y} " +
+                                 $"length={Vector2.Distance(here, to):0}");
                     return destination;
+                }
                 _smartRoute = route;
                 _smartRouteNext = 0;
                 _smartRouteDestination = destination;
@@ -370,17 +458,24 @@ namespace DOL.GS
             }
         }
 
-        /// <summary>The plan in world points on the navmesh, every leg walkable; null when there is none worth taking.</summary>
-        private static List<Vector3> PlanSmartRoute(GameBot bot, Vector3 destination, out string why)
+        /// <summary>
+        /// The plan in world points on the navmesh, every leg walkable; null when there is none worth taking, with
+        /// <paramref name="declined"/> saying why (SmartRoutePlanner.Find's reasons, or "zone", "no-navmesh", "no-floor",
+        /// "waypoint-off-mesh", "end-corridor") and <paramref name="straightDanger"/> the straight way's danger.
+        /// </summary>
+        private static List<Vector3> PlanSmartRoute(GameBot bot, Vector3 destination, out string why, out string declined,
+            out double straightDanger)
         {
             why = null;
+            declined = null;
+            straightDanger = 0;
             Zone zone = bot.CurrentZone;
             Region region = bot.CurrentRegion;
-            if (zone == null || region == null || region.GetZone((int)destination.X, (int)destination.Y) != zone)
+            if (zone == null || region == null)
+            {
+                declined = "zone";
                 return null;
-            IPathfindingMgr nav = PathfindingProvider.Instance;
-            if (!nav.IsAvailable || !nav.HasNavmesh(zone))
-                return null;
+            }
             ushort regionId = bot.CurrentRegionID;
             int level = bot.Level;
             int hard = SmartRouteHardLevel(level);
@@ -389,12 +484,28 @@ namespace DOL.GS
             double Danger(int cx, int cy) =>
                 SmartRouteSpawnDanger * SmartWorldKnowledge.HardAggressiveIn(regionId, cx, cy, hard) +
                 SmartWorldLearning.AreaDanger(regionId, cx * SmartRoutePlanner.CellSize + half, cy * SmartRoutePlanner.CellSize + half, level, utc);
+            straightDanger = SmartRoutePlanner.SegmentDanger(bot.X, bot.Y, (int)destination.X, (int)destination.Y, Danger);
+            if (region.GetZone((int)destination.X, (int)destination.Y) != zone)
+            {
+                declined = "zone";
+                return null;
+            }
+            IPathfindingMgr nav = PathfindingProvider.Instance;
+            if (!nav.IsAvailable || !nav.HasNavmesh(zone))
+            {
+                declined = "no-navmesh";
+                return null;
+            }
             var bounds = new SmartRoutePlanner.Bounds(zone.XOffset, zone.YOffset, zone.XOffset + zone.Width, zone.YOffset + zone.Height);
-            SmartRoutePlanner.Plan plan = SmartRoutePlanner.Find(bot.X, bot.Y, (int)destination.X, (int)destination.Y, bounds, Danger);
+            SmartRoutePlanner.Plan plan = SmartRoutePlanner.Find(bot.X, bot.Y, (int)destination.X, (int)destination.Y, bounds, Danger,
+                out declined, out straightDanger);
             if (plan == null)
                 return null;
             if (!AutonomousNavigationSurface.TryFloor(nav, zone, new(bot.X, bot.Y, bot.Z), out Vector3 previous))
+            {
+                declined = "no-floor";
                 return null;
+            }
             var points = new List<Vector3>(plan.Waypoints.Count);
             float z = bot.Z;
             foreach ((int x, int y) in plan.Waypoints)
@@ -402,16 +513,47 @@ namespace DOL.GS
                 Vector3? floor = nav.GetClosestPoint(zone, new Vector3(x, y, z), 384, 384, 2_000, nav.DefaultFilters);
                 if (floor is not Vector3 point || region.GetZone((int)point.X, (int)point.Y) != zone ||
                     !AutonomousZoneItinerary.HasCompleteCorridor(nav, zone, previous, point))
+                {
+                    declined = "waypoint-off-mesh";
                     return null;
+                }
                 points.Add(point);
                 previous = point;
                 z = point.Z;
             }
             Vector3 end = AutonomousNavigationSurface.TryFloor(nav, zone, destination, out Vector3 endFloor) ? endFloor : destination;
             if (!AutonomousZoneItinerary.HasCompleteCorridor(nav, zone, previous, end))
+            {
+                declined = "end-corridor";
                 return null;
+            }
             why = $"danger {plan.StraightDanger:0.#}->{plan.PlannedDanger:0.#} length {plan.StraightLength:0}->{plan.PlannedLength:0}";
             return points;
+        }
+
+        // ---- declined plans (run 6, 2026-11-05: the bots that died 12-39 times on one square planned 0-4 routes, and no
+        // line said why): every declined plan is counted by reason, logged every 10 minutes; a declined walk whose
+        // straight way crosses danger is logged on its own (the retry delay above keeps it to one line per walk).
+
+        private static readonly string[] RouteNoneReasons =
+            { "safe", "grid", "outside", "no-path", "straight", "longer", "not-safer", "zone", "no-navmesh", "no-floor", "waypoint-off-mesh", "end-corridor" };
+        private static readonly long[] RouteNoneCounts = new long[RouteNoneReasons.Length];
+        private static long _routeNoneReportTick;
+
+        private static void CountRouteNone(string reason, long now)
+        {
+            int i = Array.IndexOf(RouteNoneReasons, reason);
+            if (i >= 0)
+                System.Threading.Interlocked.Increment(ref RouteNoneCounts[i]);
+            long next = System.Threading.Interlocked.Read(ref _routeNoneReportTick);
+            if (now < next || System.Threading.Interlocked.CompareExchange(ref _routeNoneReportTick, now + 10 * 60_000L, next) != next)
+                return;
+            if (next == 0)
+                return; // the first call only starts the clock
+            var line = new System.Text.StringBuilder("SMARTAI_ROUTE_NONE last10min");
+            for (int r = 0; r < RouteNoneReasons.Length; r++)
+                line.Append(' ').Append(RouteNoneReasons[r]).Append('=').Append(System.Threading.Interlocked.Exchange(ref RouteNoneCounts[r], 0));
+            Log.Info(line.ToString());
         }
 
         // ---- camp stalls

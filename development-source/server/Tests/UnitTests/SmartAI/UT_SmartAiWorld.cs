@@ -315,6 +315,84 @@ public class UT_SmartAiWorld
     }
 
     [Test]
+    public void ADeclinedPlanSaysWhy()
+    {
+        // Run 6: bots died 12-39 times on one square with almost no planned route, and nothing said why.
+        Assert.Multiple(() =>
+        {
+            Assert.That(SmartRoutePlanner.Find(1000, 30000, 30000, 30000, Zone, (_, _) => 0, out string safe, out double none), Is.Null);
+            Assert.That(safe, Is.EqualTo("safe"));
+            Assert.That(none, Is.EqualTo(0));
+            Assert.That(SmartRoutePlanner.Find(1000, 30000, 30000, 30000, Zone, (cx, cy) => cx == 14 && cy >= 1 ? 3 : 0,
+                out string through, out double danger), Is.Null);
+            Assert.That(through, Is.EqualTo("straight"), "a mild wall: going through it is cheaper than the long way round");
+            Assert.That(danger, Is.EqualTo(3).Within(1e-9));
+            Assert.That(SmartRoutePlanner.Find(1000, 30000, 30000, 30000, Zone, (cx, cy) => cx == 14 && cy >= 1 ? 100 : 0,
+                out string longer, out _), Is.Null);
+            Assert.That(longer, Is.EqualTo("longer"), "a deadly wall: the only way around is more than 2.2 times as long");
+            Assert.That(SmartRoutePlanner.Find(1000, 30000, 30000, 30000, Zone, (_, _) => 1, out string everywhere, out _), Is.Null);
+            Assert.That(everywhere, Is.EqualTo("straight"), "danger everywhere: the straight way is already the best");
+            Assert.That(SmartRoutePlanner.Find(1000, 30000, 90000, 30000, Zone, (_, _) => 1, out string outside, out _), Is.Null);
+            Assert.That(outside, Is.EqualTo("outside"), "the destination is outside the zone grid");
+            Assert.That(SmartRoutePlanner.Find(1000, 30000, 30000, 30000, Zone, (cx, cy) => cx == 14 && cy >= 25 && cy <= 32 ? 3 : 0,
+                out string planned, out _), Is.Not.Null);
+            Assert.That(planned, Is.Null, "a plan has no decline reason");
+        });
+    }
+
+    // ---- solo death loops (run 6)
+
+    [Test]
+    public void ThreeDeathsInOneAreaWithinHalfAnHourMakeALoopArea()
+    {
+        var deaths = new List<SmartDeathLoop.Death>();
+        long t = 10_000_000;
+        Assert.Multiple(() =>
+        {
+            Assert.That(SmartDeathLoop.RecordDeath(deaths, new(200, 345_750, 522_100, t)), Is.Null);
+            Assert.That(SmartDeathLoop.RecordDeath(deaths, new(200, 330_000, 522_100, t + 60_000)), Is.Null, "elsewhere");
+            Assert.That(SmartDeathLoop.RecordDeath(deaths, new(200, 345_700, 522_400, t + 180_000)), Is.Null, "two here so far");
+            SmartDeathLoop.Area? area = SmartDeathLoop.RecordDeath(deaths, new(200, 346_000, 521_800, t + 360_000));
+            Assert.That(area, Is.Not.Null);
+            Assert.That(area.Value.Region, Is.EqualTo(200));
+            Assert.That(area.Value.X, Is.EqualTo((345_750 + 345_700 + 346_000) / 3), "the centre of the three deaths");
+            Assert.That(area.Value.Until, Is.EqualTo(t + 360_000 + SmartDeathLoop.AvoidMilliseconds));
+        });
+    }
+
+    [Test]
+    public void OldDeathsAndOtherRegionsDoNotMakeALoop()
+    {
+        var deaths = new List<SmartDeathLoop.Death>();
+        long t = 10_000_000;
+        SmartDeathLoop.RecordDeath(deaths, new(200, 345_750, 522_100, t));
+        SmartDeathLoop.RecordDeath(deaths, new(201, 345_750, 522_100, t + 1_000));
+        SmartDeathLoop.RecordDeath(deaths, new(200, 345_750, 522_100, t + SmartDeathLoop.LoopWindowMilliseconds + 5_000));
+        Assert.That(SmartDeathLoop.RecordDeath(deaths, new(200, 345_750, 522_100, t + SmartDeathLoop.LoopWindowMilliseconds + 10_000)),
+            Is.Null, "the first death has faded out of the window and one was in another region");
+    }
+
+    [Test]
+    public void AWayIsBlockedOnlyWhenItPassesALoopArea()
+    {
+        long now = 5_000_000;
+        var areas = new List<SmartDeathLoop.Area>();
+        SmartDeathLoop.Remember(areas, new(200, 345_750, 522_100, now + 60_000), now);
+        Assert.Multiple(() =>
+        {
+            // Saoaora: bind 345,050 / 528,730, walking north through the pack.
+            Assert.That(SmartDeathLoop.Crossed(areas, 200, 345_050, 528_730, 345_189, 491_669, now), Is.Not.Null);
+            Assert.That(SmartDeathLoop.Crossed(areas, 200, 345_050, 528_730, 352_000, 554_000, now), Is.Null, "south, away from it");
+            Assert.That(SmartDeathLoop.Crossed(areas, 201, 345_050, 528_730, 345_189, 491_669, now), Is.Null, "another region");
+            Assert.That(SmartDeathLoop.Crossed(areas, 200, 345_050, 528_730, 345_189, 491_669, now + 60_000), Is.Null, "expired");
+            Assert.That(SmartDeathLoop.SegmentDistance(0, 0, 1000, 0, 500, 300), Is.EqualTo(300).Within(1e-9));
+            Assert.That(SmartDeathLoop.SegmentDistance(0, 0, 1000, 0, 1300, 400), Is.EqualTo(500).Within(1e-9), "past the end");
+        });
+        SmartDeathLoop.Remember(areas, new(200, 345_800, 522_000, now + 120_000), now);
+        Assert.That(areas, Has.Count.EqualTo(1), "a newer area on the same spot replaces the older one");
+    }
+
+    [Test]
     public void HardSpawnsAndLearnedAreasAreIndexed()
     {
         SmartWorldKnowledge.Rebuild(new[]

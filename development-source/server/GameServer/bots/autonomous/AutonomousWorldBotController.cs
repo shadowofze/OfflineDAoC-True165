@@ -1139,7 +1139,16 @@ namespace DOL.GS
                 }
                 if (TryBeginFasterStableRoute(bot, point, _serviceNpc.Name))
                     return true;
-                IssuePath(bot, point, preciseArrival: true);
+                // SmartAI: plan the walk around danger; a solo bot skips a trip through its own death loop.
+                if (!SmartServiceLeg(bot, point, _serviceNpc.Name, out Vector3 leg))
+                {
+                    bot.StopMovingOnPath();
+                    bot.StopMoving();
+                    _serviceNpc = null;
+                    _serviceKind = null;
+                    return false;
+                }
+                IssuePath(bot, leg, preciseArrival: true);
                 SetStatus(bot, $"Traveling to {_serviceNpc.Name}", ServiceGoal(needed.Value),
                     "Routing to a real world service before resuming progression", _serviceNpc.Name, destination.ZoneName);
                 return true;
@@ -3603,6 +3612,8 @@ namespace DOL.GS
                     .Concat(df).ToArray();
             }
             legalCells = AvoidNoGo(legalCells, destinations);
+            if (!sharedGroup)
+                legalCells = SmartAvoidLoopAreas(bot, legalCells, destinations);
             // Less competition first: crowded camps only when every camp is crowded (AutonomousCampCompetition).
             // A low-level solo bot looks near itself first (owner 2026-10-31: level-1 bots walked a median 72,600 units
             // across the realm and 518 of 609 deaths happened on the way): the quiet camps within 15,000 in its own
@@ -4026,6 +4037,7 @@ namespace DOL.GS
                          $"bots={AutonomousCampDangerBench.DistinctBotsToBench} hours={bench.TotalHours:0}");
             if (!diedAtCamp && bot.LastDeathSpot is { Region: > 0 } deathSpot)
                 RememberNoGo(deathSpot.Region, deathSpot.X, deathSpot.Y);
+            SmartObserveSoloDeath(bot, goalAtDeath, failedTarget);
             if (diedAtCamp && _recentSoloDeathsWithoutExperience >= 2 && !string.IsNullOrWhiteSpace(_camp.MonsterName))
                 _recentFailedSoloTargets[_camp.MonsterName] = nowTick + AutonomousDeathRecoveryPolicy.FailureMemoryMilliseconds;
             _camp = null;

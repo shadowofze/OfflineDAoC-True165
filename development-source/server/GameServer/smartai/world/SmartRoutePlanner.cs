@@ -58,20 +58,39 @@ namespace DOL.GS.SmartAI
         /// safe enough, no way is found, or the safer way is much longer or not much safer. The waypoints exclude the
         /// start and the destination.
         /// </summary>
-        public static Plan Find(int sx, int sy, int dx, int dy, Bounds bounds, Func<int, int, double> danger, int maxCells = 20_000)
+        public static Plan Find(int sx, int sy, int dx, int dy, Bounds bounds, Func<int, int, double> danger, int maxCells = 20_000) =>
+            Find(sx, sy, dx, dy, bounds, danger, out _, out _, maxCells);
+
+        /// <summary>
+        /// As Find, saying why there is no plan (run 6, 2026-11-05: bots died 12-39 times on the same square with almost
+        /// no planned route, and nothing said why): "safe", "grid", "outside", "no-path", "straight", "longer",
+        /// "not-safer"; null when there is a plan. <paramref name="straightDanger"/> is the straight way's danger.
+        /// </summary>
+        public static Plan Find(int sx, int sy, int dx, int dy, Bounds bounds, Func<int, int, double> danger,
+            out string declined, out double straightDanger, int maxCells = 20_000)
         {
             double straightLength = Math.Sqrt((double)(dx - sx) * (dx - sx) + (double)(dy - sy) * (dy - sy));
-            double straightDanger = SegmentDanger(sx, sy, dx, dy, danger);
+            straightDanger = SegmentDanger(sx, sy, dx, dy, danger);
+            declined = null;
             if (straightDanger < MinStraightDanger)
+            {
+                declined = "safe";
                 return null;
+            }
             int minCx = CellOf(bounds.MinX), minCy = CellOf(bounds.MinY), maxCx = CellOf(bounds.MaxX - 1), maxCy = CellOf(bounds.MaxY - 1);
             int width = maxCx - minCx + 1, height = maxCy - minCy + 1;
             if (width <= 0 || height <= 0 || (long)width * height > maxCells)
+            {
+                declined = "grid";
                 return null;
+            }
             (int X, int Y) start = (CellOf(sx), CellOf(sy)), goal = (CellOf(dx), CellOf(dy));
             if (start.X < minCx || start.X > maxCx || start.Y < minCy || start.Y > maxCy ||
                 goal.X < minCx || goal.X > maxCx || goal.Y < minCy || goal.Y > maxCy)
+            {
+                declined = "outside";
                 return null;
+            }
 
             int Index(int x, int y) => (y - minCy) * width + (x - minCx);
             var cost = new double[width * height];
@@ -116,7 +135,10 @@ namespace DOL.GS.SmartAI
                 }
             }
             if (from[g] < 0 && g != s)
+            {
+                declined = "no-path";
                 return null;
+            }
 
             // The cell path, start to goal, then pulled taut: from each point, the farthest later cell reachable by a
             // straight line that collects no more danger than the cells it skips.
@@ -153,7 +175,10 @@ namespace DOL.GS.SmartAI
                 at = best;
             }
             if (waypoints.Count == 0)
+            {
+                declined = "straight";
                 return null;
+            }
 
             double plannedLength = 0, plannedDanger = 0;
             (int X, int Y) prev = (sx, sy);
@@ -165,8 +190,16 @@ namespace DOL.GS.SmartAI
             }
             plannedLength += Distance(prev, (dx, dy));
             plannedDanger += SegmentDanger(prev.X, prev.Y, dx, dy, cached);
-            if (plannedLength > MaxLengthRatio * Math.Max(straightLength, CellSize) || plannedDanger > MaxDangerShare * straightDanger)
+            if (plannedLength > MaxLengthRatio * Math.Max(straightLength, CellSize))
+            {
+                declined = "longer";
                 return null;
+            }
+            if (plannedDanger > MaxDangerShare * straightDanger)
+            {
+                declined = "not-safer";
+                return null;
+            }
             return new Plan(waypoints, straightDanger, plannedDanger, straightLength, plannedLength);
 
             double Heuristic(int x, int y)

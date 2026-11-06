@@ -53,4 +53,19 @@ public class UT_SmartAiFlank
             Assert.That(SmartFlank.Applies(true, true, true, false, false, false), Is.False, "not in melee");
         });
     }
+
+    [Test]
+    public void TheSpecIsWorkedOutOnTheFirstCheckAndThenOncePerSecond()
+    {
+        // Run 6: the cache started at long.MinValue, now - long.MinValue overflowed, and the spec was never worked out.
+        long now = 123_456_789;
+        Assert.Multiple(() =>
+        {
+            Assert.That(SmartFlank.WantStale(false, 0, now), Is.True, "first check");
+            Assert.That(SmartFlank.WantStale(false, 0, 0), Is.True, "first check at game time 0");
+            Assert.That(SmartFlank.WantStale(true, now, now + 500), Is.False, "cached for a second");
+            Assert.That(SmartFlank.WantStale(true, now, now + SmartFlank.WantCacheMilliseconds + 1), Is.True);
+            Assert.That(SmartFlank.WantStale(true, now, now - 1), Is.True, "clock went back");
+        });
+    }
 }

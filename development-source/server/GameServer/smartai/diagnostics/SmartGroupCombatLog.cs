@@ -110,6 +110,7 @@ namespace DOL.GS.SmartAI
                     Interlocked.Increment(ref _discarded);
             Logs.Clear();
             Chosen.Clear();
+            FlushPending();
         }
 
         public static string FileOf(Group group) =>
@@ -248,6 +249,11 @@ namespace DOL.GS.SmartAI
             if (now < _nextTick)
                 return;
             _nextTick = now + TickMs;
+            if (now >= _nextFlush)
+            {
+                _nextFlush = now + FlushMs;
+                FlushPending();
+            }
             foreach (KeyValuePair<object, GroupLog> pair in Logs)
             {
                 try
@@ -274,28 +280,97 @@ namespace DOL.GS.SmartAI
             }
         }
 
-        private static void Write(GroupLog log, string text)
+        // ---- batched writing (owner 2026-11-05: "avoid writing so many files to the NVME drive"). Run 6 wrote about
+        // 25,000 fights in two hours, each one its own open-append-close. Finished fights now wait in memory and each
+        // file gets one append every FlushMs (sooner past FlushChars), when recording is turned off and when the
+        // server stops. A crash loses at most the last FlushMs of fights.
+
+        /// <summary>How long finished fights wait in memory before their files are written.</summary>
+        public const long FlushMs = 30_000;
+        /// <summary>Waiting text (characters) that writes the files at once.</summary>
+        public const int FlushChars = 1 << 20;
+
+        private sealed class PendingFile
         {
-            string path = log.FilePath;
-            string header = log.TakeFileHeader();
+            public string Header;
+            public readonly StringBuilder Text = new();
+        }
+
+        private static Dictionary<string, PendingFile> _pending = new(StringComparer.OrdinalIgnoreCase);
+        private static int _pendingChars;
+        private static long _nextFlush;
+
+        public static int PendingFiles
+        {
+            get { lock (WriteSync) return _pending.Count; }
+        }
+
+        private static void Write(GroupLog log, string text) => BufferFight(log.FilePath, log.TakeFileHeader(), text);
+
+        /// <summary>Queues a finished fight for its file; <paramref name="header"/> (or null) opens a new file.</summary>
+        public static void BufferFight(string path, string header, string text)
+        {
+            bool full;
             lock (WriteSync)
             {
-                _writes = _writes.ContinueWith(_ =>
+                if (!_pending.TryGetValue(path, out PendingFile file))
+                    _pending[path] = file = new PendingFile();
+                file.Header ??= header;
+                file.Text.Append(text);
+                _pendingChars += text.Length;
+                full = _pendingChars >= FlushChars;
+            }
+            if (full)
+                FlushPending();
+        }
+
+        /// <summary>
+        /// Writes every waiting fight, one append per file, on the background writer. With <paramref name="wait"/> it
+        /// returns once the files are written (or after 10 s).
+        /// </summary>
+        public static void FlushPending(bool wait = false)
+        {
+            Task writes;
+            lock (WriteSync)
+            {
+                if (_pending.Count > 0)
                 {
-                    try
-                    {
-                        System.IO.Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                        if (header != null && !File.Exists(path))
-                            File.AppendAllText(path, header, Encoding.UTF8);
-                        File.AppendAllText(path, text, Encoding.UTF8);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Warn($"SmartAI group log could not be written ({path}): {e.Message}");
-                    }
-                }, TaskScheduler.Default);
+                    Dictionary<string, PendingFile> batch = _pending;
+                    _pending = new(StringComparer.OrdinalIgnoreCase);
+                    _pendingChars = 0;
+                    _writes = _writes.ContinueWith(_ => WriteBatch(batch), TaskScheduler.Default);
+                }
+                writes = _writes;
+            }
+            if (wait)
+            {
+                try { writes.Wait(10_000); }
+                catch (Exception e) { Log.Warn($"SmartAI group log: waiting for the writes failed: {e.Message}"); }
             }
         }
+
+        private static void WriteBatch(Dictionary<string, PendingFile> batch)
+        {
+            foreach (KeyValuePair<string, PendingFile> pair in batch)
+            {
+                string path = pair.Key;
+                try
+                {
+                    System.IO.Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                    string text = pair.Value.Text.ToString();
+                    if (pair.Value.Header != null && !File.Exists(path))
+                        text = pair.Value.Header + text;
+                    File.AppendAllText(path, text, Encoding.UTF8);
+                }
+                catch (Exception e)
+                {
+                    Log.Warn($"SmartAI group log could not be written ({path}): {e.Message}");
+                }
+            }
+        }
+
+        [DOL.Events.GameServerStoppedEvent]
+        public static void OnServerStopped(DOL.Events.DOLEvent e, object sender, EventArgs args) => FlushPending(wait: true);
 
         public static string Short(SmartActionFamily family) => family switch
         {

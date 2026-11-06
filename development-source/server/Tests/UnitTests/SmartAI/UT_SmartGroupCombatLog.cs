@@ -9,6 +9,38 @@ public class UT_SmartGroupCombatLog
     private const long Start = 100_000;
 
     [Test]
+    public void FinishedFightsWaitInMemoryAndEachFileGetsOneAppend()
+    {
+        // Owner 2026-11-05: fewer writes to the drive. Nothing reaches the disk until the batch is flushed.
+        string dir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ut-smart-group-log-" + System.Guid.NewGuid().ToString("N"));
+        string a = System.IO.Path.Combine(dir, "a.log"), b = System.IO.Path.Combine(dir, "b.log");
+        try
+        {
+            FlushPending(wait: true);
+            BufferFight(a, "header A\n", "fight 1\n");
+            BufferFight(a, "header A again\n", "fight 2\n");
+            BufferFight(b, null, "fight 3\n");
+            Assert.That(System.IO.File.Exists(a) || System.IO.File.Exists(b), Is.False, "still in memory");
+            Assert.That(PendingFiles, Is.EqualTo(2));
+            FlushPending(wait: true);
+            Assert.Multiple(() =>
+            {
+                Assert.That(PendingFiles, Is.EqualTo(0));
+                Assert.That(System.IO.File.ReadAllText(a), Is.EqualTo("header A\nfight 1\nfight 2\n"), "the first header only, fights in order");
+                Assert.That(System.IO.File.ReadAllText(b), Is.EqualTo("fight 3\n"));
+            });
+            BufferFight(a, "header A\n", "fight 4\n");
+            FlushPending(wait: true);
+            Assert.That(System.IO.File.ReadAllText(a), Is.EqualTo("header A\nfight 1\nfight 2\nfight 4\n"), "no second header in an existing file");
+        }
+        finally
+        {
+            if (System.IO.Directory.Exists(dir))
+                System.IO.Directory.Delete(dir, true);
+        }
+    }
+
+    [Test]
     public void AFightIsCompleteOnlyWhenNobodyFightsAndNoHeldEnemyIsNear()
     {
         Assert.That(EndOf(true, false, Start + 10_000, Start, Start + 9_000), Is.EqualTo(FightEnd.Ongoing), "A member still fighting");
