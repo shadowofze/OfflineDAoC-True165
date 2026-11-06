@@ -8,7 +8,8 @@
       fights, kills, deaths, deaths per fight, share of fights with a death, kills per log-hour,
       fight length, quiet time between fights, caster melee starts, swing position, style use,
       spells landed and heals, and the recorder's flags.
-    It writes an HTML page (old AI against SmartAI, and every run side by side) and prints a short summary.
+    It writes an HTML page and the same tables as Markdown (for a pull request; -MdOut, default next to the HTML
+    page as fight-compare.md), and prints a short summary.
 
     Turn recording on from the server start in both kinds of run, so they are recorded the same way:
     state-165/smartai-world.json  "settings": { "recordFightsFromStart": true }
@@ -27,6 +28,7 @@ param(
     [string[]]$Runs,
     [int]$MinFights = 20,
     [string]$HtmlOut,
+    [string]$MdOut,
     [string]$CsvOut,
     [switch]$Open
 )
@@ -34,6 +36,7 @@ param(
 # "powershell -File" hands "-Runs a,b" over as one string: split it here.
 $Runs = @($Runs | ForEach-Object { $_ -split '[,; ]+' } | Where-Object { $_ })
 if (-not $HtmlOut) { $HtmlOut = Join-Path $LogsDir 'fight-compare.html' }
+if (-not $MdOut) { $MdOut = [IO.Path]::ChangeExtension($HtmlOut, '.md') }
 
 $casters = @('Wizard','Theurgist','Sorcerer','Cabalist','Eldritch','Enchanter','Mentalist','Animist','Runemaster',
              'Spiritmaster','Bonedancer','Mage','Magician','Elementalist','Forester','Mystic')
@@ -276,4 +279,58 @@ if ($CsvOut) {
         Export-Csv -NoTypeInformation -Path $CsvOut
     Write-Output "CSV: $CsvOut"
 }
+
+# ---- Markdown (for a pull request: GitHub renders the tables). Only ASCII in this file (Windows PowerShell 5.1
+# reads a BOM-less script as ANSI), so the marks are made from code points.
+$up = [char]::ConvertFromUtf32(0x2705); $down = [char]::ConvertFromUtf32(0x274C)
+function MdEsc([string]$s) { $s.Replace('|', '\|') }
+function Get-MdClassTable($statsList, $names) {
+    $classes = @{}
+    foreach ($st in $statsList) { foreach ($e in $st.DeathsByClass.GetEnumerator()) { $classes[$e.Key] = $e.Value + [double]$classes[$e.Key] } }
+    $top = $classes.GetEnumerator() | Sort-Object Value -Descending | Select-Object -First 15
+    if (-not $top) { return @('No member deaths.', '') }
+    $lines = @(('| Class | ' + (($names | ForEach-Object { "$(MdEsc $_) deaths (per 100 fights in)" }) -join ' | ') + ' |'),
+               ('|---|' + ('---:|' * $names.Count)))
+    foreach ($c in $top) {
+        $cells = foreach ($st in $statsList) {
+            $d = [double]$st.DeathsByClass[$c.Key]; $f = [double]$st.FightsByClass[$c.Key]
+            '{0:N0} ({1})' -f $d, $(if ($f) { '{0:N1}' -f (100 * $d / $f) } else { '-' })
+        }
+        $lines += "| $(MdEsc $c.Key) | $($cells -join ' | ') |"
+    }
+    return $lines + ''
+}
+$md = @('# Old AI against SmartAI: fight logs', '',
+        "Made $(Get-Date -Format 'yyyy-MM-dd HH:mm') from the fight recorder's logs. Runs: $(($results | Select-Object -ExpandProperty Run -Unique) -join ', '). Runs with fewer than $MinFights fights are left out.",
+        "Caster melee counts pure caster classes only. Bots keep their levels between runs, so later runs start a little stronger.", '')
+foreach ($kind in 'group','solo') {
+    $kr = @($results | Where-Object Kind -eq $kind)
+    if (-not $kr) { continue }
+    $md += $(if ($kind -eq 'group') { '## Group fights' } else { '## Solo fights (a bot fighting alone)' }), ''
+    $old = $totals["$kind|Old AI"]; $new = $totals["$kind|SmartAI"]
+    if ($old -and $new) {
+        $md += '### Old AI against SmartAI', '',
+               "All runs of each AI added together: old AI $($old.Runs) run(s), $('{0:N0}' -f $old.Fights) fights; SmartAI $($new.Runs) run(s), $('{0:N0}' -f $new.Fights) fights. Change is SmartAI against the old AI ($up better, $down worse).", '',
+               '| Measure | Old AI | SmartAI | Change |', '|---|---:|---:|---:|'
+        foreach ($m in $metrics) {
+            $a = Get-Value $m $old; $b = Get-Value $m $new
+            $ch = if ($m.L -in 'Fights','Kills','Deaths') { @('', '') } else { Get-Change $m $a $b }
+            $mark = switch ($ch[1]) { 'better' { "$up " } 'worse' { "$down " } default { '' } }
+            $md += "| $(MdEsc $m.L) | $(Format-Value $m $a) | $(Format-Value $m $b) | $mark$($ch[0]) |"
+        }
+        $md += '', '### Member deaths by class', ''
+        $md += Get-MdClassTable @($old, $new) @('Old AI', 'SmartAI')
+    }
+    $md += '### Every run side by side', '', 'Bold is the best run on that line.', '',
+           ('| Measure | ' + (($kr | ForEach-Object { "$($_.AI) $($_.Run)" + $(if ($_.Folder -notmatch '^smart_ai_') { " ($(MdEsc $_.Folder))" }) }) -join ' | ') + ' |'),
+           ('|---|' + ('---:|' * $kr.Count))
+    foreach ($m in $metrics) {
+        $vals = @($kr | ForEach-Object { Get-Value $m $_.Stats })
+        $best = if ($m.B -eq 'low') { ($vals | Measure-Object -Minimum).Minimum } elseif ($m.B -eq 'high') { ($vals | Measure-Object -Maximum).Maximum } else { $null }
+        $md += "| $(MdEsc $m.L) | " + (($vals | ForEach-Object { $t = Format-Value $m $_; if ($null -ne $best -and $kr.Count -gt 1 -and $_ -eq $best) { "**$t**" } else { $t } }) -join ' | ') + ' |'
+    }
+    $md += ''
+}
+[IO.File]::WriteAllText($MdOut, ($md -join "`r`n"), (New-Object System.Text.UTF8Encoding $false))
+Write-Output "Markdown report: $MdOut"
 if ($Open) { Start-Process $HtmlOut }
