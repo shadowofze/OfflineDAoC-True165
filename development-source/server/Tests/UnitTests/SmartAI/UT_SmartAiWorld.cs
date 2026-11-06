@@ -148,6 +148,26 @@ public class UT_SmartAiWorld
     }
 
     [Test]
+    public void FightRecordingStartsWithTheServerOnlyWhenTheFileSaysSo()
+    {
+        SmartGroupCombatLog.Stop();
+        try
+        {
+            SmartGroupCombatLog.OnServerStarted(null, null, EventArgs.Empty);
+            Assert.That(SmartGroupCombatLog.IsOn, Is.False, "off by default");
+
+            File.WriteAllText(SmartWorldConfig.FilePath, "{ \"settings\": { \"recordFightsFromStart\": true } }");
+            SmartWorldConfig.UseFileForTests(SmartWorldConfig.FilePath);
+            SmartGroupCombatLog.OnServerStarted(null, null, EventArgs.Empty);
+            Assert.That(SmartGroupCombatLog.CurrentScope, Is.EqualTo(SmartGroupCombatLog.Scope.AllGroups));
+        }
+        finally
+        {
+            SmartGroupCombatLog.Stop();
+        }
+    }
+
+    [Test]
     public void TheConfigKeepsTheOwnersSettingsAndOverrides()
     {
         string path = SmartWorldConfig.FilePath;

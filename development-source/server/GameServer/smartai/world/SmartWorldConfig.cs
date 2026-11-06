@@ -45,6 +45,9 @@ namespace DOL.GS.SmartAI
             /// <summary>A party standing at its camp this long, every member alive and ready, with nothing pulled, has
             /// stalled: it learns that and moves to another camp (seconds; 0 turns the check off).</summary>
             public int CampStallSeconds { get; set; } = 120;
+            /// <summary>Fight recording (/smartai debugfights) starts with the server, SmartAI on or off, so runs of
+            /// the old bot AI and of SmartAI are recorded the same way and can be compared (owner 2026-11-06).</summary>
+            public bool RecordFightsFromStart { get; set; }
         }
 
         public sealed class ZoneOverride

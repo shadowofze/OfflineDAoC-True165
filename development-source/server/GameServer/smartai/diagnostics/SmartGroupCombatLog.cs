@@ -372,6 +372,29 @@ namespace DOL.GS.SmartAI
         [DOL.Events.GameServerStoppedEvent]
         public static void OnServerStopped(DOL.Events.DOLEvent e, object sender, EventArgs args) => FlushPending(wait: true);
 
+        /// <summary>
+        /// smartai-world.json "recordFightsFromStart" (owner 2026-11-06: compare the old bot AI with SmartAI over
+        /// several runs): recording starts with the server whether SmartAI is on or off. Every hook is in GameBot,
+        /// WeaponAction and SpellHandler, so the old AI's fights are recorded the same way; only the SmartAI decision
+        /// lines are missing from them. Each file's header says "SmartAI on" or "off".
+        /// </summary>
+        [DOL.Events.GameServerStartedEvent]
+        public static void OnServerStarted(DOL.Events.DOLEvent e, object sender, EventArgs args)
+        {
+            try
+            {
+                if (!SmartWorldConfig.Current.RecordFightsFromStart)
+                    return;
+                RecordAll();
+                Log.Info($"SMARTAI_FIGHTLOG recording from start, SmartAI {(SmartAiConfig.IsEnabled ? "on" : "off")}: " +
+                         $"{Directory} and {SoloDirectory}");
+            }
+            catch (Exception ex)
+            {
+                Log.Warn($"SmartAI group log: could not start recording: {ex.Message}");
+            }
+        }
+
         public static string Short(SmartActionFamily family) => family switch
         {
             SmartActionFamily.Triage => "Heal",
