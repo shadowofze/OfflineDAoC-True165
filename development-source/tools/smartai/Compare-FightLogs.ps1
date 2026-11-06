@@ -280,9 +280,8 @@ if ($CsvOut) {
     Write-Output "CSV: $CsvOut"
 }
 
-# ---- Markdown (for a pull request: GitHub renders the tables). Only ASCII in this file (Windows PowerShell 5.1
-# reads a BOM-less script as ANSI), so the marks are made from code points.
-$up = [char]::ConvertFromUtf32(0x2705); $down = [char]::ConvertFromUtf32(0x274C)
+# ---- Markdown (for a pull request: GitHub renders the tables). Plain text only - no emoji, and one line per
+# paragraph, because GitHub keeps every line break in a pull request's description.
 function MdEsc([string]$s) { $s.Replace('|', '\|') }
 function Get-MdClassTable($statsList, $names) {
     $classes = @{}
@@ -301,8 +300,8 @@ function Get-MdClassTable($statsList, $names) {
     return $lines + ''
 }
 $md = @('# Old AI against SmartAI: fight logs', '',
-        "Made $(Get-Date -Format 'yyyy-MM-dd HH:mm') from the fight recorder's logs. Runs: $(($results | Select-Object -ExpandProperty Run -Unique) -join ', '). Runs with fewer than $MinFights fights are left out.",
-        "Caster melee counts pure caster classes only. Bots keep their levels between runs, so later runs start a little stronger.", '')
+        ("Made $(Get-Date -Format 'yyyy-MM-dd HH:mm') from the fight recorder's logs. Runs: $(($results | Select-Object -ExpandProperty Run -Unique) -join ', '). Runs with fewer than $MinFights fights are left out. " +
+         "Caster melee counts pure caster classes only. Bots keep their levels between runs, so later runs start a little stronger."), '')
 foreach ($kind in 'group','solo') {
     $kr = @($results | Where-Object Kind -eq $kind)
     if (-not $kr) { continue }
@@ -310,13 +309,13 @@ foreach ($kind in 'group','solo') {
     $old = $totals["$kind|Old AI"]; $new = $totals["$kind|SmartAI"]
     if ($old -and $new) {
         $md += '### Old AI against SmartAI', '',
-               "All runs of each AI added together: old AI $($old.Runs) run(s), $('{0:N0}' -f $old.Fights) fights; SmartAI $($new.Runs) run(s), $('{0:N0}' -f $new.Fights) fights. Change is SmartAI against the old AI ($up better, $down worse).", '',
+               "All runs of each AI added together: old AI $($old.Runs) run(s), $('{0:N0}' -f $old.Fights) fights; SmartAI $($new.Runs) run(s), $('{0:N0}' -f $new.Fights) fights. Change is SmartAI against the old AI (""better"" and ""worse"" say which way SmartAI moved).", '',
                '| Measure | Old AI | SmartAI | Change |', '|---|---:|---:|---:|'
         foreach ($m in $metrics) {
             $a = Get-Value $m $old; $b = Get-Value $m $new
             $ch = if ($m.L -in 'Fights','Kills','Deaths') { @('', '') } else { Get-Change $m $a $b }
-            $mark = switch ($ch[1]) { 'better' { "$up " } 'worse' { "$down " } default { '' } }
-            $md += "| $(MdEsc $m.L) | $(Format-Value $m $a) | $(Format-Value $m $b) | $mark$($ch[0]) |"
+            $mark = switch ($ch[1]) { 'better' { ' better' } 'worse' { ' worse' } default { '' } }
+            $md += "| $(MdEsc $m.L) | $(Format-Value $m $a) | $(Format-Value $m $b) | $($ch[0])$mark |"
         }
         $md += '', '### Member deaths by class', ''
         $md += Get-MdClassTable @($old, $new) @('Old AI', 'SmartAI')
