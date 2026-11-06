@@ -8,8 +8,9 @@
       fights, kills, deaths, deaths per fight, share of fights with a death, kills per log-hour,
       fight length, quiet time between fights, caster melee starts, swing position, style use,
       spells landed and heals, and the recorder's flags.
-    It writes an HTML page and the same tables as Markdown (for a pull request; -MdOut, default next to the HTML
-    page as fight-compare.md), and prints a short summary.
+    It writes an HTML page and the same tables as a text file for a pull request (-TextOut, default next to the HTML
+    page as fight-compare.txt): its columns line up when read as plain text, and GitHub shows its headings and
+    tables formatted when it is pasted into a pull request. It also prints a short summary.
 
     Turn recording on from the server start in both kinds of run, so they are recorded the same way:
     state-165/smartai-world.json  "settings": { "recordFightsFromStart": true }
@@ -28,7 +29,7 @@ param(
     [string[]]$Runs,
     [int]$MinFights = 20,
     [string]$HtmlOut,
-    [string]$MdOut,
+    [Alias('MdOut')][string]$TextOut,
     [string]$CsvOut,
     [switch]$Open
 )
@@ -36,7 +37,7 @@ param(
 # "powershell -File" hands "-Runs a,b" over as one string: split it here.
 $Runs = @($Runs | ForEach-Object { $_ -split '[,; ]+' } | Where-Object { $_ })
 if (-not $HtmlOut) { $HtmlOut = Join-Path $LogsDir 'fight-compare.html' }
-if (-not $MdOut) { $MdOut = [IO.Path]::ChangeExtension($HtmlOut, '.md') }
+if (-not $TextOut) { $TextOut = [IO.Path]::ChangeExtension($HtmlOut, '.txt') }
 
 $casters = @('Wizard','Theurgist','Sorcerer','Cabalist','Eldritch','Enchanter','Mentalist','Animist','Runemaster',
              'Spiritmaster','Bonedancer','Mage','Magician','Elementalist','Forester','Mystic')
@@ -330,6 +331,31 @@ foreach ($kind in 'group','solo') {
     }
     $md += ''
 }
-[IO.File]::WriteAllText($MdOut, ($md -join "`r`n"), (New-Object System.Text.UTF8Encoding $false))
-Write-Output "Markdown report: $MdOut"
+# Pads every table's columns so they line up as plain text; GitHub reads the padded tables the same way.
+function Format-TextTables([string[]]$lines) {
+    $out = New-Object System.Collections.Generic.List[string]
+    $i = 0
+    while ($i -lt $lines.Count) {
+        if (-not $lines[$i].StartsWith('|')) { $out.Add($lines[$i]); $i++; continue }
+        $rows = @(); while ($i -lt $lines.Count -and $lines[$i].StartsWith('|')) { $rows += , @($lines[$i].Trim().Trim('|').Split('|') | ForEach-Object { $_.Trim() }); $i++ }
+        $cols = ($rows | ForEach-Object { $_.Count } | Measure-Object -Maximum).Maximum
+        $right = @(for ($c = 0; $c -lt $cols; $c++) { $c -lt $rows[1].Count -and $rows[1][$c].EndsWith(':') })
+        $width = @(for ($c = 0; $c -lt $cols; $c++) {
+            $w = 3
+            for ($r = 0; $r -lt $rows.Count; $r++) { if ($r -ne 1 -and $c -lt $rows[$r].Count) { $w = [math]::Max($w, $rows[$r][$c].Length) } }
+            $w
+        })
+        for ($r = 0; $r -lt $rows.Count; $r++) {
+            $cells = for ($c = 0; $c -lt $cols; $c++) {
+                $v = if ($c -lt $rows[$r].Count) { $rows[$r][$c] } else { '' }
+                if ($r -eq 1) { if ($right[$c]) { ('-' * ($width[$c] - 1)) + ':' } else { '-' * $width[$c] } }
+                elseif ($right[$c]) { $v.PadLeft($width[$c]) } else { $v.PadRight($width[$c]) }
+            }
+            $out.Add('| ' + ($cells -join ' | ') + ' |')
+        }
+    }
+    return , $out.ToArray()
+}
+[IO.File]::WriteAllText($TextOut, ((Format-TextTables $md) -join "`r`n"), (New-Object System.Text.UTF8Encoding $false))
+Write-Output "Text report for a pull request: $TextOut"
 if ($Open) { Start-Process $HtmlOut }
