@@ -70,7 +70,8 @@ namespace DOL.GS.SmartAI
                 // Nothing to cast and no melee allowed: hold instead of the legacy swing. Keep the triage this think
                 // already ran from running again in a later legacy path.
                 brain.AlreadyCheckedHeals = true;
-                if (brain.Body.attackComponent?.AttackState == true)
+                // A melee ban never cancels a bow shot (run 8: archers' draws were stopped every think).
+                if (brain.Body.attackComponent?.AttackState == true && brain.Body.ActiveWeaponSlot != eActiveWeaponSlot.Distance)
                     brain.Body.StopAttack();
                 decision = new SmartDecision(profile.Spec.Name, "Hold", 0, $"melee banned ({profile.MeleeBanReason})", GameLoop.GameLoopTime);
                 return true;

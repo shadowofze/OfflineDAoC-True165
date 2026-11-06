@@ -119,6 +119,9 @@ namespace DOL.GS
             }
             if (AmmoType(weapon) is not { } type || AmmoCount(bot, type) >= RestockBelowFor(bot))
                 return;
+            long now = GameLoop.GameLoopTime;
+            if (RestockFailedUntil.TryGetValue(bot.DatabaseID, out long until) && now < until)
+                return;
             GameMerchant seller = new[] { at }.Concat(bot.GetNPCsInRadius(2500).OfType<GameMerchant>())
                 .Where(m => m != null && AutonomousBotEconomy.SellsForCoin(m) && m.TradeItems != null &&
                             (m.Realm == eRealm.None || m.Realm == bot.Realm))
@@ -126,25 +129,52 @@ namespace DOL.GS
             DbItemTemplate template = seller == null ? null : Ammo(seller, type, weapon);
             if (template == null || template.Price <= 0)
                 return;
+            int before = AmmoCount(bot, type);
+            string stopped = null;
             for (int i = 0; i < 20 && AmmoCount(bot, type) < KeepFor(bot); i++)
             {
                 eInventorySlot slot = bot.Inventory.FindFirstEmptySlot(eInventorySlot.FirstBackpack, eInventorySlot.LastBackpack);
-                if (slot == eInventorySlot.Invalid || !AutonomousBotEconomy.TrySpend(bot.DatabaseID, template.Price))
+                if (slot == eInventorySlot.Invalid)
+                {
+                    stopped = "bag full";
                     break;
+                }
+                if (!AutonomousBotEconomy.TrySpend(bot.DatabaseID, template.Price))
+                {
+                    stopped = "no coin";
+                    break;
+                }
                 DbInventoryItem stack = GameInventoryItem.Create(template);
                 if (stack.PackSize > 1 && stack.MaxCount >= stack.PackSize)
                     stack.Count = stack.PackSize;
                 if (!bot.Inventory.AddItem(slot, stack))
                 {
                     AutonomousBotEconomy.AddMoney(bot.DatabaseID, template.Price);
+                    stopped = "bag refused the stack";
                     break;
                 }
             }
+            int after = AmmoCount(bot, type);
+            if (after <= before)
+            {
+                // Nothing bought (run 8, 2026-11-06: 78 archers retried every few seconds and logged a restock each
+                // time - one 261 times at 40 arrows, one 202 times with none). Say why once, then wait before the next try.
+                RestockFailedUntil[bot.DatabaseID] = now + RestockRetryMilliseconds;
+                Log.Info($"BOT_RESTOCK_FAILED_165 bot={bot.Name} id={bot.DatabaseID} ammo={type} now={after} why=\"{stopped ?? "nothing to buy"}\" " +
+                         $"price={template.Price} from=\"{seller.Name}\" retry_min={RestockRetryMilliseconds / 60_000}");
+                return;
+            }
+            RestockFailedUntil.TryRemove(bot.DatabaseID, out _);
             AutonomousBotEconomy.MarkInventoryChanged(bot);
             bot.MarkAutonomousStateDirty();
             AutonomousBotStatusPersistence.Queue(bot, true);
-            Log.Info($"BOT_RESTOCKED_165 bot={bot.Name} id={bot.DatabaseID} ammo={type} now={AmmoCount(bot, type)} from=\"{seller.Name}\"");
+            Log.Info($"BOT_RESTOCKED_165 bot={bot.Name} id={bot.DatabaseID} ammo={type} now={after} bought={after - before}" +
+                     $"{(stopped != null ? $" stopped=\"{stopped}\"" : string.Empty)} from=\"{seller.Name}\"");
         }
+
+        /// <summary>A bot whose restock bought nothing waits this long before trying again.</summary>
+        public const long RestockRetryMilliseconds = 10 * 60_000;
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<long, long> RestockFailedUntil = new();
 
         /// <summary>A throwing weapon is its own ammunition and is used up per throw, as a player's is: its stack is topped
         /// up with packs of the same weapon from a merchant close by, as far as the coin goes.</summary>

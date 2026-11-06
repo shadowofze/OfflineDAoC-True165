@@ -772,6 +772,14 @@ namespace DOL.GS
 
         private bool _smartTravelResting;
 
+        /// <summary>The rest before travel still applies: a solo bot, out of combat, SmartAI on.</summary>
+        private bool SmartTravelRestHolds(GameBot bot) =>
+            TravelRestHolds(_smartTravelResting, SmartAiConfig.IsEnabled, bot.Group != null, bot.InCombat);
+
+        /// <summary>Pure: the tick leaves a rest before travel alone while it still applies.</summary>
+        public static bool TravelRestHolds(bool travelResting, bool smartAi, bool grouped, bool inCombat) =>
+            travelResting && smartAi && !grouped && !inCombat;
+
         /// <summary>
         /// Pure: a solo bot too weak to set off: below 60% health, or a power user below 40% power. Once it has sat
         /// down it rests on to the pull threshold (90% health, 80% power and endurance), as a group does.

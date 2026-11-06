@@ -3660,6 +3660,8 @@ namespace DOL.AI.Brain
 
         private bool TryApproachAmbush(GameLiving target)
         {
+            // SmartAI: an assassin hides and walks in to open on a monster with its stealth opener (run 8, 2026-11-06).
+            if (DOL.GS.SmartAI.SmartStealthOpener.TryApproach(BotBody, target)) return true;
             if (!BotRvrAmbush.CanApproach(BotBody, target)) return false;
             int range = Body.MeleeAttackRange;
             if (BotRangedCombat.IsDedicatedArcher((eCharacterClass)BotBody.CharacterClass.ID) &&

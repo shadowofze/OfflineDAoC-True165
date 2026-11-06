@@ -114,6 +114,11 @@ namespace DOL.AI.Brain
                     return true;
                 return false;
             }
+            // A bow draw is never thrown away on the chance of a spell (run 8, 2026-11-06: Rangers' specs try spells
+            // first; stopping the draw every think and letting the legacy brain restart it meant no arrow ever left -
+            // one Ranger drew for 15 minutes). Instants still go off; anything else waits for the shot.
+            if (BotRangedCombat.KeepsDrawForSpells(swinging, Body.ActiveWeaponSlot))
+                return Body.CanCastInstantHarmfulSpells && CheckSpells(eCheckSpellType.Offensive);
             if (Body.TargetObject != target)
                 Body.TargetObject = target;
             if (swinging)

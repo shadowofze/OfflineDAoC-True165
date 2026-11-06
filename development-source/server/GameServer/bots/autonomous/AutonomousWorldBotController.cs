@@ -507,8 +507,10 @@ namespace DOL.GS
                 // an obsolete camp's sit state is stale; routing below also wakes
                 // the bot when movement actually takes over.
                 bool recoveringAtCurrentCamp = _camp != null && ReferenceEquals(_restingCamp, _camp);
+                // A solo bot resting before it travels (SmartRestBeforeTravel) keeps its rest too: waking it here sat it
+                // back down on the next walk order, every 2 s, and it never regained anything (run 8, 2026-11-06).
                 if (bot.IsRecoveryResting && !recoveringAtCurrentCamp && !_dungeonRouteResting &&
-                    _groupDirective?.Phase != "Regrouping" && !_townIdleUntilUtc.HasValue)
+                    _groupDirective?.Phase != "Regrouping" && !_townIdleUntilUtc.HasValue && !SmartTravelRestHolds(bot))
                     bot.WakeRecoveryRest();
 
                 if (bot.IsCasting && !BotSongTwistPolicy.HasMobileSongCast(bot))

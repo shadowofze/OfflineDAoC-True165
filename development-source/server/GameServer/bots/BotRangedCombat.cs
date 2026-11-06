@@ -34,6 +34,10 @@ namespace DOL.GS
         public static bool NeedsAttackStart(bool attacking, GameObject previousTarget, GameObject target) =>
             !attacking || previousTarget != target;
 
+        /// <summary>Pure: a ranged attack in progress is kept when a spell is only being tried (run 8, 2026-11-06).</summary>
+        public static bool KeepsDrawForSpells(bool attacking, eActiveWeaponSlot slot) =>
+            attacking && slot == eActiveWeaponSlot.Distance;
+
         public static bool IsDedicatedArcher(eCharacterClass characterClass) => characterClass is
             eCharacterClass.Scout or eCharacterClass.Hunter or eCharacterClass.Ranger;
 

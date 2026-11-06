@@ -60,17 +60,32 @@ namespace DOL.GS
             bool smartAi = SmartAI.SmartStyleSelector.Drives(bot);
             // Preserve a deliberate tank taunt, but revalidate at the actual swing.
             Style queued = bot.styleComponent.NextCombatStyle;
-            if (preserveQueued && Usable(bot, queued, lastAttack, smartAi)) return queued;
+            bool queuedUsable = preserveQueued && Usable(bot, queued, lastAttack, smartAi);
+            if (queuedUsable && (!smartAi || bot.StylesTaunt?.Contains(queued) == true)) return queued;
             Style best = null;
             Style anytime = null;
+            Style opener = null;
+            Style positional = null;
             foreach (Style style in bot.Styles)
             {
                 if (!Usable(bot, style, lastAttack, smartAi)) continue;
                 if (Better(style, best)) best = style;
                 if (SavageBotCombatPolicy.IsReliableAnytimeStyle(style) && Better(style, anytime)) anytime = style;
+                if (style.StealthRequirement && Better(style, opener)) opener = style;
+                else if (style.OpeningRequirementType == Style.eOpening.Positional && Better(style, positional)) positional = style;
             }
             bot.styleComponent.NextCombatBackupStyle = anytime;
-            return best;
+            return Choose(smartAi, queuedUsable ? queued : null, opener, positional, best);
         }
+
+        /// <summary>
+        /// Pure: the style a SmartAI bot swings. Usable here means its opening is met now (StyleProcessor.CanUseStyle).
+        /// A stealth opener the bot is hidden for comes first, then a positional style it stands in the arc for (run 8,
+        /// 2026-11-06: Nightshades behind their target swung Bumblebee's Sting 82 times and Wasp's Sting 26 - the
+        /// queued or higher-growth anytime style won, and the walk round the monster was wasted), then the queued
+        /// style, then the best by growth rate. The legacy brain keeps queued-then-best.
+        /// </summary>
+        public static Style Choose(bool smartAi, Style queued, Style opener, Style positional, Style best) =>
+            smartAi ? opener ?? positional ?? queued ?? best : queued ?? best;
     }
 }
