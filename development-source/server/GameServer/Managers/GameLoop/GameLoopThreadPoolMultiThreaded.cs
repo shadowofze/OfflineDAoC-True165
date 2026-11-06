@@ -28,6 +28,8 @@ namespace DOL.GS
         // Thread management.
         private Thread[] _workers;                      // Worker threads (excludes caller).
         private long[] _workerCycle;                    // Worker cycle phase, used to detect stuck threads.
+        private int[] _workerItem;                      // Index of the item each worker is processing (for the watchdog).
+        [ThreadStatic] private static int t_workerId;   // This thread's worker index plus one (0 = not a worker).
         private GameLoopThreadPoolWatchdog _watchdog;   // Monitors worker health; restarts if needed.
         private CancellationTokenSource _shutdownToken;
 
@@ -71,6 +73,7 @@ namespace DOL.GS
                 _workerCount = _degreeOfParallelism - 1;
                 _workers = new Thread[_workerCount];
                 _workerCycle = new long[_workerCount];
+                _workerItem = new int[_workerCount];
                 _workerStartLatch = new(_workerCount);
                 _workReady = new ManualResetEventSlim[_workerCount];
 
@@ -108,7 +111,7 @@ namespace DOL.GS
 
             void StartWatchdog()
             {
-                _watchdog = new(_workers, _workerCycle, RestartWorkers);
+                _watchdog = new(_workers, _workerCycle, RestartWorkers, DescribeWorkerItem);
                 _watchdog.Start();
             }
         }
@@ -206,6 +209,7 @@ namespace DOL.GS
             (int Id, bool Restart) = ((int, bool)) obj;
             _workers[Id] = Thread.CurrentThread;
             _workerCycle[Id] = GameLoopThreadPoolWatchdog.IDLE_CYCLE;
+            t_workerId = Id + 1;
             base.InitWorker(obj);
             _workerStartLatch.Signal();
             RunWorkerLoop(Id, _shutdownToken.Token);
@@ -307,10 +311,14 @@ namespace DOL.GS
                 if (start < 0)
                     start = 0;
 
+                int worker = t_workerId - 1;
+
                 for (int i = start; i < end; i++)
                 {
                     try
                     {
+                        if (worker >= 0)
+                            Volatile.Write(ref _workerItem[worker], i);
                         _workProcessor.Process(i);
                     }
                     catch (Exception exception)
@@ -325,6 +333,20 @@ namespace DOL.GS
                 // item index. Subtracting one can strand item zero when only
                 // one worker remains. Re-read shared work after every chunk.
                 remainingWork = Volatile.Read(ref _workState.RemainingWork);
+            }
+        }
+
+        /// <summary>For the watchdog: the step and the item a worker is processing now (run 7, 2026-11-05: a hang named only the thread).</summary>
+        private string DescribeWorkerItem(int id)
+        {
+            try
+            {
+                WorkProcessor processor = _workProcessor;
+                return processor == null ? "no batch" : processor.Describe(Volatile.Read(ref _workerItem[id]));
+            }
+            catch (Exception e)
+            {
+                return $"unknown ({e.GetType().Name})";
             }
         }
 
@@ -357,11 +379,21 @@ namespace DOL.GS
                 _items = default;
                 _action = null;
             }
+
+            public override string Describe(int index)
+            {
+                List<T> items = _items;
+                MethodInfo method = _action?.Method;
+                string step = method == null ? "?" : $"{method.DeclaringType?.Name}.{method.Name}";
+                object item = items != null && index >= 0 && index < items.Count ? items[index] : null;
+                return $"step={step} item={index} {GameLoopWorkDescriber.Describe(item)}";
+            }
         }
 
         private abstract class WorkProcessor
         {
             public abstract void Process(int index);
+            public abstract string Describe(int index);
         }
     }
 }
